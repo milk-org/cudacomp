@@ -370,6 +370,12 @@ int_fast8_t CUDACOMP_extractModesLoop_cli()
 /* =============================================================================================== */
 
 
+void __attribute__ ((constructor)) libinit_cudacomp()
+{
+	init_cudacomp();
+	printf(" ...... Loading module %s\n", __FILE__);
+}
+
 
 
 int_fast8_t init_cudacomp()
