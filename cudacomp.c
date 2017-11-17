@@ -389,7 +389,7 @@ int_fast8_t init_cudacomp()
 #endif
 
     strcpy(data.module[data.NBmodule].name,__FILE__);
-    strcpy(data.module[data.NBmodule].info,"CUDA wrapper for AO loop");
+    strcpy(data.module[data.NBmodule].info,"milk    - CUDA wrapper for AO loop");
     data.NBmodule++;
 
 
