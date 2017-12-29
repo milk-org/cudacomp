@@ -373,12 +373,7 @@ int_fast8_t CUDACOMP_extractModesLoop_cli()
 void __attribute__ ((constructor)) libinit_cudacomp()
 {
 	init_cudacomp();
-
-	if(data.progStatus>0)
-	{
-		printf("  Found unloaded shared object in ./libs/ -> LOADING module %s\n", __FILE__);
-		fflush(stdout);
-	}	
+	RegisterModule(__FILE__, "milk", "CUDA wrapper for AO loop");
 }
 
 
@@ -392,11 +387,6 @@ int_fast8_t init_cudacomp()
         gpumatmultconf[i].alloc = 0;
     }
 #endif
-
-    strcpy(data.module[data.NBmodule].name, __FILE__);
-    strcpy(data.module[data.NBmodule].package ,"milk");
-    strcpy(data.module[data.NBmodule].info ,"CUDA wrapper for AO loop");
-    data.NBmodule++;
 
 
 
