@@ -123,6 +123,9 @@ int FORCESEMINIT = 1;
 
 
 extern DATA data;
+
+static int INITSTATUS_cudacomp = 0;
+
 extern pid_t CLIPID;
 
 
@@ -372,8 +375,12 @@ int_fast8_t CUDACOMP_extractModesLoop_cli()
 
 void __attribute__ ((constructor)) libinit_cudacomp()
 {
-	init_cudacomp();
-	RegisterModule(__FILE__, "milk", "CUDA wrapper for AO loop");
+	if ( INITSTATUS_cudacomp == 0 )
+	{
+		init_cudacomp();
+		RegisterModule(__FILE__, "milk", "CUDA wrapper for AO loop");
+		INITSTATUS_cudacomp = 1;
+	}
 }
 
 

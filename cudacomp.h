@@ -126,6 +126,8 @@ typedef struct
 /* =============================================================================================== */
 
 
+void __attribute__ ((constructor)) libinit_cudacomp();
+
 /**
  * @brief Initialize cudacomp module and command line interface.
  */
