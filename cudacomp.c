@@ -2611,7 +2611,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
     long ID_Cmatrix;
 
 	// TESTING FLAGS
-	int VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse = 0;
+	int VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse = 1;
     int testmode = 0;
 
 
