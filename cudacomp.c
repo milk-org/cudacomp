@@ -2845,6 +2845,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 	}
 	
 	
+	if(MAGMAloop_iter == 0)
+        magma_queue_create(0, &magmaqueue);
 	
 	
 	if(PSINVmode==1)
@@ -2924,8 +2926,7 @@ printf("line %d\n", __LINE__); fflush(stdout);
 	// STEP 2 :   Copy input data from CPU to GPU   
 	// ****************************************************
 	
-    if(MAGMAloop_iter == 0)
-        magma_queue_create(0, &magmaqueue);
+
 	
     if(MAGMAfloat==1)
         magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, M, magmaqueue);
