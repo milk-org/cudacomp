@@ -101,7 +101,13 @@ static int clock_gettime(int clk_id, struct mach_timespec *t){
 /* =============================================================================================== */
 /* =============================================================================================== */
 
-#define min(a,b) (((a)<(b))?(a):(b))
+
+#ifndef max
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#endif
+#ifndef min
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#endif
 
 
 # ifdef _OPENMP
