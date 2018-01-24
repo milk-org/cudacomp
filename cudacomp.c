@@ -2902,7 +2902,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
                      &sizeS,
                      &it,
                      &flops,
-                     queue, handle );	
+                     magmaqueue, handle );	
 
 		TESTING_FREE_DEV( magmaf_d_B );
 		TESTING_FREE_DEV( magmaf_d_U );
