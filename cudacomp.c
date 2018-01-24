@@ -2627,7 +2627,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 	int PSINVmode = 1; // 0 for MAGMA EVD, 1 for MAGMA QDWH partial SVD
 
-	float QDWHlimit = 0.1; // tunable numerical parameter
+	float QDWHlimit = 0.0001; // tunable numerical parameter
 	// how many singular values need to be computed
 	// 0 < value < 1
 	// higher number -> singular value more approximate
@@ -2879,12 +2879,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 		int sizeS;
     
 		TESTING_MALLOC_CPU( magmaf_h_S, float, min_mn);
-printf("line %d\n", __LINE__); fflush(stdout);        
         TESTING_MALLOC_DEV( magmaf_d_B, float, lddb*min_mn);
 		TESTING_MALLOC_DEV( magmaf_d_U, float, lddu*min_mn);
 		TESTING_MALLOC_DEV( magmaf_d_VT, float, lddvt*N);
 		
-		printf("line %d\n", __LINE__); fflush(stdout);
 		
 		//if(MAGMAfloat==1)
 		magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, M, magmaqueue);
@@ -2913,13 +2911,9 @@ printf("line %d\n", __LINE__); fflush(stdout);
 
 		printf("line %d\n", __LINE__); fflush(stdout);
 		TESTING_FREE_DEV( magmaf_d_B );
-		printf("line %d\n", __LINE__); fflush(stdout);
 		TESTING_FREE_DEV( magmaf_d_U );
-		printf("line %d\n", __LINE__); fflush(stdout);
 		TESTING_FREE_DEV( magmaf_d_VT );
-		printf("line %d\n", __LINE__); fflush(stdout);
 		TESTING_FREE_CPU( magmaf_h_S );
-printf("line %d\n", __LINE__); fflush(stdout);
 
 		printf("EXITING QDWH partial mode ...\n");
 		fflush(stdout);			
