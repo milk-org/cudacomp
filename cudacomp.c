@@ -2851,7 +2851,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 		
 		float flops = 0.0;
 		int it = 0;
-
+		int max_mn = max(M,N);
 		int min_mn = min(M,N);
 		int n2 = 2*min_mn;	
 	    int n232 = r32up(n2);     
@@ -2878,10 +2878,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 		
 		QDWHpartial();	
 
-		TESTING_FREE_DEV( magma_d_B );
-		TESTING_FREE_DEV( magma_d_U );
-		TESTING_FREE_DEV( magma_d_VT );
-		TESTING_FREE_CPU( magma_h_S );
+		TESTING_FREE_DEV( magmaf_d_B );
+		TESTING_FREE_DEV( magmaf_d_U );
+		TESTING_FREE_DEV( magmaf_d_VT );
+		TESTING_FREE_CPU( magmaf_h_S );
 
 		printf("EXITING QDWH partial mode ...\n");
 		fflush(stdout);			
