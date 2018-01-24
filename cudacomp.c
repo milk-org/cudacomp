@@ -2625,7 +2625,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 
 
-	int PSINVmode = 0; // 0 for MAGMA EVD, 1 for MAGMA QDWH partial SVD
+	int PSINVmode = 1; // 0 for MAGMA EVD, 1 for MAGMA QDWH partial SVD
 
 	float QDWHlimit = 0.1; // tunable numerical parameter
 	// how many singular values need to be computed
@@ -2895,7 +2895,7 @@ printf("line %d\n", __LINE__); fflush(stdout);
 
 		int fact = 1; //[0 1] 0 for QR, 1 for PO
 		
-		/*
+		
 		QDWHpartial(M, N, // Size of matrix
                      QDWHlimit, // Threshold
                      fact, // [0 1] 0 for QR, 1 for PO
@@ -2909,7 +2909,7 @@ printf("line %d\n", __LINE__); fflush(stdout);
                      &it,
                      &flops,
                      magmaqueue, handle );	
-*/
+
 
 		printf("line %d\n", __LINE__); fflush(stdout);
 		TESTING_FREE_DEV( magmaf_d_B );
