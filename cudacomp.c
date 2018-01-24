@@ -2910,11 +2910,16 @@ printf("line %d\n", __LINE__); fflush(stdout);
                      &flops,
                      magmaqueue, handle );	
 */
-		TESTING_FREE_DEV( magmaf_d_B );
-		TESTING_FREE_DEV( magmaf_d_U );
-		TESTING_FREE_DEV( magmaf_d_VT );
-		TESTING_FREE_CPU( magmaf_h_S );
 
+		printf("line %d\n", __LINE__); fflush(stdout);
+		TESTING_FREE_DEV( magmaf_d_B );
+		printf("line %d\n", __LINE__); fflush(stdout);
+		TESTING_FREE_DEV( magmaf_d_U );
+		printf("line %d\n", __LINE__); fflush(stdout);
+		TESTING_FREE_DEV( magmaf_d_VT );
+		printf("line %d\n", __LINE__); fflush(stdout);
+		TESTING_FREE_CPU( magmaf_h_S );
+printf("line %d\n", __LINE__); fflush(stdout);
 
 		printf("EXITING QDWH partial mode ...\n");
 		fflush(stdout);			
