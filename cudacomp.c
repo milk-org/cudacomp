@@ -2882,7 +2882,27 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 		TESTING_MALLOC_DEV( magmaf_d_U, float, lddu*min_mn);
 		TESTING_MALLOC_DEV( magmaf_d_VT, float, lddvt*N);
 		
-		QDWHpartial();	
+		
+		//if(MAGMAfloat==1)
+		magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, M, magmaqueue);
+		//else
+		//	magma_dsetmatrix( M, N, magma_h_A, M, magma_d_A, M, magmaqueue);
+
+		int fact = 1; //[0 1] 0 for QR, 1 for PO
+		
+		QDWHpartial(M, N, // Size of matrix
+                     QDWHlimit, // Threshold
+                     fact, // [0 1] 0 for QR, 1 for PO
+                     magmaf_d_A,  M, // matrix
+                     magmaf_h_S,          // Sigular values, size n, tau = S in QDWH
+                     magmaf_d_U,  lddu, // Left singular vectors, size mx(10%n)
+                     magmaf_d_VT, lddvt,// Right singular vectors, size nxn, d_VT = d_VT 
+                     magmaf_d_B,  lddb, // Needed for the QR fact in QDWH, it is of size NxN, because the matrix will reduced 
+                     magmaf_h_A, min_mn,
+                     &sizeS,
+                     &it,
+                     &flops,
+                     queue, handle );	
 
 		TESTING_FREE_DEV( magmaf_d_B );
 		TESTING_FREE_DEV( magmaf_d_U );
