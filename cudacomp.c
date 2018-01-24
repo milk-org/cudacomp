@@ -2619,7 +2619,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 
 
-	int PSINVmode = 1; // 0 for MAGMA EVD, 1 for MAGMA QDWH partial SVD
+	int PSINVmode = 0; // 0 for MAGMA EVD, 1 for MAGMA QDWH partial SVD
 
 	float QDWHlimit = 0.1; // tunable numerical parameter
 	// how many singular values need to be computed
@@ -2731,27 +2731,33 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
     {
         if(MAGMAfloat==0)
         {
-            TESTING_MALLOC_CPU( magma_h_A, double, M*N);
+            TESTING_MALLOC_PIN( magma_h_A, double, M*N); // NOTE: changed from CPU to PIN
             TESTING_MALLOC_DEV( magma_d_A, double, M*N);
 
+			if(PSINVmode==0)
+			{
             TESTING_MALLOC_CPU( magma_h_AtA, double, N*N);
             TESTING_MALLOC_DEV( magma_d_AtA, double, N*N);
 
             TESTING_MALLOC_CPU( magma_h_VT1, double, N*N);
             TESTING_MALLOC_DEV( magma_d_VT1, double, N*N);
             TESTING_MALLOC_DEV( magma_d_M2, double, N*N);
+		}
         }
         else
         {
             TESTING_MALLOC_CPU( magmaf_h_A, float, M*N);
             TESTING_MALLOC_DEV( magmaf_d_A, float, M*N);
-
-            TESTING_MALLOC_CPU( magmaf_h_AtA, float, N*N);
+        
+			if(PSINVmode==0)
+			{
+				TESTING_MALLOC_CPU( magmaf_h_AtA, float, N*N);
             TESTING_MALLOC_DEV( magmaf_d_AtA, float, N*N);
 
             TESTING_MALLOC_CPU( magmaf_h_VT1, float, N*N);
             TESTING_MALLOC_DEV( magmaf_d_VT1, float, N*N);
             TESTING_MALLOC_DEV( magmaf_d_M2, float, N*N);
+			}
         }
     }
 
@@ -2833,12 +2839,49 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 	}
 	
 	
+	
+	
 	if(PSINVmode==1)
 	{
 		printf("ENTERING QDWH partial mode ...\n");
 		fflush(stdout);
 		
+		cublasHandle_t handle;
+		cublasCreate( &handle );
+		
+		float flops = 0.0;
+		int it = 0;
+
+		int min_mn = min(m,n);
+		int n2 = 2*min_mn;	
+	    int n232 = r32up(n2);     
+	    int lddb  = n232;      
+	    int ldd_min_mn = r32up(min_mn);     
+	    int ldd_max_mn = r32up(max_mn);     
+	    int ldda = ldd_max_mn;      
+	    int m32 = r32up(m);     
+	    int n32 = r32up(n);     
+	    int lddu  = m32;     
+	    int lddvt = n32;
+	
+		 /*
+     * Allocatation for QDWHPartial
+     */
+    float *magmaf_d_B, *magmaf_d_VT, *magmaf_d_U, *magmaf_h_S;
+    int sizeS;
+    
+		TESTING_MALLOC_CPU( magmaf_h_S, float, min_mn);
+        
+        TESTING_MALLOC_DEV( magmaf_d_B, float, lddb*min_mn);
+		TESTING_MALLOC_DEV( magmaf_d_U, float, lddu*min_mn);
+		TESTING_MALLOC_DEV( magmaf_d_VT, float, lddvt*N);
+		
 		QDWHpartial();	
+
+		TESTING_FREE_DEV( magma_d_B );
+		TESTING_FREE_DEV( magma_d_U );
+		TESTING_FREE_DEV( magma_d_VT );
+		TESTING_FREE_CPU( magma_h_S );
 
 		printf("EXITING QDWH partial mode ...\n");
 		fflush(stdout);			
@@ -3206,15 +3249,23 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
     {
         if(MAGMAfloat==1)
         {
+			if(PSINVmode==0)
+			{
             TESTING_FREE_CPU( magmaf_h_VT1 );
-            TESTING_FREE_CPU( magmaf_w1 );
             TESTING_FREE_CPU( magmaf_h_AtA );
+			}
+            
+            TESTING_FREE_CPU( magmaf_w1 );
         }
         else
         {
+			if(PSINVmode==0)
+			{
             TESTING_FREE_CPU( magma_h_VT1 );
-            TESTING_FREE_CPU( magma_w1 );
             TESTING_FREE_CPU( magma_h_AtA );
+			}
+			
+            TESTING_FREE_CPU( magma_w1 );
         }
     }
 
@@ -3295,14 +3346,19 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 
         //	magma_dsetmatrix( N, N, h_M2, N, d_M2, N, magmaqueue);
+        if(PSINVmode==0)
+        {
         if(MAGMAfloat==1)
             TESTING_FREE_CPU( magmaf_h_M2 );
         else
             TESTING_FREE_CPU( magma_h_M2 );
+		}
     }
 
     if(LOOPmode == 0)
     {
+		if(PSINVmode==0)
+		{
         if(MAGMAfloat==1)
         {
             TESTING_FREE_DEV( magmaf_d_VT1 );
@@ -3313,6 +3369,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
             TESTING_FREE_DEV( magma_d_VT1 );
             TESTING_FREE_DEV( magma_d_AtA );
         }
+		}
     }
 
  
