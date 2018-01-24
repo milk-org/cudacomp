@@ -2832,8 +2832,14 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 		fflush(stdout);
 	}
 	
-
-
+	
+	if(PSINVmode==1)
+	{
+		QDWHpartial();		
+	}
+	else
+	{
+	
 	// ****************************************************
 	// STEP 2 :   Copy input data from CPU to GPU   
 	// ****************************************************
@@ -3398,6 +3404,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
     else
         magma_dgetmatrix( M, N, magma_d_Ainv, M, magma_h_Ainv, M, magmaqueue);
 
+	}
 
     if(testmode == 1)
     {
