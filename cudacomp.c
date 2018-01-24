@@ -2752,7 +2752,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
         }
         else
         {
-            TESTING_MALLOC_CPU( magmaf_h_A, float, M*N);
+            TESTING_MALLOC_PIN( magmaf_h_A, float, M*N);
             TESTING_MALLOC_DEV( magmaf_d_A, float, M*N);
         
 			if(PSINVmode==0)
