@@ -510,7 +510,7 @@ int_fast8_t init_cudacomp()
 
 
 
-
+static inline int r32up(x) { return ((x+31)/32)*32;}
 
 
 #ifdef HAVE_CUDA
@@ -2852,15 +2852,15 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 		float flops = 0.0;
 		int it = 0;
 
-		int min_mn = min(m,n);
+		int min_mn = min(M,N);
 		int n2 = 2*min_mn;	
 	    int n232 = r32up(n2);     
 	    int lddb  = n232;      
 	    int ldd_min_mn = r32up(min_mn);     
 	    int ldd_max_mn = r32up(max_mn);     
 	    int ldda = ldd_max_mn;      
-	    int m32 = r32up(m);     
-	    int n32 = r32up(n);     
+	    int m32 = r32up(M);     
+	    int n32 = r32up(N);     
 	    int lddu  = m32;     
 	    int lddvt = n32;
 	
