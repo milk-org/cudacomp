@@ -2612,10 +2612,21 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 	// TESTING FLAGS
 	int VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse = 1;
-    int testmode = 0;
+    int testmode = 1;
 
 
     int MAGMAfloat = 1;		                                               /**< 1 if single precision, 0 if double precision */
+
+
+
+	int PSINVmode = 0; // 0 for MAGMA EVD, 1 for MAGMA QDWH partial SVD
+
+	float QDWHlimit = 0.1; // tunable numerical parameter
+	// how many singular values need to be computed
+	// 0 < value < 1
+	// higher number -> singular value more approximate
+	// execution time longer as value -> 0
+
 
 
 	int magmaXmode = 0; // expert mode, uses magma_ssyevdx_gpu
