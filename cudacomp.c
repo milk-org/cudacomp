@@ -2873,20 +2873,23 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 		 /*
      * Allocatation for QDWHPartial
      */
-    float *magmaf_d_B, *magmaf_d_VT, *magmaf_d_U, *magmaf_h_S;
-    int sizeS;
+		float *magmaf_d_B, *magmaf_d_VT, *magmaf_d_U, *magmaf_h_S;
+		int sizeS;
     
 		TESTING_MALLOC_CPU( magmaf_h_S, float, min_mn);
-        
+printf("line %d\n", __LINE__); fflush(stdout);        
         TESTING_MALLOC_DEV( magmaf_d_B, float, lddb*min_mn);
 		TESTING_MALLOC_DEV( magmaf_d_U, float, lddu*min_mn);
 		TESTING_MALLOC_DEV( magmaf_d_VT, float, lddvt*N);
 		
+		printf("line %d\n", __LINE__); fflush(stdout);
 		
 		//if(MAGMAfloat==1)
 		magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, M, magmaqueue);
 		//else
 		//	magma_dsetmatrix( M, N, magma_h_A, M, magma_d_A, M, magmaqueue);
+
+		printf("line %d\n", __LINE__); fflush(stdout);
 
 		int fact = 1; //[0 1] 0 for QR, 1 for PO
 		
@@ -2909,6 +2912,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 		TESTING_FREE_DEV( magmaf_d_U );
 		TESTING_FREE_DEV( magmaf_d_VT );
 		TESTING_FREE_CPU( magmaf_h_S );
+
 
 		printf("EXITING QDWH partial mode ...\n");
 		fflush(stdout);			
