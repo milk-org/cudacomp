@@ -2619,7 +2619,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 
 
-	int PSINVmode = 0; // 0 for MAGMA EVD, 1 for MAGMA QDWH partial SVD
+	int PSINVmode = 1; // 0 for MAGMA EVD, 1 for MAGMA QDWH partial SVD
 
 	float QDWHlimit = 0.1; // tunable numerical parameter
 	// how many singular values need to be computed
@@ -2731,7 +2731,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
     {
         if(MAGMAfloat==0)
         {
-            TESTING_MALLOC_CPU( magma_h_A, double, M*N); // NOTE: changed from CPU to PIN
+            TESTING_MALLOC_PIN( magma_h_A, double, M*N); // NOTE: changed from CPU to PIN
             TESTING_MALLOC_DEV( magma_d_A, double, M*N);
 
 			if(PSINVmode==0)
