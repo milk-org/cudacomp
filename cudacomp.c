@@ -2890,6 +2890,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 		int fact = 1; //[0 1] 0 for QR, 1 for PO
 		
+		/*
 		QDWHpartial(M, N, // Size of matrix
                      QDWHlimit, // Threshold
                      fact, // [0 1] 0 for QR, 1 for PO
@@ -2903,7 +2904,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
                      &it,
                      &flops,
                      magmaqueue, handle );	
-
+*/
 		TESTING_FREE_DEV( magmaf_d_B );
 		TESTING_FREE_DEV( magmaf_d_U );
 		TESTING_FREE_DEV( magmaf_d_VT );
