@@ -2835,7 +2835,13 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 	
 	if(PSINVmode==1)
 	{
-		QDWHpartial();		
+		printf("ENTERING QDWH partial mode ...\n");
+		fflush(stdout);
+		
+		QDWHpartial();	
+
+		printf("EXITING QDWH partial mode ...\n");
+		fflush(stdout);			
 	}
 	else
 	{
