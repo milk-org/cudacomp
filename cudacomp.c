@@ -2627,6 +2627,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 	int PSINVmode = 0; // 0 for MAGMA EVD, 1 for MAGMA QDWH partial SVD
 
+
 	float QDWHlimit = 0.0001; // tunable numerical parameter
 	// how many singular values need to be computed
 	// 0 < value < 1
