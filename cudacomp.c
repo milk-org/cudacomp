@@ -2618,7 +2618,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 	// TESTING FLAGS
 	int VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse = 1;
-    int testmode = 1;
+    int testmode = 0;
 
 
     int MAGMAfloat = 1;		                                               /**< 1 if single precision, 0 if double precision */
@@ -2990,6 +2990,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
                 data.image[ID_AtA].array.F[ii] = magma_h_AtA[ii];
         }
         save_fits("mAtA", "!test_mAtA.fits");
+        delete_image_ID("mAtA");
     }
 
 
