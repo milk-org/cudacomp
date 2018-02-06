@@ -486,8 +486,8 @@ int_fast8_t init_cudacomp()
         
     RegisterCLIcommand("cudacomppsinv", __FILE__, CUDACOMP_magma_compute_SVDpseudoInverse_cli, "compute pseudo inverse", \
     "<input matrix [string]> <output pseudoinv [string]> <eps [float]> <NBmodes [long]> <VTmat [string]>", \
-    "cudacomppsinv matA matAinv 0.01 100 VTmat 1e-4 1e-7", \
-    "int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, float qdwh_tol)");
+    "cudacomppsinv matA matAinv 0.01 100 VTmat 0 1e-4 1e-7", \
+    "int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, double qdwh_s, float qdwh_tol)");
     
         
         
@@ -2616,7 +2616,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name, con
 
 
 int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, \
-long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, float qdwh_tol) 
+long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, double qdwh_s, float qdwh_tol) 
 {
     long ID_Rmatrix;
     uint8_t atype;
@@ -2652,7 +2652,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, floa
 
     int MAGMAfloat = 1;		                                               /**< 1 if single precision, 0 if double precision */
 
-    int QDWHPartial = 1; // 1 do QDWHPartial, MAGMA otherwise
+//    int mode_QDWHPartial = 1; // 1 do QDWHPartial, MAGMA otherwise
     int fact = 1; // 1 use PO-based QDWH iter, QR-based otherwise
     int psinv = 1; // 1 calculate psinv, no otherwise
     double s = 1.e-9; // Threshold for to capture a subset of the singular values
@@ -2772,7 +2772,16 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, floa
     int lddu  = m32;
     int lddvt = n32;
 
-    if (QDWHPartial) {
+
+	int mode_QDWHPartial;
+	if (PSINV_MODE == 1)
+		mode_QDWHPartial = 1;
+	else
+		mode_QDWHPartial = 0;
+		
+		
+
+    if (mode_QDWHPartial) {
 	if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse==1)
 	{
 		printf("ALLOCATION FOR PSINV QDWHPartial M: %d N: %d min: %d\n", M, N, min_mn);
@@ -2942,7 +2951,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, floa
 
     /*
     */
-    if (QDWHPartial) {
+    if (mode_QDWHPartial) {
            sprintf(fname, "Aorig.txt");
            if((fp=fopen(fname, "w"))==NULL)
            {
@@ -2980,7 +2989,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, floa
     }
 
 
-    if (QDWHPartial) {
+    if (mode_QDWHPartial) {
        clock_gettime(CLOCK_REALTIME, &t2);
        if (MAGMAfloat) {
            cublasHandle_t handle;
@@ -3651,7 +3660,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, floa
     if(testmode == 1)
     {
 /*
-       if(QDWHPartial == 1)
+       if(mode_QDWHPartial == 1)
        {  // A[1:M, 1:N] -> Ainv[1:N, 1:M]
           // BUT need to transpose the Ainv resulting from QDWHPartial
           // to be compliant with cacao, as it expects Ainv[1:M, 1:N]
@@ -3726,7 +3735,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, floa
     }
 
 /*
-    if(QDWHPartial == 1)
+    if(mode_QDWHPartial == 1)
     {
        if(atype==_DATATYPE_FLOAT)
        {
@@ -3848,7 +3857,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, floa
         tdiff = info_time_diff(t5, t6);
         t56d = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
 
-        if (QDWHPartial == 0) {
+        if (mode_QDWHPartial == 0) {
             tdiff = info_time_diff(t6, t7);
             t67d = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
 
@@ -3870,7 +3879,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, floa
       printf("  3-4	%12.3f ms\n", t34d*1000.0);
       printf("  4-5	%12.3f ms\n", t45d*1000.0);
       printf("  5-6	%12.3f ms\n", t56d*1000.0);
-      if (QDWHPartial == 0) {
+      if (mode_QDWHPartial == 0) {
            printf("  6-7	%12.3f ms\n", t67d*1000.0);
            printf("  7-8	%12.3f ms\n", t78d*1000.0);
       }
