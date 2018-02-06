@@ -329,9 +329,11 @@ int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli()
 
 int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_cli()
 {
-	if(CLI_checkarg(1,4)+CLI_checkarg(2,3)+CLI_checkarg(3,1)+CLI_checkarg(4,2)+CLI_checkarg(5,3)+CLI_checkarg(6,1)+CLI_checkarg(7,1)==0)
+	if(CLI_checkarg(1,4)+CLI_checkarg(2,3)+CLI_checkarg(3,1)+CLI_checkarg(4,2)+CLI_checkarg(5,3)+\
+	CLI_checkarg(6,2)+CLI_checkarg(7,1)+CLI_checkarg(8,1)==0)
         CUDACOMP_magma_compute_SVDpseudoInverse(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, \
-        data.cmdargtoken[3].val.numf, data.cmdargtoken[4].val.numl, data.cmdargtoken[5].val.string, 0, data.cmdargtoken[6].val.numf, data.cmdargtoken[7].val.numf);
+        data.cmdargtoken[3].val.numf, data.cmdargtoken[4].val.numl, data.cmdargtoken[5].val.string, 0, \
+        data.cmdargtoken[6].val.numl, data.cmdargtoken[7].val.numf, data.cmdargtoken[8].val.numf);
     else
         return 1;
 }
@@ -3020,11 +3022,11 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, dou
                         psinv,
                         s, // Threshold to capture a subset of the singular values
                         tol, // Tolerance (governs accuracy) 
-                        magmaf_d_A,  m32, // matrix
+                        magmaf_d_A,  M, // m32 // matrix
                         magmaf_h_S,          // Sigular values, size n, tau = S in QDWH
-                        magmaf_d_U,  lddu, // Left singular vectors, size mx(10%n)
-                        magmaf_d_VT, lddvt,// Right singular vectors, size nxn, d_VT = d_VT 
-                        magmaf_d_B,  lddb, // Needed for the QR fact in QDWH, it is of size NxN, because the matrix will reduced 
+                        magmaf_d_U,  M, //lddu, // Left singular vectors, size mx(10%n)
+                        magmaf_d_VT, N, //lddvt,// Right singular vectors, size nxn, d_VT = d_VT 
+                        magmaf_d_B,  n2, //lddb, // Needed for the QR fact in QDWH, it is of size NxN, because the matrix will reduced 
                         magmaf_h_Ainv, N, 
                         &sizeS,
                         &wanted,
