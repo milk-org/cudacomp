@@ -234,7 +234,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name, con
  * 
  * @warning Requires M>N (tall matrix)
  */
-int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode);
+int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, \
+long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, float qdwh_tol);
 
 
 

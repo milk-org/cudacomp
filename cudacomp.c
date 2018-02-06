@@ -329,8 +329,9 @@ int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli()
 
 int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_cli()
 {
-	if(CLI_checkarg(1,4)+CLI_checkarg(2,3)+CLI_checkarg(3,1)+CLI_checkarg(4,2)+CLI_checkarg(5,3)==0)
-        CUDACOMP_magma_compute_SVDpseudoInverse(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.numf, data.cmdargtoken[4].val.numl, data.cmdargtoken[5].val.string, 0);
+	if(CLI_checkarg(1,4)+CLI_checkarg(2,3)+CLI_checkarg(3,1)+CLI_checkarg(4,2)+CLI_checkarg(5,3)+CLI_checkarg(6,1)+CLI_checkarg(7,1)==0)
+        CUDACOMP_magma_compute_SVDpseudoInverse(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, \
+        data.cmdargtoken[3].val.numf, data.cmdargtoken[4].val.numl, data.cmdargtoken[5].val.string, 0, data.cmdargtoken[6].val.numf, data.cmdargtoken[7].val.numf);
     else
         return 1;
 }
@@ -483,7 +484,10 @@ int_fast8_t init_cudacomp()
 
     RegisterCLIcommand("cudacomppsinvSVD", __FILE__, CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli, "compute pseudo inverse with direct SVD", "<input matrix [string]> <output pseudoinv [string]> <eps [float]> <NBmodes [long]> <VTmat [string]>", "cudacomppsinvSVD matA matAinv 0.01 100 VTmat", "int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name);");
         
-    RegisterCLIcommand("cudacomppsinv", __FILE__, CUDACOMP_magma_compute_SVDpseudoInverse_cli, "compute pseudo inverse", "<input matrix [string]> <output pseudoinv [string]> <eps [float]> <NBmodes [long]> <VTmat [string]>", "cudacomppsinv matA matAinv 0.01 100 VTmat", "int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode)");
+    RegisterCLIcommand("cudacomppsinv", __FILE__, CUDACOMP_magma_compute_SVDpseudoInverse_cli, "compute pseudo inverse", \
+    "<input matrix [string]> <output pseudoinv [string]> <eps [float]> <NBmodes [long]> <VTmat [string]>", \
+    "cudacomppsinv matA matAinv 0.01 100 VTmat 1e-4 1e-7", \
+    "int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, float qdwh_tol)");
     
         
         
@@ -2611,7 +2615,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name, con
  */
 
 
-int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode) 
+int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, \
+long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, double qdwh_s, float qdwh_tol) 
 {
     long ID_Rmatrix;
     uint8_t atype;
@@ -2659,7 +2664,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 	// this does not speed up computation
 	magma_int_t mout;
 
-
+	s = qdwh_s;
+	tol = qdwh_tol;
 
 
   //  if(timing==1)
