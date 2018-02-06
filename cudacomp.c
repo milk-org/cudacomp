@@ -218,6 +218,23 @@ static magma_int_t *magma_iwork;
 
 
 
+int QDWHpartial (int M, int N, 
+                        int fact,
+                        int psinv,
+                        double s,
+                        float  tol,
+                        float *d_A,  int ldda, 
+                        float *S, 
+                        float *d_U,  int lddu, 
+                        float *d_VT, int lddvt,
+                        float *d_B,  int lddb, 
+                        float *A, int lda, 
+                        int *sizeS,
+                        int *sizeK,
+                        int *it, 
+                        float *flops, 
+                        magma_queue_t queue, 
+                        cublasHandle_t handle );
 
 
 
@@ -2631,9 +2648,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
     int MAGMAfloat = 1;		                                               /**< 1 if single precision, 0 if double precision */
 
     int QDWHPartial = 1; // 1 do QDWHPartial, MAGMA otherwise
-    int fact = 0; // 1 use PO-based QDWH iter, QR-based otherwise
+    int fact = 1; // 1 use PO-based QDWH iter, QR-based otherwise
     int psinv = 1; // 1 calculate psinv, no otherwise
-    double s = 1.e-3; // Threshold for to capture a subset of the singular values
+    double s = 1.e-9; // Threshold for to capture a subset of the singular values
+    float tol = 1.e-7; // Threshold used during rank revealing QR
     int sizeS = 0, wanted = 0, it = 0;
     float flops = 0.0;
 
@@ -2957,10 +2975,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 
     if (QDWHPartial) {
+       clock_gettime(CLOCK_REALTIME, &t2);
        if (MAGMAfloat) {
            cublasHandle_t handle;
            cublasCreate( &handle );
-           clock_gettime(CLOCK_REALTIME, &t2);
            if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse==1)
            {
 	    printf("QDWHPartial: COMPUTE PSEUDO-INVERSE (float supported only!)\n");
@@ -2986,11 +3004,12 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
                         fact,
                         psinv,
                         s, // Threshold to capture a subset of the singular values
-                        magmaf_d_A,  M, // matrix
+                        tol, // Tolerance (governs accuracy) 
+                        magmaf_d_A,  m32, // matrix
                         magmaf_h_S,          // Sigular values, size n, tau = S in QDWH
-                        magmaf_d_U,  M, // Left singular vectors, size mx(10%n)
-                        magmaf_d_VT, N,// Right singular vectors, size nxn, d_VT = d_VT 
-                        magmaf_d_B,  n2, // Needed for the QR fact in QDWH, it is of size NxN, because the matrix will reduced 
+                        magmaf_d_U,  lddu, // Left singular vectors, size mx(10%n)
+                        magmaf_d_VT, lddvt,// Right singular vectors, size nxn, d_VT = d_VT 
+                        magmaf_d_B,  lddb, // Needed for the QR fact in QDWH, it is of size NxN, because the matrix will reduced 
                         magmaf_h_Ainv, N, 
                         &sizeS,
                         &wanted,
@@ -2998,6 +3017,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
                         &flops, 
                         magmaqueue, handle );
 
+	     printf("==========================> Projected size %d Wanted %d\n", sizeS, wanted);
     clock_gettime(CLOCK_REALTIME, &t3);
 /*
 */
@@ -3624,6 +3644,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
     if(testmode == 1)
     {
+/*
        if(QDWHPartial == 1)
        {  // A[1:M, 1:N] -> Ainv[1:N, 1:M]
           // BUT need to transpose the Ainv resulting from QDWHPartial
@@ -3645,6 +3666,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
        }
        else
        {
+*/
           ID_Ainv = create_2Dimage_ID("mAinv", M, N);
           if(MAGMAfloat==1)
           {
@@ -3659,7 +3681,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
                       data.image[ID_Ainv].array.F[jj*M+ii] = magma_h_Ainv[jj*M+ii];
           }
           save_fits("mAinv", "!test_mAinv.fits");
+/*
        }
+*/
     }
 
     //if(timing==1)
@@ -3695,6 +3719,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 		fflush(stdout);
     }
 
+/*
     if(QDWHPartial == 1)
     {
        if(atype==_DATATYPE_FLOAT)
@@ -3732,6 +3757,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
     }
     else
     {
+*/
        if(atype==_DATATYPE_FLOAT)
        {
            if(MAGMAfloat==1)
@@ -3760,7 +3786,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
                    data.image[ID_Cmatrix].array.D[ii] = magma_h_Ainv[ii];
            }
        }
+/*
     }
+*/
 
 
     //if(timing==1)
@@ -3814,12 +3842,13 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
         tdiff = info_time_diff(t5, t6);
         t56d = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
 
-        tdiff = info_time_diff(t6, t7);
-        t67d = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        if (QDWHPartial == 0) {
+            tdiff = info_time_diff(t6, t7);
+            t67d = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
 
-        tdiff = info_time_diff(t7, t8);
-        t78d = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-
+            tdiff = info_time_diff(t7, t8);
+            t78d = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        } 
         tdiff = info_time_diff(t8, t9);
         t89d = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
 
@@ -3835,8 +3864,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
       printf("  3-4	%12.3f ms\n", t34d*1000.0);
       printf("  4-5	%12.3f ms\n", t45d*1000.0);
       printf("  5-6	%12.3f ms\n", t56d*1000.0);
-      printf("  6-7	%12.3f ms\n", t67d*1000.0);
-      printf("  7-8	%12.3f ms\n", t78d*1000.0);
+      if (QDWHPartial == 0) {
+           printf("  6-7	%12.3f ms\n", t67d*1000.0);
+           printf("  7-8	%12.3f ms\n", t78d*1000.0);
+      }
       printf("  8-9	%12.3f ms\n", t89d*1000.0);
       printf("\n");
       printf(" TOTAL  %12.3f ms\n", t09d*1000.0);
