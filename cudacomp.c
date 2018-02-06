@@ -3224,7 +3224,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
 
 		if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse==1)
 		{
-			printf(" -> magma_ssyevd_gpu -> ");
+			printf(" -> FLOAT [%d] magma_ssyevd_gpu -> ", magmaXmode);
 			fflush(stdout);
 		}
 		
@@ -3247,7 +3247,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const c
     {			
 		if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse==1)
 		{
-			printf(" -> magma_dsyevd_gpu -> ");  
+			printf(" -> DOUBLE [%d] magma_dsyevd_gpu -> ", magmaXmode);  
 			fflush(stdout);
         }
         // CODE CAN HANG HERE - THIS HAPPENS ONCE OUT OF multiple 1000s EXECUTIONS WHEN RUNNING IN A LOOP.. SEEMS TO BE A MAGMA ISSUE
