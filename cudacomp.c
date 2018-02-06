@@ -2952,7 +2952,6 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, dou
 
 
     /*
-    */
     if (mode_QDWHPartial) {
            sprintf(fname, "Aorig.txt");
            if((fp=fopen(fname, "w"))==NULL)
@@ -2968,6 +2967,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, dou
            }
            fclose(fp);
     }
+    */
 
 
     if(LOOPmode==0) /// if pseudo-inverse is only computed once, these arrays can be freed
