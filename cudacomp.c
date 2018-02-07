@@ -217,7 +217,7 @@ static magma_int_t *magma_iwork;
 #endif
 
 
-
+#ifdef HAVE_QDWHpartial
 int QDWHpartial (int M, int N, 
                         int fact,
                         int psinv,
@@ -235,7 +235,7 @@ int QDWHpartial (int M, int N,
                         float *flops, 
                         magma_queue_t queue, 
                         cublasHandle_t handle );
-
+#endif
 
 
 
@@ -2776,14 +2776,19 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, dou
 
 
 	int mode_QDWHPartial;
-	if (PSINV_MODE == 1)
+	if (PSINV_MODE == 1){
 		mode_QDWHPartial = 1;
+		#ifndef HAVE_QDWHpartial
+		mode_QDWHPartial = 0;
+		#endif
+	}
 	else
 		mode_QDWHPartial = 0;
 		
 		
 
     if (mode_QDWHPartial) {
+#ifdef HAVE_QDWHpartial
 	if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse==1)
 	{
 		printf("ALLOCATION FOR PSINV QDWHPartial M: %d N: %d min: %d\n", M, N, min_mn);
@@ -2817,6 +2822,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, dou
                 TESTING_MALLOC_DEV( magmaf_d_B, float, lddb*min_mn);
             }
         }
+#endif
     }
     else{
 	if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse==1)
@@ -2992,6 +2998,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, dou
 
 
     if (mode_QDWHPartial) {
+#ifdef HAVE_QDWHpartial
        clock_gettime(CLOCK_REALTIME, &t2);
        if (MAGMAfloat) {
            cublasHandle_t handle;
@@ -3118,6 +3125,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, dou
            }
     clock_gettime(CLOCK_REALTIME, &t6);
        }
+#endif
     }
     else {
 
