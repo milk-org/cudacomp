@@ -2165,8 +2165,8 @@ int GPU_loop_MultMat_free(int index)
     // In CUDA, this has (void**) cast.
     #define TESTING_MALLOC_DEV( ptr, type, size )                              \
         if ( MAGMA_SUCCESS !=                                                  \
-                magma_malloc( (void**) &ptr, (size)*sizeof(type) )) {          \
-            fprintf( stderr, "!!!! magma_malloc failed for: %s\n", #ptr );     \
+                magma_malloc( (void**) &ptr, (size_t) sizeof(type)*size )) {          \
+            fprintf( stderr, "!!!! magma_malloc failed for: %s  size = %ld  typesize = %d\n", #ptr, (long) size, (int) sizeof(type) );     \
             magma_finalize();                                                  \
             exit(-1);                                                          \
         }
@@ -2624,9 +2624,10 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, dou
     uint8_t atype;
     uint32_t *arraysizetmp;
     int size; // variable for memory allocations
-    long N, M;
+    magma_int_t N, M;
     long ii, jj, k;
     magma_int_t info;
+
 
 
     long ID_AtA, ID_VT, ID_Ainv;
@@ -2827,7 +2828,7 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, dou
     else{
 	if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse==1)
 	{
-		printf("ALLOCATION FOR PSINV MAGMA\n");
+		printf("ALLOCATION FOR PSINV MAGMA M=%ld N=%ld\n", M, N);
 		fflush(stdout);
         }
 
@@ -2848,7 +2849,11 @@ long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, dou
             else
             {
                 TESTING_MALLOC_CPU( magmaf_h_A, float, M*N);
+                printf("Allocating magmaf_d_A on device ...\n");
+                fflush(stdout);
                 TESTING_MALLOC_DEV( magmaf_d_A, float, M*N);
+                printf(" ... done\n");
+                fflush(stdout);
     
                 TESTING_MALLOC_CPU( magmaf_h_AtA, float, N*N);
                 TESTING_MALLOC_DEV( magmaf_d_AtA, float, N*N);
