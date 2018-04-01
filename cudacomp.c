@@ -127,7 +127,7 @@ static inline int r32up(x) { return ((x+31)/32)*32;}
 int FORCESEMINIT = 1;
 
 
-extern DATA data;
+//extern struct DATA data;
 
 static int INITSTATUS_cudacomp = 0;
 
