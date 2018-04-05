@@ -664,7 +664,12 @@ int CUDACOMP_printGPUMATMULTCONF(int index)
 
 
 
-int_fast8_t GPUcomp_test(long NBact, long NBmodes, long WFSsize, long GPUcnt)
+int_fast8_t GPUcomp_test(
+		long NBact, 
+		long NBmodes, 
+		long WFSsize, 
+		long GPUcnt
+		)
 {
     long ID_contrM;
     long ID_WFS;
@@ -4696,7 +4701,21 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
  * 
  */ 
 
-int CUDACOMP_extractModesLoop(const char *in_stream, const char *intot_stream, const char *IDmodes_name, const char *IDrefin_name, const char *IDrefout_name, const char *IDmodes_val_name, int GPUindex, int PROCESS, int TRACEMODE, int MODENORM, int insem, int axmode, long twait)
+int CUDACOMP_extractModesLoop(
+		const char *in_stream, 
+		const char *intot_stream, 
+		const char *IDmodes_name, 
+		const char *IDrefin_name, 
+		const char *IDrefout_name, 
+		const char *IDmodes_val_name, 
+		int GPUindex, 
+		int PROCESS, 
+		int TRACEMODE, 
+		int MODENORM, 
+		int insem, 
+		int axmode, 
+		long twait
+		)
 {
     long IDin;
     long IDintot;
@@ -5099,7 +5118,8 @@ int CUDACOMP_extractModesLoop(const char *in_stream, const char *intot_stream, c
 
 
 
-
+list_image_ID();
+sleep(10.0);
 
 	twait1 = twait;
 
