@@ -4794,8 +4794,6 @@ int CUDACOMP_extractModesLoop(
 	int RT_priority = 80; //any number from 0-99
     struct sched_param schedpar;
 
-list_image_ID();
-sleep(20.0);
 
     schedpar.sched_priority = RT_priority;
 #ifndef __MACH__
