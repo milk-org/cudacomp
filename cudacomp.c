@@ -4794,7 +4794,8 @@ int CUDACOMP_extractModesLoop(
 	int RT_priority = 80; //any number from 0-99
     struct sched_param schedpar;
 
-
+list_image_ID();
+sleep(20.0);
 
     schedpar.sched_priority = RT_priority;
 #ifndef __MACH__
@@ -4802,8 +4803,7 @@ int CUDACOMP_extractModesLoop(
 #endif
 
 
-list_image_ID();
-sleep(10.0);
+
 
     IDin = image_ID(in_stream);
     m = data.image[IDin].md[0].size[0]*data.image[IDin].md[0].size[1];
