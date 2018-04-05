@@ -4995,7 +4995,8 @@ int CUDACOMP_extractModesLoop(
             exit(EXIT_FAILURE);
         }
     }
-
+list_image_ID();
+sleep(10.0);
 
 
     if (sigaction(SIGINT, &data.sigact, NULL) == -1) {
@@ -5118,8 +5119,7 @@ int CUDACOMP_extractModesLoop(
 
 
 
-list_image_ID();
-sleep(10.0);
+
 
 	twait1 = twait;
 
