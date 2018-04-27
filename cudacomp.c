@@ -2795,11 +2795,13 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     int lddvt = n32;
 
 
+	printf("-- PSINV_MODE = %d\n", PSINV_MODE);
+
     int mode_QDWHPartial;  // 1 do QDWHPartial, MAGMA otherwise
     if (PSINV_MODE == 1) {
         mode_QDWHPartial = 1;
 #ifndef HAVE_QDWHpartial
-		printf("-- HAVE_QDWHpartial defined\n");
+		printf("-- QDWHpartial NOT defined  -> FORCING mode_QDWHPartial=0\n");
         mode_QDWHPartial = 0;
 #endif
     }
