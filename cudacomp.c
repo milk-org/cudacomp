@@ -284,7 +284,6 @@ int_fast8_t CUDACOMP_test_cli()
 
 
 
-
 #ifdef HAVE_CUDA
 
 
@@ -408,10 +407,11 @@ int_fast8_t CUDACOMP_extractModesLoop_cli()
 
 void __attribute__ ((constructor)) libinit_cudacomp()
 {
+	printf("INITSTATUS_cudacomp = %d\n", INITSTATUS_cudacomp);
 	if ( INITSTATUS_cudacomp == 0 )
 	{
 		init_cudacomp();
-		RegisterModule(__FILE__, "milk", "CUDA wrapper for AO loop");
+		RegisterModule( __FILE__, "milk", "CUDA wrapper");
 		INITSTATUS_cudacomp = 1;
 	}
 }
@@ -421,13 +421,18 @@ void __attribute__ ((constructor)) libinit_cudacomp()
 int_fast8_t init_cudacomp()
 {
     long i;
+   
 #ifdef HAVE_CUDA
+    printf("HAVE_CUDA defined\n");
     for(i=0; i<20; i++) {
         gpumatmultconf[i].init = 0;
         gpumatmultconf[i].alloc = 0;
     }
 #endif
 
+#ifndef HAVE_CUDA
+printf("HAVE_CUDA NOT defined\n");
+#endif
 
 
 /* =============================================================================================== */
@@ -441,7 +446,7 @@ int_fast8_t init_cudacomp()
 
 #ifdef HAVE_CUDA
     strcpy(data.cmd[data.NBcmd].key,"cudacompinit");
-    strcpy(data.cmd[data.NBcmd].module,__FILE__);
+    strcpy(data.cmd[data.NBcmd].module, __FILE__);
     data.cmd[data.NBcmd].fp = CUDACOMP_init;
     strcpy(data.cmd[data.NBcmd].info,"init CUDA comp");
     strcpy(data.cmd[data.NBcmd].syntax,"no argument");
