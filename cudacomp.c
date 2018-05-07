@@ -423,16 +423,16 @@ int_fast8_t init_cudacomp()
     long i;
    
 #ifdef HAVE_CUDA
-    printf("HAVE_CUDA defined\n");
+//    printf("HAVE_CUDA defined\n");
     for(i=0; i<20; i++) {
         gpumatmultconf[i].init = 0;
         gpumatmultconf[i].alloc = 0;
     }
 #endif
 
-#ifndef HAVE_CUDA
-printf("HAVE_CUDA NOT defined\n");
-#endif
+//#ifndef HAVE_CUDA
+//printf("HAVE_CUDA NOT defined\n");
+//#endif
 
 
 /* =============================================================================================== */
