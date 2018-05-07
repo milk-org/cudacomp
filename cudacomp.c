@@ -407,7 +407,7 @@ int_fast8_t CUDACOMP_extractModesLoop_cli()
 
 void __attribute__ ((constructor)) libinit_cudacomp()
 {
-	printf("INITSTATUS_cudacomp = %d\n", INITSTATUS_cudacomp);
+	// printf("INITSTATUS_cudacomp = %d\n", INITSTATUS_cudacomp);
 	if ( INITSTATUS_cudacomp == 0 )
 	{
 		init_cudacomp();
