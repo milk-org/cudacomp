@@ -113,7 +113,7 @@ static int clock_gettime(int clk_id, struct mach_timespec *t){
 #define OMP_NELEMENT_LIMIT 1000000
 # endif
 
-static inline int r32up(x) { return ((x+31)/32)*32;}
+static inline int r32up(int x) { return ((x+31)/32)*32;}
 
 
 
