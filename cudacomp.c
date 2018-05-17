@@ -55,6 +55,7 @@ static int clock_gettime(int clk_id, struct mach_timespec *t){
 
 
 
+
 #include <sys/types.h>
 #include <sys/file.h>
 #include <sys/mman.h>
@@ -413,6 +414,14 @@ void __attribute__ ((constructor)) libinit_cudacomp()
 		init_cudacomp();
 		RegisterModule( __FILE__, "milk", "CUDA wrapper");
 		INITSTATUS_cudacomp = 1;
+		
+		#ifdef HAVE_CUDA
+		printf("[HAVE_CUDA]");
+		#endif
+		
+		#ifdef HAVE_MAGMA
+		printf("[HAVE_MAGMA]");
+		#endif
 	}
 }
 
@@ -2566,10 +2575,11 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
  *
  *
  * Computes pseuso inverse of M x N matrix
- *
+ * Returns transpose of pseudoinverse
+ * 
  * When used with AOloopControl module:
- *    N: number of actuators
- *    M: number of sensors
+ *    N: number of actuators  (AO control) =  dimension of each measurement  (stat)
+ *    M: number of sensors    (AO control) =  number of measurements samples (stat) 
  * 	assumes M>N
  *
  *
@@ -2711,8 +2721,24 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
      *   M = xsize*ysize
      *   N = ysize
      *
+     * MATRIX REPRESENTATION COVENTION
+     * 
+     * Using column-major indexing
+     * When viewed as a FITS file, first matrix column (= vector) appears as the bottom line of the FITS image.
+     * First matrix element is bottom left corner, second element is immediately to the right of it.
+     * Noting elements as a[row,column] = a[i,j], elements are accessed as in memory as:
+     * a[ j * M + i ]
+     * 
+     * FITS file representation (ds9 view) starts from bottom left corner:
+     * 
+     * a[000,N-1] -> a[001,N-1] -> ... -> a[M-1,N-1]
+     * ............................................. ^
+     * a[000,001] -> a[001,001] -> ... -> a[M-1,001] ^
+     * a[000,000] -> a[001,000] -> ... -> a[M-1,000] ^     : this is the first matrix column
+     * 
      * Note that a tall input matrix (M>N) will appear short if viewed as an image.
-     * There is a 90 deg rotation between image and matrix
+     * There is a 90 deg rotation between image and matrix. To view the FITS file in the conventional
+     * matrix view, rotate by 90 deg clockwise.
      *
      */
 
@@ -4000,6 +4026,24 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
     if(LOOPmode == 1)
         MAGMAloop_iter++;
+
+	if(testmode == 1) // compute product of Ainv with A
+	{
+		long ID_AinvA;
+		
+		ID_AinvA = create_2Dimage_ID("AinvA", N, N);
+		// ii, jj output index
+		for(ii=0;ii<N;ii++)
+			for(jj=0;jj<N;jj++)
+				{
+					for(k=0;k<M;k++)
+						{
+							data.image[ID_AinvA].array.F[jj*N+ii] += data.image[ID_Cmatrix].array.F[ii*M+k] * data.image[ID_Rmatrix].array.F[jj*M+k];
+						}
+				}
+		save_fits("AinvA", "!test_AinvA.fits");
+	}
+
 
     return(ID_Cmatrix);
 }
