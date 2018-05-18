@@ -2607,7 +2607,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
  * A+ = VT^-1 S^-2 V^-1 V S UT
  * A+ = V S^-1 UT
  *
- *  Main steps:
+ *  Main steps (non-QDWH):
  *
  *  STEP 1 :   Fill input data into magmaf_h_A on host
  *
@@ -2639,6 +2639,31 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
  * @note When used to compute AO control matrix, N=number of actuators/modes, M=number of WFS elements
  * @note EIGENVALUES are good to about 1e-6 of peak eigenvalue in single precision, much better with double precision
  * @note 2.5x faster in single precision
+ *
+ * 
+ * 
+ * TEST MODE OUTPOUT
+ * 
+ * non-QDWH mode:
+ * 
+ * test_mA.fits               content of magmaf_h_A
+ * test_mAtA.fits             content of transpose(A) x A = magmaf_d_AtA (output of STEP 3)
+ * test_eigenv.dat            list of eigenvalues
+ * test_SVDmodes.log          number of singular values kept
+ * test_mM2.fits              matrix M2 (output of STEP 8)
+ * test_mVT.fits              matrix transpose(V) = eigenvectors (output of step 6)
+ * test_mAinv.fits            transpose of pseudoinverse
+ * test_AinvA.fits            product of Ainv with A, should be close to identity matrix size NxN
+ * 
+ * 
+ * QDWH mode:
+ * 
+ * test_mA.QDWH.fits          content of magmaf_h_A
+ * test_Aorig.QDWH.txt        content of magmaf_h_A prior to calling psinv function
+ * test_sv.QDWH.dat           singular values after call to psinv function
+ * test_SVDmodes.QDWH.log     number of singular values kept (note : independent form pseudo-inverse computation)
+ * test_mAinv.QDWH.fits       transpose of pseudoinverse
+ * test_AinvA.QDWH.fits       product of Ainv with A, should be close to identity matrix size NxN
  */
 
 
@@ -2721,7 +2746,11 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
      *   M = xsize*ysize
      *   N = ysize
      *
-     * MATRIX REPRESENTATION COVENTION
+     * Matrix is M by N
+     * M = vector length
+     * N = number of columns/vectors
+     * 
+     * MATRIX REPRESENTATION CONVENTION
      * 
      * Using column-major indexing
      * When viewed as a FITS file, first matrix column (= vector) appears as the bottom line of the FITS image.
@@ -2729,7 +2758,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
      * Noting elements as a[row,column] = a[i,j], elements are accessed as in memory as:
      * a[ j * M + i ]
      * 
-     * FITS file representation (ds9 view) starts from bottom left corner:
+     * FITS file representation (ds9 view) starts from bottom left corner.
      * 
      * a[000,N-1] -> a[001,N-1] -> ... -> a[M-1,N-1]
      * ............................................. ^
@@ -2750,6 +2779,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     /// j = 0 ... N
     ///
 
+
+
+	
 
     arraysizetmp = (uint32_t*) malloc(sizeof(uint32_t)*3);
 
@@ -2826,6 +2858,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     int lddvt = n32;
 
 
+	// Check if using psinv library
+
 	printf("-- PSINV_MODE = %d\n", PSINV_MODE);
 
     int mode_QDWHPartial;  // 1 do QDWHPartial, MAGMA otherwise
@@ -2840,6 +2874,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         mode_QDWHPartial = 0;
 
 	printf("-- PSINV_MODE = %d  mode_QDWHPartial = %d\n", PSINV_MODE, mode_QDWHPartial);
+
+
 
 
 	// =================================================================
@@ -2962,6 +2998,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     // ****************************************************
     // STEP 1 :   Fill input data into magmaf_h_A on host
     // ****************************************************
+	// There is no pixel reordering beetween internal memory and magma array
+	// Both are column-major.
+
 
     if(atype==_DATATYPE_FLOAT)
     {
@@ -3007,7 +3046,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 data.image[ID_A].array.F[ii] = magma_h_A[ii];
         }
 
-        save_fits("mA", "!test_mA.fits");
+        if( mode_QDWHPartial == 0 )
+			save_fits("mA", "!test_mA.fits");
+		else
+			save_fits("mA", "!test_mA.QDWH.fits");
         delete_image_ID("mA");
     }
 
@@ -3034,15 +3076,19 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         fflush(stdout);
     }
 
+	// copy from host to device
+	//
+	
     if(MAGMAfloat==1)
         magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, M, magmaqueue);
     else
         magma_dsetmatrix( M, N, magma_h_A, M, magma_d_A, M, magmaqueue);
 
 
-    /*
+	// testing input to QDWH
+    if(testmode == 1)
     if (mode_QDWHPartial) {
-           sprintf(fname, "Aorig.txt");
+           sprintf(fname, "test_Aorig.QDWH.txt");
            if((fp=fopen(fname, "w"))==NULL)
            {
                printf("ERROR: cannot create file \"%s\"\n", fname);
@@ -3056,7 +3102,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
            }
            fclose(fp);
     }
-    */
+    
 
 
     if(LOOPmode==0) /// if pseudo-inverse is only computed once, these arrays can be freed
@@ -3151,7 +3197,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 fflush(stdout);
             }
 
-            sprintf(fname, "sv.dat");
+			if(testmode == 1)
+			{
+            sprintf(fname, "test_sv.QDWH.dat");
             if((fp=fopen(fname, "w"))==NULL)
             {
                 printf("ERROR: cannot create file \"%s\"\n", fname);
@@ -3162,6 +3210,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 fprintf(fp,"%5ld %20.8g  %20.8f  %20.8f %e  %5ld %5ld\n", k, magmaf_h_S[k], magmaf_h_S[k]/magmaf_h_S[0], SVDeps, s, (long) sizeS, (long) wanted);
             //fprintf(fp,"%5ld %20.8g  %e  %5ld %5ld\n", k, magmaf_h_S[k], s, sizeS, wanted);
             fclose(fp);
+			}
+            
             clock_gettime(CLOCK_REALTIME, &t4);
 
             // ****************************************************
@@ -3197,7 +3247,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 fflush(stdout);
             }
 
-            fp = fopen("SVDmodes.log", "w");
+            fp = fopen("test_SVDmodes.QDWH.log", "w");
             fprintf(fp, "%6ld %6ld\n", mode, MaxNBmodes1);
             fclose(fp);
             MaxNBmodes1 = mode;
@@ -3436,7 +3486,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
             fflush(stdout);
         }
 
-        sprintf(fname, "eigenv.dat");
+
+		if(testmode == 1)
+		{
+        sprintf(fname, "test_eigenv.dat");
         if((fp=fopen(fname, "w"))==NULL)
         {
             printf("ERROR: cannot create file \"%s\"\n", fname);
@@ -3453,6 +3506,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 fprintf(fp,"%5ld %20.8g  %20.8f  %20.8f\n", k, magma_w1[N-k-1], magma_w1[N-k-1]/magma_w1[N-1], SVDeps*SVDeps);
         }
         fclose(fp);
+		}
 
 
         /// w1 values are the EIGENVALUES of AT A
@@ -3493,9 +3547,12 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
             fflush(stdout);
         }
 
-        fp = fopen("SVDmodes.log", "w");
+		if(testmode == 1)
+		{
+        fp = fopen("test_SVDmodes.log", "w");
         fprintf(fp, "%6ld %6ld\n", mode, MaxNBmodes1);
         fclose(fp);
+		}
         MaxNBmodes1 = mode;
         //printf("Keeping %ld modes  (SVDeps = %g)\n", MaxNBmodes1, SVDeps);
 
@@ -3529,7 +3586,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                     data.image[ID_VT].array.F[jj*N+ii] = magma_h_AtA[(N-ii-1)*N+jj];
         }
 
-
+		if(testmode == 1)
+			save_fits("mVT", "!test_mVT.fits");
 
         // ****************************************************
         // STEP 7 :   Write eigenvectors/eigenvalue to magma_h_VT1 if eigenvalue > limit
@@ -4041,7 +4099,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 							data.image[ID_AinvA].array.F[jj*N+ii] += data.image[ID_Cmatrix].array.F[ii*M+k] * data.image[ID_Rmatrix].array.F[jj*M+k];
 						}
 				}
-		save_fits("AinvA", "!test_AinvA.fits");
+        if( mode_QDWHPartial == 0 )
+			save_fits("AinvA", "!test_AinvA.fits");
+		else
+			save_fits("AinvA", "!test_AinvA.QDWH.fits");
 	}
 
 
