@@ -4083,8 +4083,13 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         {
 			if( mode_QDWHPartial == 1 )
 			{
-				for(ii=0; ii<M*N; ii++)
-					data.image[ID_Cmatrix].array.F[ii] = magmaf_h_Ainv[jj];
+//				for(ii=0; ii<M*N; ii++)
+//					data.image[ID_Cmatrix].array.F[ii] = magmaf_h_Ainv[jj];
+
+				for(ii=0; ii<M; ii++)
+				for(jj=0; jj<N; jj++)
+					data.image[ID_Cmatrix].array.F[jj*M+ii] = magmaf_h_Ainv[ii*N+jj];
+
 			}
 			else
 				memcpy(data.image[ID_Cmatrix].array.F, magmaf_h_Ainv, sizeof(float)*M*N);
@@ -4171,8 +4176,6 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         if(MAGMAfloat==1)
 		{
 			memcpy(data.image[ID_AinvA].array.F, magmaf_h_AtA, sizeof(float)*N*N);
-			//TEST1
-			//memcpy(data.image[ID_AinvA].array.F, magmaf_h_AtA, sizeof(float)*N*N);
 		}
 
 
@@ -4317,8 +4320,6 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         MAGMAloop_iter++;
 
 	
-
-//	exit(0);//TEST
     return(ID_Cmatrix);
 }
 
