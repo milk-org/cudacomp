@@ -333,7 +333,7 @@ int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_cli()
 	CLI_checkarg(6,2)+CLI_checkarg(7,1)+CLI_checkarg(8,1)==0)
         CUDACOMP_magma_compute_SVDpseudoInverse(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, \
         data.cmdargtoken[3].val.numf, data.cmdargtoken[4].val.numl, data.cmdargtoken[5].val.string, 0, \
-        data.cmdargtoken[6].val.numl, data.cmdargtoken[7].val.numf, data.cmdargtoken[8].val.numf);
+        data.cmdargtoken[6].val.numl, data.cmdargtoken[7].val.numf, data.cmdargtoken[8].val.numf, 0);
     else
         return 1;
 }
@@ -2224,7 +2224,11 @@ int GPU_loop_MultMat_free(int index)
  *
  */
 
-long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *IDmatAinv_name, const char *IDmatOut_name)
+long CUDACOMP_MatMatMult_testPseudoInverse(
+	const char *IDmatA_name, 
+	const char *IDmatAinv_name, 
+	const char *IDmatOut_name
+	)
 {
     long IDmatA, IDmatAinv;
     long IDmatOut;
@@ -2719,7 +2723,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     int         LOOPmode,
     int         PSINV_MODE,
     double      qdwh_s,
-    float       qdwh_tol
+    float       qdwh_tol,
+    int 		testmode
 )
 {
     long ID_Rmatrix;
@@ -2752,7 +2757,6 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
     // TESTING FLAGS
     int VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse = 1;
-    int testmode = 1;
 
 
     int MAGMAfloat = 1;		                                               /**< 1 if single precision, 0 if double precision */
