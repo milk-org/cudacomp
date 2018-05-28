@@ -2969,9 +2969,11 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 TESTING_MALLOC_DEV( magma_d_VT, double, lddvt*N);
                 TESTING_MALLOC_DEV( magma_d_B, double, lddb*min_mn);
                 
-                
+                if(testmode==1)
+                {
                 TESTING_MALLOC_DEV( magma_d_AtA, double, N*N); // used for testing
                 TESTING_MALLOC_CPU( magma_h_AtA, double, N*N);
+				}
             }
             else
             {
@@ -2984,12 +2986,11 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 TESTING_MALLOC_DEV( magmaf_d_VT, float, lddvt*N);
                 TESTING_MALLOC_DEV( magmaf_d_B, float, lddb*min_mn);
                 
-                TESTING_MALLOC_DEV( magmaf_d_AtA, float, N*N); // used for testing
-                TESTING_MALLOC_CPU( magmaf_h_AtA, float, N*N);
-				//TEST1
-				//TESTING_MALLOC_DEV( magmaf_d_AtA, float, n32*N); // used for testing
-                //TESTING_MALLOC_CPU( magmaf_h_AtA, float, N*N);
-
+                if(testmode==1)
+                {
+					TESTING_MALLOC_DEV( magmaf_d_AtA, float, N*N); // used for testing
+					TESTING_MALLOC_CPU( magmaf_h_AtA, float, N*N);
+				}
             }
         }
 #endif
@@ -3370,8 +3371,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 }
             }
             
-            if(testmode==1)
-            {
+            //if(testmode==1)
+            //{
 				dAinvMODE = 1;
 		        if(MAGMAloop_iter==0)
 				{
@@ -3385,7 +3386,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 						TESTING_MALLOC_DEV( magma_d_Ainv, double, N*M );
 					}
 				}
-			}
+			//}
             
             
             magma_queue_sync( magmaqueue );
@@ -4072,11 +4073,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     clock_gettime(CLOCK_REALTIME, &t11);
 
 
-
-
-	if(testmode == 1) // compute product of Ainv with A
-	{
-		if( mode_QDWHPartial == 1 )
+	if( mode_QDWHPartial == 1 )
 		{
 			// copy from CPU to GPU
 			if(MAGMAfloat==1)
@@ -4085,6 +4082,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 				magma_dsetmatrix( N, M, magma_h_Ainv, N, magma_d_Ainv, N, magmaqueue);
 		}
 
+
+	if(testmode == 1) // compute product of Ainv with A
+	{
 		if( mode_QDWHPartial == 1 )
 		{
 			magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, m32, magmaqueue);
@@ -4115,6 +4115,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 		else
 			save_fits("AinvA", "!test_AinvA.QDWH.fits");
 	}
+	
+	
+	
 
 	magma_queue_sync( magmaqueue );
 	clock_gettime(CLOCK_REALTIME, &t12);
@@ -4124,9 +4127,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 	ID_PFfmdat = image_ID("PFfmdat");
 	if(ID_PFfmdat != -1)
 	{
-		printf("=========================================\n");
-		printf("========= OUTPUT M-M MULTIPLY ===========\n");
-		printf("=========================================\n");
+		printf("=============================================\n");
+		printf("=========// OUTPUT M-M MULTIPLY //===========\n");
+		printf("=============================================\n");
 		
 		printf("Transp(Ainv)     N x M   = %d x %d\n", N, M);
 		printf("PFfmdat  M x K           = %d x %d\n", data.image[ID_PFfmdat].md[0].size[0], data.image[ID_PFfmdat].md[0].size[1]);
@@ -4144,7 +4147,11 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         TESTING_MALLOC_CPU( magmaf_h_PF, float, N*K);
         
         magma_ssetmatrix( M, K, data.image[ID_PFfmdat].array.F, M, magmaf_d_PFfmdat, M, magmaqueue);
-        magma_sgemm(  MagmaTrans, MagmaNoTrans, N, K, M, 1.0, magmaf_d_Ainv, M, magmaf_d_PFfmdat, M, 0.0,  magmaf_d_PF, N, magmaqueue);
+        if( mode_QDWHPartial == 1 )
+			magma_sgemm(  MagmaNoTrans, MagmaNoTrans, N, K, M, 1.0, magmaf_d_Ainv, N, magmaf_d_PFfmdat, M, 0.0,  magmaf_d_PF, N, magmaqueue);
+		else
+			magma_sgemm(  MagmaTrans, MagmaNoTrans, N, K, M, 1.0, magmaf_d_Ainv, M, magmaf_d_PFfmdat, M, 0.0,  magmaf_d_PF, N, magmaqueue);
+		
 		magma_sgetmatrix( N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
 		
 		long ID_PF = create_2Dimage_ID("psinvPFmat", N, K);
