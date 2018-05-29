@@ -2068,6 +2068,33 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
             }
     }
 
+	if(timing == 1)
+	{
+		tdiff = info_time_diff(tdt0[0], tdt1[0]);
+        tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //27
+		TimerIndex++;
+
+		tdiff = info_time_diff(tdt1[0], tdt2[0]);
+        tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //28
+		TimerIndex++;
+
+		tdiff = info_time_diff(tdt2[0], tdt3[0]);
+        tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //29
+		TimerIndex++;
+
+		tdiff = info_time_diff(tdt3[0], tdt4[0]);
+        tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //30
+		TimerIndex++;
+
+		tdiff = info_time_diff(tdt4[0], tdt5[0]);
+        tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //31
+		TimerIndex++;
+	}
 
     // SUM RESULTS FROM SEPARATE GPUs
     if(timing == 1)
@@ -2076,7 +2103,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         clock_gettime(CLOCK_REALTIME, &tnow);
         tdiff = info_time_diff(data.image[IDtiming].md[0].atime.ts, tnow);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //27
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //32
 		TimerIndex++;
     }
 
@@ -2122,7 +2149,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         clock_gettime(CLOCK_REALTIME, &tnow);
         tdiff = info_time_diff(data.image[IDtiming].md[0].atime.ts, tnow);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //28
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //33
 		TimerIndex++;
     }
     
