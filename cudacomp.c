@@ -995,7 +995,8 @@ void *compute_function( void *ptr )
             }
         }
 
-		thdata->t0 = &t00;
+		thdata->t0->tv_sec = t00.tv_sec;
+		thdata->t0->tv_nsec = t00.tv_nsec;
 		clock_gettime(CLOCK_REALTIME, thdata->t1);
 
         *ptrstat = 3; // transfer: prt0 -> d_wfsVec
