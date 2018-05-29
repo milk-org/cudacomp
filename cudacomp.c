@@ -5078,24 +5078,24 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
 
 
 /** @brief extract mode coefficients from data stream
- * 
- */ 
+ *
+ */
 
 int CUDACOMP_extractModesLoop(
-		const char *in_stream, 
-		const char *intot_stream, 
-		const char *IDmodes_name, 
-		const char *IDrefin_name, 
-		const char *IDrefout_name, 
-		const char *IDmodes_val_name, 
-		int GPUindex, 
-		int PROCESS, 
-		int TRACEMODE, 
-		int MODENORM, 
-		int insem, 
-		int axmode, 
-		long twait
-		)
+    const char *in_stream,
+    const char *intot_stream,
+    const char *IDmodes_name,
+    const char *IDrefin_name,
+    const char *IDrefout_name,
+    const char *IDmodes_val_name,
+    int GPUindex,
+    int PROCESS,
+    int TRACEMODE,
+    int MODENORM,
+    int insem,
+    int axmode,
+    long twait
+)
 {
     long IDin;
     long IDintot;
@@ -5164,20 +5164,32 @@ int CUDACOMP_extractModesLoop(
     long IDrefout;
 
     long refindex;
-	long twait1;
+    long twait1;
     struct timespec t0;
+    
+    struct timespec t00;
+    struct timespec t01;
+    struct timespec t02;
+    struct timespec t03;
+    struct timespec t04;
+    struct timespec t05;
+    struct timespec t06;
+    
+    
     struct timespec t1;
 
     int MODEVALCOMPUTE = 1; // 1 if compute, 0 if import
 
 
-	int RT_priority = 80; //any number from 0-99
+    int RT_priority = 80; //any number from 0-99
     struct sched_param schedpar;
+
+
 
 
     schedpar.sched_priority = RT_priority;
 #ifndef __MACH__
-    sched_setscheduler(0, SCHED_FIFO, &schedpar); 
+    sched_setscheduler(0, SCHED_FIFO, &schedpar);
 #endif
 
 
@@ -5499,12 +5511,12 @@ int CUDACOMP_extractModesLoop(
 
 
 
-	twait1 = twait;
+    twait1 = twait;
 
     while(loopOK == 1)
     {
-		clock_gettime(CLOCK_REALTIME, &t0);
-				
+        clock_gettime(CLOCK_REALTIME, &t0);
+
         if(MODEVALCOMPUTE==1)
         {
             if(refindex != data.image[IDref].md[0].cnt0)
@@ -5541,7 +5553,8 @@ int CUDACOMP_extractModesLoop(
                 semr = 0;
             }
 
-
+			
+			clock_gettime(CLOCK_REALTIME, &t00);
 
             if(semr==0)
             {
@@ -5558,42 +5571,47 @@ int CUDACOMP_extractModesLoop(
                     printf("cudaMemcpy returned error code %d, line %d\n", cudaStat, __LINE__);
                     exit(EXIT_FAILURE);
                 }
+				
+				clock_gettime(CLOCK_REALTIME, &t01);
 
                 if(BETAMODE == 1)
                 {
                     beta = -1.0;
                     cudaStat = cudaMemcpy(d_modeval, modevalarrayref, sizeof(float)*NBmodes, cudaMemcpyHostToDevice);
                 }
+                
+                clock_gettime(CLOCK_REALTIME, &t02);
 
                 // compute
                 cublas_status = cublasSgemv(cublasH, CUBLAS_OP_T, m, NBmodes, &alpha, d_modes, m, d_in, 1, &beta, d_modeval, 1);
                 if (cublas_status != CUBLAS_STATUS_SUCCESS)
                 {
-				printf("cublasSgemv returned error code %d, line(%d)\n", cublas_status, __LINE__);
-                fflush(stdout);
-                if(cublas_status == CUBLAS_STATUS_NOT_INITIALIZED)
-                    printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
-                if(cublas_status == CUBLAS_STATUS_INVALID_VALUE)
-                    printf("   CUBLAS_STATUS_INVALID_VALUE\n");
-                if(cublas_status == CUBLAS_STATUS_ARCH_MISMATCH)
-                    printf("   CUBLAS_STATUS_ARCH_MISMATCH\n");
-                if(cublas_status == CUBLAS_STATUS_EXECUTION_FAILED)
-                    printf("   CUBLAS_STATUS_EXECUTION_FAILED\n");
+                    printf("cublasSgemv returned error code %d, line(%d)\n", cublas_status, __LINE__);
+                    fflush(stdout);
+                    if(cublas_status == CUBLAS_STATUS_NOT_INITIALIZED)
+                        printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
+                    if(cublas_status == CUBLAS_STATUS_INVALID_VALUE)
+                        printf("   CUBLAS_STATUS_INVALID_VALUE\n");
+                    if(cublas_status == CUBLAS_STATUS_ARCH_MISMATCH)
+                        printf("   CUBLAS_STATUS_ARCH_MISMATCH\n");
+                    if(cublas_status == CUBLAS_STATUS_EXECUTION_FAILED)
+                        printf("   CUBLAS_STATUS_EXECUTION_FAILED\n");
 
-                printf("GPU index                           = %d\n", GPUindex);
+                    printf("GPU index                           = %d\n", GPUindex);
 
-                printf("CUBLAS_OP                           = %d\n", CUBLAS_OP_T);
-                printf("alpha                               = %f\n", alpha);
-                printf("alpha                               = %f\n", beta);
-                printf("m                                   = %d\n", (int) m);
-                printf("NBmodes                             = %d\n", (int) NBmodes);
-                fflush(stdout);
-                exit(EXIT_FAILURE);								
+                    printf("CUBLAS_OP                           = %d\n", CUBLAS_OP_T);
+                    printf("alpha                               = %f\n", alpha);
+                    printf("alpha                               = %f\n", beta);
+                    printf("m                                   = %d\n", (int) m);
+                    printf("NBmodes                             = %d\n", (int) NBmodes);
+                    fflush(stdout);
+                    exit(EXIT_FAILURE);
                 }
 
                 // copy result
                 data.image[ID_modeval].md[0].write = 1;
 
+				clock_gettime(CLOCK_REALTIME, &t03);
 
                 if(initref==0) // construct reference to be subtracted
                 {
@@ -5633,14 +5651,14 @@ int CUDACOMP_extractModesLoop(
         }
         else // WAIT FOR NEW MODEVAL
         {
-			sem_wait(data.image[ID_modeval].semptr[insem]);
-		}
+            sem_wait(data.image[ID_modeval].semptr[insem]);
+        }
 
 
 
 
 
-
+		clock_gettime(CLOCK_REALTIME, &t04);
 
 
 
@@ -5670,7 +5688,7 @@ int CUDACOMP_extractModesLoop(
             }
         }
 
-
+		clock_gettime(CLOCK_REALTIME, &t05);
 
         if(PROCESS==1)
         {
@@ -5712,30 +5730,63 @@ int CUDACOMP_extractModesLoop(
             data.image[IDprocrms].md[0].cnt0++;
             data.image[IDprocrms].md[0].write = 0;
         }
+        
+        clock_gettime(CLOCK_REALTIME, &t06);
 
 
-	//	printf("wait\n");
-	//	fflush(stdout);
+        //	printf("wait\n");
+        //	fflush(stdout);
 
-		if(twait1<0)
-			twait1 = 0;
-		
-		if(twait>0)
-			usleep(twait1);
-				
-		clock_gettime(CLOCK_REALTIME, &t1);
+        if(twait1<0)
+            twait1 = 0;
+
+        if(twait>0)
+            usleep(twait1);
+
+        clock_gettime(CLOCK_REALTIME, &t1);
         tdiff = info_time_diff(t0, t1);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-	
-		if(tdiffv<1.0e-6*twait) 
-			twait1 ++;
-		else
-			twait1 --;
-		
-		
-		//printf("%ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
-		//fflush(stdout);
 
+        if(tdiffv<1.0e-6*twait)
+            twait1 ++;
+        else
+            twait1 --;
+
+		if(tdiffv>1.0e-3)
+		{
+			printf("  function CUDACOMP_extractModesLoop - TIMING GLITCH: \n");
+			printf("       %ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
+			fflush(stdout);
+			
+			tdiff = info_time_diff(t0, t00);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             t00: %8.3lf\n", 1.0e3*tdiffv);
+
+			tdiff = info_time_diff(t0, t01);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             t01: %8.3lf\n", 1.0e3*tdiffv);
+
+			tdiff = info_time_diff(t0, t02);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             t02: %8.3lf\n", 1.0e3*tdiffv);
+
+			tdiff = info_time_diff(t0, t03);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             t03: %8.3lf\n", 1.0e3*tdiffv);			
+
+			tdiff = info_time_diff(t0, t04);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             t04: %8.3lf\n", 1.0e3*tdiffv);
+
+			tdiff = info_time_diff(t0, t05);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             t05: %8.3lf\n", 1.0e3*tdiffv);
+			
+			tdiff = info_time_diff(t0, t06);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             t06: %8.3lf\n", 1.0e3*tdiffv);			
+		}
+	
         if((data.signal_INT == 1)||(data.signal_TERM == 1)||(data.signal_ABRT==1)||(data.signal_BUS==1)||(data.signal_SEGV==1)||(data.signal_HUP==1)||(data.signal_PIPE==1))
         {
             loopOK = 0;
