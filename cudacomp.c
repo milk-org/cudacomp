@@ -995,7 +995,7 @@ void *compute_function( void *ptr )
             }
         }
 
-		//clock_gettime(CLOCK_REALTIME, thdata->t1);
+		clock_gettime(CLOCK_REALTIME, thdata->t1);
 
         *ptrstat = 3; // transfer: prt0 -> d_wfsVec
         stat = cublasSetVector(gpumatmultconf[index].Nsize[device], sizeof(float), (float*) ptr0, 1, gpumatmultconf[index].d_wfsVec[device], 1);
@@ -1011,7 +1011,7 @@ void *compute_function( void *ptr )
             exit(EXIT_FAILURE);
         }
 
-		//clock_gettime(CLOCK_REALTIME, thdata->t2);
+		clock_gettime(CLOCK_REALTIME, thdata->t2);
 		
         if(gpumatmultconf[index].refWFSinit[device] == 0) // compute DM reference (used when reference changes)
         {
@@ -1149,7 +1149,7 @@ void *compute_function( void *ptr )
                 exit(EXIT_FAILURE);				
             }
             
-            //clock_gettime(CLOCK_REALTIME, thdata->t3);
+            clock_gettime(CLOCK_REALTIME, thdata->t3);
 
 
 			//
@@ -1175,7 +1175,7 @@ void *compute_function( void *ptr )
                 }
             }
             
-            //clock_gettime(CLOCK_REALTIME, thdata->t4);
+            clock_gettime(CLOCK_REALTIME, thdata->t4);
 
             // result is on gpumatmultconf[index].d_dmVec[device]
             stat = cublasGetVector(gpumatmultconf[index].M, sizeof(float), gpumatmultconf[index].d_dmVec[device], 1, gpumatmultconf[index].dmVec_part[device], 1);
@@ -1192,7 +1192,7 @@ void *compute_function( void *ptr )
             }
         }
         
-        //clock_gettime(CLOCK_REALTIME, thdata->t5);
+        clock_gettime(CLOCK_REALTIME, thdata->t5);
         //
         // When data is ready on CPU, post semaphore #5
         //
@@ -1934,12 +1934,12 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
     long cnt;
 	int TimerIndex;
 
-	struct timespec tdt0;
-    struct timespec tdt1;
-    struct timespec tdt2;
-    struct timespec tdt3;
-    struct timespec tdt4;
-    struct timespec tdt5;
+	struct timespec tdt0[10];
+    struct timespec tdt1[10];
+    struct timespec tdt2[10];
+    struct timespec tdt3[10];
+    struct timespec tdt4[10];
+    struct timespec tdt5[10];
 
 
 	TimerIndex = TimerOffsetIndex;
@@ -2015,7 +2015,12 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
             gpumatmultconf[index].thdata[ptn].numl0 = ptn*ptn;
             gpumatmultconf[index].thdata[ptn].cindex = index;
             gpumatmultconf[index].thdata[ptn].status = GPUstatus;
-            gpumatmultconf[index].thdata[ptn].t0 = &tdt0;
+            gpumatmultconf[index].thdata[ptn].t0 = &tdt0[ptn];
+            gpumatmultconf[index].thdata[ptn].t1 = &tdt1[ptn];
+            gpumatmultconf[index].thdata[ptn].t2 = &tdt2[ptn];
+            gpumatmultconf[index].thdata[ptn].t3 = &tdt3[ptn];
+            gpumatmultconf[index].thdata[ptn].t4 = &tdt4[ptn];
+            gpumatmultconf[index].thdata[ptn].t5 = &tdt5[ptn];
             gpumatmultconf[index].iret[ptn] = pthread_create( &gpumatmultconf[index].threadarray[ptn], NULL, compute_function, (void*) &gpumatmultconf[index].thdata[ptn]);
             if(gpumatmultconf[index].iret[ptn])
             {
