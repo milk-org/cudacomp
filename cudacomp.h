@@ -35,6 +35,15 @@ typedef struct
     long numl0;
     int cindex; // computation index
     int_fast8_t *status; // where to white status
+    
+    // timers
+    struct timespec *t0;
+    struct timespec *t1;
+    struct timespec *t2;
+    struct timespec *t3;
+    struct timespec *t4;
+    struct timespec *t5;
+    
 } THDATA;
 
 

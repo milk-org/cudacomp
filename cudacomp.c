@@ -928,6 +928,9 @@ void *compute_function( void *ptr )
 
     float alpharef, betaref;
 
+	
+
+
     thdata = (THDATA*) ptr;
     device = thdata->thread_no;
     index = thdata->cindex;
@@ -964,6 +967,8 @@ void *compute_function( void *ptr )
 		//fflush(stdout);
 		
 		
+		clock_gettime(CLOCK_REALTIME, thdata->t0);
+		
         // copy DM reference to output to prepare computation:   d_dmVec <- d_dmRef
         error = cudaMemcpy(gpumatmultconf[index].d_dmVec[device], gpumatmultconf[index].d_dmRef[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToDevice);
         if (error != cudaSuccess)
@@ -974,6 +979,10 @@ void *compute_function( void *ptr )
         }
 
         *ptrstat = 2; // wait for image
+        
+        //
+        // Wait for semaphore #1 to be posted to transfer from CPU to GPU
+        //
         if(gpumatmultconf[index].sem==1)
         {
             sem_wait(gpumatmultconf[index].semptr1[device]);
@@ -985,6 +994,8 @@ void *compute_function( void *ptr )
                     sem_trywait(gpumatmultconf[index].semptr1[device]);
             }
         }
+
+		clock_gettime(CLOCK_REALTIME, thdata->t1);
 
         *ptrstat = 3; // transfer: prt0 -> d_wfsVec
         stat = cublasSetVector(gpumatmultconf[index].Nsize[device], sizeof(float), (float*) ptr0, 1, gpumatmultconf[index].d_wfsVec[device], 1);
@@ -1000,7 +1011,8 @@ void *compute_function( void *ptr )
             exit(EXIT_FAILURE);
         }
 
-
+		clock_gettime(CLOCK_REALTIME, thdata->t2);
+		
         if(gpumatmultconf[index].refWFSinit[device] == 0) // compute DM reference (used when reference changes)
         {
             *ptrstat = 4; // compute
@@ -1105,6 +1117,9 @@ void *compute_function( void *ptr )
         {
             *ptrstat = 4; // compute
 
+			//
+			// Post semaphore #2 when starting computation
+			//
             if(gpumatmultconf[index].sem==1)
                 sem_post(gpumatmultconf[index].semptr2[device]);
 
@@ -1133,13 +1148,22 @@ void *compute_function( void *ptr )
                 fflush(stdout);
                 exit(EXIT_FAILURE);				
             }
+            
+            clock_gettime(CLOCK_REALTIME, thdata->t3);
 
 
+			//
+			// When computation is done on GPU, post semaphore #3
+			//
             if(gpumatmultconf[index].sem==1)
                 sem_post(gpumatmultconf[index].semptr3[device]);
 
             *ptrstat = 5; // transfer result
 
+
+			//
+			// Wait for semaphore #4 to be posted to transfer from GPU to CPU
+			//
             if(gpumatmultconf[index].sem==1)
             {
                 sem_wait(gpumatmultconf[index].semptr4[device]);
@@ -1150,6 +1174,8 @@ void *compute_function( void *ptr )
                         sem_trywait(gpumatmultconf[index].semptr4[device]);
                 }
             }
+            
+            clock_gettime(CLOCK_REALTIME, thdata->t4);
 
             // result is on gpumatmultconf[index].d_dmVec[device]
             stat = cublasGetVector(gpumatmultconf[index].M, sizeof(float), gpumatmultconf[index].d_dmVec[device], 1, gpumatmultconf[index].dmVec_part[device], 1);
@@ -1165,6 +1191,11 @@ void *compute_function( void *ptr )
                 exit(EXIT_FAILURE);
             }
         }
+        
+        clock_gettime(CLOCK_REALTIME, thdata->t5);
+        //
+        // When data is ready on CPU, post semaphore #5
+        //
         if(gpumatmultconf[index].sem==1)
             sem_post(gpumatmultconf[index].semptr5[device]);
 
@@ -1940,7 +1971,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         clock_gettime(CLOCK_REALTIME, &tnow);
         tdiff = info_time_diff(data.image[IDtiming].md[0].atime.ts, tnow);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        data.image[IDtiming].array.F[TimerIndex] = tdiffv;
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //25
         TimerIndex++;
     }
 
@@ -1993,7 +2024,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         clock_gettime(CLOCK_REALTIME, &tnow);
         tdiff = info_time_diff(data.image[IDtiming].md[0].atime.ts, tnow);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        data.image[IDtiming].array.F[TimerIndex] = tdiffv;
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //26
 		TimerIndex++;
     }
 
@@ -2022,7 +2053,6 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
                 for(cnt=0; cnt<semval; cnt++)
                     sem_trywait(gpumatmultconf[index].semptr5[ptn]);
             }
-
     }
 
 
@@ -2033,7 +2063,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         clock_gettime(CLOCK_REALTIME, &tnow);
         tdiff = info_time_diff(data.image[IDtiming].md[0].atime.ts, tnow);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        data.image[IDtiming].array.F[TimerIndex] = tdiffv;
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //27
 		TimerIndex++;
     }
 
@@ -2079,7 +2109,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         clock_gettime(CLOCK_REALTIME, &tnow);
         tdiff = info_time_diff(data.image[IDtiming].md[0].atime.ts, tnow);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        data.image[IDtiming].array.F[TimerIndex] = tdiffv;
+        data.image[IDtiming].array.F[TimerIndex] = tdiffv; //28
 		TimerIndex++;
     }
     
