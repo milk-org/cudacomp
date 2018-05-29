@@ -5752,7 +5752,7 @@ int CUDACOMP_extractModesLoop(
         else
             twait1 --;
 
-		if(tdiffv>1.0e-3)
+		if(tdiffv>0.5e-3)
 		{
 			printf("  function CUDACOMP_extractModesLoop - TIMING GLITCH: \n");
 			printf("       %ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
