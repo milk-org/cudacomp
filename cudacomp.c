@@ -967,7 +967,7 @@ void *compute_function( void *ptr )
 		//fflush(stdout);
 		
 		
-		clock_gettime(CLOCK_REALTIME, thdata->t0);
+		//clock_gettime(CLOCK_REALTIME, thdata->t0);
 		
         // copy DM reference to output to prepare computation:   d_dmVec <- d_dmRef
         error = cudaMemcpy(gpumatmultconf[index].d_dmVec[device], gpumatmultconf[index].d_dmRef[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToDevice);
@@ -995,7 +995,7 @@ void *compute_function( void *ptr )
             }
         }
 
-		clock_gettime(CLOCK_REALTIME, thdata->t1);
+		//clock_gettime(CLOCK_REALTIME, thdata->t1);
 
         *ptrstat = 3; // transfer: prt0 -> d_wfsVec
         stat = cublasSetVector(gpumatmultconf[index].Nsize[device], sizeof(float), (float*) ptr0, 1, gpumatmultconf[index].d_wfsVec[device], 1);
@@ -1011,7 +1011,7 @@ void *compute_function( void *ptr )
             exit(EXIT_FAILURE);
         }
 
-		clock_gettime(CLOCK_REALTIME, thdata->t2);
+		//clock_gettime(CLOCK_REALTIME, thdata->t2);
 		
         if(gpumatmultconf[index].refWFSinit[device] == 0) // compute DM reference (used when reference changes)
         {
@@ -1149,7 +1149,7 @@ void *compute_function( void *ptr )
                 exit(EXIT_FAILURE);				
             }
             
-            clock_gettime(CLOCK_REALTIME, thdata->t3);
+            //clock_gettime(CLOCK_REALTIME, thdata->t3);
 
 
 			//
@@ -1175,7 +1175,7 @@ void *compute_function( void *ptr )
                 }
             }
             
-            clock_gettime(CLOCK_REALTIME, thdata->t4);
+            //clock_gettime(CLOCK_REALTIME, thdata->t4);
 
             // result is on gpumatmultconf[index].d_dmVec[device]
             stat = cublasGetVector(gpumatmultconf[index].M, sizeof(float), gpumatmultconf[index].d_dmVec[device], 1, gpumatmultconf[index].dmVec_part[device], 1);
@@ -1192,7 +1192,7 @@ void *compute_function( void *ptr )
             }
         }
         
-        clock_gettime(CLOCK_REALTIME, thdata->t5);
+        //clock_gettime(CLOCK_REALTIME, thdata->t5);
         //
         // When data is ready on CPU, post semaphore #5
         //
@@ -1934,6 +1934,13 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
     long cnt;
 	int TimerIndex;
 
+/*	struct timespec *tdt0;
+    struct timespec *tdt1;
+    struct timespec *tdt2;
+    struct timespec *tdt3;
+    struct timespec *tdt4;
+    struct timespec *tdt5;
+*/
 
 	TimerIndex = TimerOffsetIndex;
 	
