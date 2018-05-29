@@ -967,7 +967,7 @@ void *compute_function( void *ptr )
 		//fflush(stdout);
 		
 		
-		//clock_gettime(CLOCK_REALTIME, thdata->t0);
+		clock_gettime(CLOCK_REALTIME, thdata->t0);
 		
         // copy DM reference to output to prepare computation:   d_dmVec <- d_dmRef
         error = cudaMemcpy(gpumatmultconf[index].d_dmVec[device], gpumatmultconf[index].d_dmRef[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToDevice);
@@ -1934,13 +1934,13 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
     long cnt;
 	int TimerIndex;
 
-/*	struct timespec *tdt0;
-    struct timespec *tdt1;
-    struct timespec *tdt2;
-    struct timespec *tdt3;
-    struct timespec *tdt4;
-    struct timespec *tdt5;
-*/
+	struct timespec tdt0;
+    struct timespec tdt1;
+    struct timespec tdt2;
+    struct timespec tdt3;
+    struct timespec tdt4;
+    struct timespec tdt5;
+
 
 	TimerIndex = TimerOffsetIndex;
 	
@@ -2015,6 +2015,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
             gpumatmultconf[index].thdata[ptn].numl0 = ptn*ptn;
             gpumatmultconf[index].thdata[ptn].cindex = index;
             gpumatmultconf[index].thdata[ptn].status = GPUstatus;
+            gpumatmultconf[index].thdata[ptn].t0 = &tdt0;
             gpumatmultconf[index].iret[ptn] = pthread_create( &gpumatmultconf[index].threadarray[ptn], NULL, compute_function, (void*) &gpumatmultconf[index].thdata[ptn]);
             if(gpumatmultconf[index].iret[ptn])
             {
