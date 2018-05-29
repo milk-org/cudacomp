@@ -928,7 +928,7 @@ void *compute_function( void *ptr )
 
     float alpharef, betaref;
 
-	
+	struct timespec t00;
 
 
     thdata = (THDATA*) ptr;
@@ -967,7 +967,7 @@ void *compute_function( void *ptr )
 		//fflush(stdout);
 		
 		
-		clock_gettime(CLOCK_REALTIME, thdata->t0);
+		clock_gettime(CLOCK_REALTIME, &t00);
 		
         // copy DM reference to output to prepare computation:   d_dmVec <- d_dmRef
         error = cudaMemcpy(gpumatmultconf[index].d_dmVec[device], gpumatmultconf[index].d_dmRef[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToDevice);
@@ -995,6 +995,7 @@ void *compute_function( void *ptr )
             }
         }
 
+		thdata->t0 = &t00;
 		clock_gettime(CLOCK_REALTIME, thdata->t1);
 
         *ptrstat = 3; // transfer: prt0 -> d_wfsVec
