@@ -1017,6 +1017,9 @@ void *compute_function( void *ptr )
 		
         if(gpumatmultconf[index].refWFSinit[device] == 0) // compute DM reference (used when reference changes)
         {
+			printf("DM reference changed -> recompute\n");
+			fflush(stdout);
+			
             *ptrstat = 4; // compute
 
             if(gpumatmultconf[index].sem==1)
