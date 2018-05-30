@@ -1184,7 +1184,7 @@ void *compute_function( void *ptr )
 			
 			//cudaMemcpy ( gpumatmultconf[index].dmVec_part[device], gpumatmultconf[index].d_dmVec[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToHost);
             // result is on gpumatmultconf[index].d_dmVec[device]
-            /*stat = cublasGetVector(gpumatmultconf[index].M, sizeof(float), gpumatmultconf[index].d_dmVec[device], 1, gpumatmultconf[index].dmVec_part[device], 1);
+            stat = cublasGetVector(gpumatmultconf[index].M, sizeof(float), gpumatmultconf[index].d_dmVec[device], 1, gpumatmultconf[index].dmVec_part[device], 1);
             if (stat != CUBLAS_STATUS_SUCCESS)
             {
                 fprintf(stderr, "!!!! device access error (read C)\n");
@@ -1195,7 +1195,7 @@ void *compute_function( void *ptr )
                 if(stat == CUBLAS_STATUS_MAPPING_ERROR)
                     printf("   CUBLAS_STATUS_MAPPING_ERROR\n");
                 exit(EXIT_FAILURE);
-            }*/
+            }
         }
         
         clock_gettime(CLOCK_REALTIME, thdata->t5);
