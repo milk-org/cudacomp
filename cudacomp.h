@@ -35,6 +35,15 @@ typedef struct
     long numl0;
     int cindex; // computation index
     int_fast8_t *status; // where to white status
+    
+    // timers
+    struct timespec *t0;
+    struct timespec *t1;
+    struct timespec *t2;
+    struct timespec *t3;
+    struct timespec *t4;
+    struct timespec *t5;
+    
 } THDATA;
 
 
@@ -234,7 +243,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name, con
  * 
  * @warning Requires M>N (tall matrix)
  */
-int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, double qdwh_s, float qdwh_tol);
+int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, double qdwh_s, float qdwh_tol, int testmode);
 
 
 
