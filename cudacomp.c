@@ -930,6 +930,8 @@ void __attribute__((hot)) *compute_function( void *ptr )
 	struct timespec t00;
 
 
+	int OKcomputeGPU = 0; //TEST
+
     thdata = (THDATA*) ptr;
     device = thdata->thread_no;
     index = thdata->cindex;
@@ -1043,9 +1045,11 @@ void __attribute__((hot)) *compute_function( void *ptr )
             //        cublasSgemv_beta = 0.0;
             alpharef = 1.0;
             betaref = 0.0;
-            stat = cublasSgemv(gpumatmultconf[index].handle[device], CUBLAS_OP_N, gpumatmultconf[index].M, gpumatmultconf[index].Nsize[device], &alpharef, gpumatmultconf[index].d_cMat[device], gpumatmultconf[index].M, gpumatmultconf[index].d_wfsVec[device], 1, &betaref, gpumatmultconf[index].d_dmRef[device], 1);
-            if (stat != CUBLAS_STATUS_SUCCESS)
-            {
+            
+			stat = cublasSgemv(gpumatmultconf[index].handle[device], CUBLAS_OP_N, gpumatmultconf[index].M, gpumatmultconf[index].Nsize[device], &alpharef, gpumatmultconf[index].d_cMat[device], gpumatmultconf[index].M, gpumatmultconf[index].d_wfsVec[device], 1, &betaref, gpumatmultconf[index].d_dmRef[device], 1);
+            
+			if (stat != CUBLAS_STATUS_SUCCESS)
+				{
                 printf("cublasSgemv returned error code %d, line(%d)\n", stat, __LINE__);
                 fflush(stdout);
                 if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
@@ -1067,7 +1071,8 @@ void __attribute__((hot)) *compute_function( void *ptr )
                 printf("gpumatmultconf[index].Nsize[device] = %d\n", (int) gpumatmultconf[index].Nsize[device]);
                 fflush(stdout);
                 exit(EXIT_FAILURE);
-            }
+				}
+			
             //          cublasSgemv_alpha = alphatmp;
             //          cublasSgemv_beta = betatmp;
 
@@ -1142,6 +1147,8 @@ void __attribute__((hot)) *compute_function( void *ptr )
                 sem_post(gpumatmultconf[index].semptr2[device]);
                 */
 
+			if(OKcomputeGPU == 1)
+			{
             stat = cublasSgemv(gpumatmultconf[index].handle[device], CUBLAS_OP_N, gpumatmultconf[index].M, gpumatmultconf[index].Nsize[device], &cublasSgemv_alpha, gpumatmultconf[index].d_cMat[device], gpumatmultconf[index].M, gpumatmultconf[index].d_wfsVec[device], 1, &cublasSgemv_beta, gpumatmultconf[index].d_dmVec[device], 1);
 
             if (stat != CUBLAS_STATUS_SUCCESS)
@@ -1167,7 +1174,7 @@ void __attribute__((hot)) *compute_function( void *ptr )
                 fflush(stdout);
                 exit(EXIT_FAILURE);				
             }
-            
+			}
             clock_gettime(CLOCK_REALTIME, thdata->t3);
 
 
@@ -1203,6 +1210,9 @@ void __attribute__((hot)) *compute_function( void *ptr )
 			
 			//cudaMemcpy ( gpumatmultconf[index].dmVec_part[device], gpumatmultconf[index].d_dmVec[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToHost);
             // result is on gpumatmultconf[index].d_dmVec[device]
+            
+            if(OKcomputeGPU == 1)
+            {
             stat = cublasGetVector(gpumatmultconf[index].M, sizeof(float), gpumatmultconf[index].d_dmVec[device], 1, gpumatmultconf[index].dmVec_part[device], 1);
             if (stat != CUBLAS_STATUS_SUCCESS)
             {
@@ -1215,6 +1225,7 @@ void __attribute__((hot)) *compute_function( void *ptr )
                     printf("   CUBLAS_STATUS_MAPPING_ERROR\n");
                 exit(EXIT_FAILURE);
             }
+			}
         }
         
         clock_gettime(CLOCK_REALTIME, thdata->t5);
