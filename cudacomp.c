@@ -991,7 +991,11 @@ void *compute_function( void *ptr )
                 sem_getvalue(gpumatmultconf[index].semptr1[device], &semval);
                 for(cnt=0; cnt<semval; cnt++)
                 {
+					printf("================================================\n");
+					printf("================================================\n");
 					printf("======== %s  %s  semptr1 decrement ============\n", __FILE__, __LINE__);
+					printf("================================================\n");
+					printf("================================================\n");
 					sem_trywait(gpumatmultconf[index].semptr1[device]);					
 				}
             }
