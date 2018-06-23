@@ -5881,21 +5881,11 @@ int CUDACOMP_extractModesLoop(
 			
 			printf("---\n");
 			
-			tdiff = info_time_diff(t00, t01);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             00 -> 01: %8.3lf\n", 1.0e3*tdiffv);		
 			
-			tdiff = info_time_diff(t01, t02);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             01 -> 02: %8.3lf\n", 1.0e3*tdiffv);
 			
-			tdiff = info_time_diff(t02, t03);
+			tdiff = info_time_diff(t0, t04);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             02 -> 03: %8.3lf\n", 1.0e3*tdiffv);		
-			
-			tdiff = info_time_diff(t03, t04);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             03 -> 04: %8.3lf\n", 1.0e3*tdiffv);
+			printf("             0  -> 04: %8.3lf\n", 1.0e3*tdiffv);
 
 			tdiff = info_time_diff(t04, t05);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
