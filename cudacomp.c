@@ -902,7 +902,7 @@ void matrixMulCPU(float *cMat, float *wfsVec, float *dmVec, int M, int N)
  */
 
 
-void *compute_function( void *ptr )
+void __attribute__((hot)) *compute_function( void *ptr )
 {
     THDATA *thdata;
     int device;
@@ -1027,8 +1027,9 @@ void *compute_function( void *ptr )
 			
             *ptrstat = 4; // compute
 
-            if(gpumatmultconf[index].sem==1)
-                sem_post(gpumatmultconf[index].semptr2[device]);
+			// enable this post if outside process needs to be notified of computation start
+/*            if(gpumatmultconf[index].sem==1)
+                sem_post(gpumatmultconf[index].semptr2[device]);*/ 
 
 
           //  printf("%d  device %d (GPU %d): compute reference product\n", index, device, gpumatmultconf[index].GPUdevice[device]);
@@ -1072,9 +1073,11 @@ void *compute_function( void *ptr )
 
             gpumatmultconf[index].refWFSinit[device] = 1;
 
-
+			// enable this post if outside process needs to be notified of computation start
+			/*
             if(gpumatmultconf[index].sem==1)
                 sem_post(gpumatmultconf[index].semptr3[device]);
+*/
 
             *ptrstat = 5; // transfer result
 
@@ -1169,9 +1172,10 @@ void *compute_function( void *ptr )
 			//
 			// When computation is done on GPU, post semaphore #3
 			//
+			/*
             if(gpumatmultconf[index].sem==1)
                 sem_post(gpumatmultconf[index].semptr3[device]);
-
+*/
             *ptrstat = 5; // transfer result
 
 
