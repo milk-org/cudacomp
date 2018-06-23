@@ -1966,7 +1966,11 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
     {
         sem_getvalue(gpumatmultconf[index].semptr1[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
-            sem_trywait(gpumatmultconf[index].semptr1[ptn]);
+        {
+			printf("WARNING %s %d  : sem_trywait on semptr1 index %d ptn %d\n", __FILE__, __LINE__, index, ptn);
+			fflush(stdout);   
+			 sem_trywait(gpumatmultconf[index].semptr1[ptn]);
+		}
 
         sem_getvalue(gpumatmultconf[index].semptr2[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
