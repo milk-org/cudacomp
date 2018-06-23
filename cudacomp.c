@@ -992,11 +992,8 @@ void *compute_function( void *ptr )
                 sem_getvalue(gpumatmultconf[index].semptr1[device], &semval);
                 for(cnt=0; cnt<semval; cnt++)
                 {
-					printf("================================================\n");
-					printf("================================================\n");
-					printf("======== %s  %d  semptr1 decrement ============\n", __FILE__, __LINE__);
-					printf("================================================\n");
-					printf("================================================\n");
+					printf("WARNING %s %d  : sem_trywait on semptr1 index %d device %d\n", __FILE__, __LINE__, index, device);
+					fflush(stdout);  
 					sem_trywait(gpumatmultconf[index].semptr1[device]);					
 				}
             }
@@ -1088,7 +1085,11 @@ void *compute_function( void *ptr )
                 {
                     sem_getvalue(gpumatmultconf[index].semptr4[device], &semval);
                     for(cnt=0; cnt<semval; cnt++)
+                    {
+						printf("WARNING %s %d  : sem_trywait on semptr4 index %d device %d\n", __FILE__, __LINE__, index, device);
+						fflush(stdout);  
                         sem_trywait(gpumatmultconf[index].semptr4[device]);
+					}
                 }
             }
 
@@ -1184,7 +1185,11 @@ void *compute_function( void *ptr )
                 {
                     sem_getvalue(gpumatmultconf[index].semptr4[device], &semval);
                     for(cnt=0; cnt<semval; cnt++)
+                    {
+						printf("WARNING %s %d  : sem_trywait on semptr4 index %d device %d\n", __FILE__, __LINE__, index, device);
+						fflush(stdout); 
                         sem_trywait(gpumatmultconf[index].semptr4[device]);
+					}
                 }
             }
             
@@ -1972,21 +1977,38 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
 			 sem_trywait(gpumatmultconf[index].semptr1[ptn]);
 		}
 
+
         sem_getvalue(gpumatmultconf[index].semptr2[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
+        {
+			printf("WARNING %s %d  : sem_trywait on semptr2 index %d ptn %d\n", __FILE__, __LINE__, index, ptn);
+			fflush(stdout);
             sem_trywait(gpumatmultconf[index].semptr2[ptn]);
+		}
 
         sem_getvalue(gpumatmultconf[index].semptr3[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
+        {
+			printf("WARNING %s %d  : sem_trywait on semptr3 index %d ptn %d\n", __FILE__, __LINE__, index, ptn);
+			fflush(stdout);  
             sem_trywait(gpumatmultconf[index].semptr3[ptn]);
+		}
 
         sem_getvalue(gpumatmultconf[index].semptr4[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
+        {
+			printf("WARNING %s %d  : sem_trywait on semptr4 index %d ptn %d\n", __FILE__, __LINE__, index, ptn);
+			fflush(stdout);
             sem_trywait(gpumatmultconf[index].semptr4[ptn]);
+		}
 
         sem_getvalue(gpumatmultconf[index].semptr5[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
+        {
+			printf("WARNING %s %d  : sem_trywait on semptr5 index %d ptn %d\n", __FILE__, __LINE__, index, ptn);
+			fflush(stdout);
             sem_trywait(gpumatmultconf[index].semptr5[ptn]);
+		}
     }
 
 
@@ -2082,7 +2104,11 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
             {
                 sem_getvalue(gpumatmultconf[index].semptr5[ptn], &semval);
                 for(cnt=0; cnt<semval; cnt++)
+                {
+					printf("WARNING %s %d  : sem_trywait on semptr5 index %d ptn %d\n", __FILE__, __LINE__, index, ptn);
+					fflush(stdout);
                     sem_trywait(gpumatmultconf[index].semptr5[ptn]);
+				}
             }
     }
 
@@ -5067,7 +5093,11 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
                 // fflush(stdout);
                 sem_getvalue(data.image[IDcoeff].semptr[2], &semval);
                 for(scnt=0; scnt<semval; scnt++)
+                {
+					printf("WARNING %s %d  : sem_trywait on semptr2\n", __FILE__, __LINE__);
+					fflush(stdout);
                     sem_trywait(data.image[IDcoeff].semptr[2]);
+                }
                 // printf("done\n");
                 // fflush(stdout);
             }
@@ -5396,7 +5426,10 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     {
         MODEVALCOMPUTE = 0;
         // drive semaphore to zero
-        while(sem_trywait(data.image[ID_modeval].semptr[insem])==0) {}
+        while(sem_trywait(data.image[ID_modeval].semptr[insem])==0) {
+			printf("WARNING %s %d  : sem_trywait on ID_modeval\n", __FILE__, __LINE__);
+			fflush(stdout);	
+			}
     }
 
     free(arraytmp);
@@ -5645,7 +5678,10 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
                     semr = sem_timedwait(data.image[IDin].semptr[insem], &ts);
 
                     // drive semaphore to zero
-                    while(sem_trywait(data.image[IDin].semptr[insem])==0) {}
+                    while(sem_trywait(data.image[IDin].semptr[insem])==0) {
+					printf("WARNING %s %d  : sem_trywait on IDin\n", __FILE__, __LINE__);
+					fflush(stdout);						
+						}
                 }
             }
             else // compute response of reference immediately
