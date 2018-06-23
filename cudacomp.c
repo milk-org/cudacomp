@@ -5847,7 +5847,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 
 		if(tdiffv>1.0e-3)
 		{
-			printf("  ... function CUDACOMP_extractModesLoop - TIMING GLITCH  [%09ld] \n", t0.tv_nsec);
+			printf("  ... function CUDACOMP_extractModesLoop - TIMING GLITCH  [%09ld] [%d]\n", t0.tv_nsec, insem);
 			printf("       %ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
 			fflush(stdout);
 			
