@@ -1009,6 +1009,8 @@ void __attribute__((hot)) *compute_function( void *ptr )
 		clock_gettime(CLOCK_REALTIME, thdata->t1);
 
         *ptrstat = 3; // transfer: prt0 -> d_wfsVec
+        if(ComputeGPU_FLAG == 1)
+        {
         stat = cublasSetVector(gpumatmultconf[index].Nsize[device], sizeof(float), (float*) ptr0, 1, gpumatmultconf[index].d_wfsVec[device], 1);
         if (stat != CUBLAS_STATUS_SUCCESS)
         {
@@ -1021,6 +1023,7 @@ void __attribute__((hot)) *compute_function( void *ptr )
                 printf("   CUBLAS_STATUS_MAPPING_ERROR\n");
             exit(EXIT_FAILURE);
         }
+		}
 
 		clock_gettime(CLOCK_REALTIME, thdata->t2);
 		
