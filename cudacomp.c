@@ -982,7 +982,7 @@ void *compute_function( void *ptr )
         //
         // Wait for semaphore #1 to be posted to transfer from CPU to GPU
         //
-        printf("%s %d      index = %d  sem = %d\n", __FILE__, __LINE__, index, gpumatmultconf[index].sem);
+        //printf("%s %d      index = %d  sem = %d\n", __FILE__, __LINE__, index, gpumatmultconf[index].sem);//TEST
         if(gpumatmultconf[index].sem==1)
         {
             sem_wait(gpumatmultconf[index].semptr1[device]);
