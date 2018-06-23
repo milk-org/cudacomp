@@ -5591,8 +5591,18 @@ int CUDACOMP_extractModesLoop(
 	printf("LOOP START   MODEVALCOMPUTE = %d\n", MODEVALCOMPUTE);
 	fflush(stdout);
 	
+
+	
     while(loopOK == 1)
     {
+	int t00OK = 0;
+	int t01OK = 0;
+	int t02OK = 0;
+	int t03OK = 0;
+	int t04OK = 0;
+	int t05OK = 0;
+	int t06OK = 0;
+
         clock_gettime(CLOCK_REALTIME, &t0);
 
         if(MODEVALCOMPUTE==1)
@@ -5631,7 +5641,7 @@ int CUDACOMP_extractModesLoop(
                 semr = 0;
             }
 
-			
+			t00OK = 1;
 			clock_gettime(CLOCK_REALTIME, &t00);
 
             if(semr==0)
@@ -5650,6 +5660,7 @@ int CUDACOMP_extractModesLoop(
                     exit(EXIT_FAILURE);
                 }
 				
+				t01OK = 1;
 				clock_gettime(CLOCK_REALTIME, &t01);
 
                 if(BETAMODE == 1)
@@ -5658,6 +5669,7 @@ int CUDACOMP_extractModesLoop(
                     cudaStat = cudaMemcpy(d_modeval, modevalarrayref, sizeof(float)*NBmodes, cudaMemcpyHostToDevice);
                 }
                 
+                t02OK = 1;
                 clock_gettime(CLOCK_REALTIME, &t02);
 
                 // compute
@@ -5689,6 +5701,7 @@ int CUDACOMP_extractModesLoop(
                 // copy result
                 data.image[ID_modeval].md[0].write = 1;
 
+				t03OK = 1;
 				clock_gettime(CLOCK_REALTIME, &t03);
 
                 if(initref==0) // construct reference to be subtracted
@@ -5735,7 +5748,7 @@ int CUDACOMP_extractModesLoop(
 
 
 
-
+		t04OK = 1;
 		clock_gettime(CLOCK_REALTIME, &t04);
 
 
@@ -5766,6 +5779,7 @@ int CUDACOMP_extractModesLoop(
             }
         }
 
+		t05OK = 1;
 		clock_gettime(CLOCK_REALTIME, &t05);
 
         if(PROCESS==1)
@@ -5809,6 +5823,7 @@ int CUDACOMP_extractModesLoop(
             data.image[IDprocrms].md[0].write = 0;
         }
         
+        t06OK = 1;
         clock_gettime(CLOCK_REALTIME, &t06);
 
 
@@ -5838,31 +5853,31 @@ int CUDACOMP_extractModesLoop(
 			
 			tdiff = info_time_diff(t0, t00);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             t00: %8.3lf\n", 1.0e3*tdiffv);
+			printf(" %d            t00: %8.3lf\n", t00OK, 1.0e3*tdiffv);
 
 			tdiff = info_time_diff(t0, t01);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             t01: %8.3lf\n", 1.0e3*tdiffv);
+			printf(" %d            t01: %8.3lf\n", t01OK, 1.0e3*tdiffv);
 
 			tdiff = info_time_diff(t0, t02);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             t02: %8.3lf\n", 1.0e3*tdiffv);
+			printf(" %d            t02: %8.3lf\n", t02OK, 1.0e3*tdiffv);
 
 			tdiff = info_time_diff(t0, t03);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             t03: %8.3lf\n", 1.0e3*tdiffv);			
+			printf(" %d            t03: %8.3lf\n", t03OK, 1.0e3*tdiffv);			
 
 			tdiff = info_time_diff(t0, t04);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             t04: %8.3lf\n", 1.0e3*tdiffv);
+			printf(" %d            t04: %8.3lf\n", t04OK, 1.0e3*tdiffv);
 
 			tdiff = info_time_diff(t0, t05);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             t05: %8.3lf\n", 1.0e3*tdiffv);
+			printf(" %d            t05: %8.3lf\n", t05OK, 1.0e3*tdiffv);
 			
 			tdiff = info_time_diff(t0, t06);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             t06: %8.3lf\n", 1.0e3*tdiffv);	
+			printf(" %d            t06: %8.3lf\n", t06OK, 1.0e3*tdiffv);	
 			
 			printf("---\n");
 			
