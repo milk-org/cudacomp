@@ -1972,7 +1972,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         sem_getvalue(gpumatmultconf[index].semptr1[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
         {
-			printf("WARNING %s %d  : [%ld] sem_trywait on semptr1 index %d ptn %d\n", __FILE__, __LINE__, cnt, index, ptn);
+			printf("WARNING %s %d  : [%ld] sem_trywait on semptr1 index %d ptn %d\n", __FILE__, __LINE__, semval-cnt, index, ptn);
 			fflush(stdout);   
 			 sem_trywait(gpumatmultconf[index].semptr1[ptn]);
 		}
@@ -1981,7 +1981,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         sem_getvalue(gpumatmultconf[index].semptr2[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
         {
-			printf("WARNING %s %d  : [%ld] sem_trywait on semptr2 index %d ptn %d\n", __FILE__, __LINE__, cnt, index, ptn);
+			printf("WARNING %s %d  : [%ld] sem_trywait on semptr2 index %d ptn %d\n", __FILE__, __LINE__, semval-cnt, index, ptn);
 			fflush(stdout);
             sem_trywait(gpumatmultconf[index].semptr2[ptn]);
 		}
@@ -1989,7 +1989,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         sem_getvalue(gpumatmultconf[index].semptr3[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
         {
-			printf("WARNING %s %d  : [%ld] sem_trywait on semptr3 index %d ptn %d\n", __FILE__, __LINE__, cnt, index, ptn);
+			printf("WARNING %s %d  : [%ld] sem_trywait on semptr3 index %d ptn %d\n", __FILE__, __LINE__, semval-cnt, index, ptn);
 			fflush(stdout);  
             sem_trywait(gpumatmultconf[index].semptr3[ptn]);
 		}
@@ -1997,7 +1997,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         sem_getvalue(gpumatmultconf[index].semptr4[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
         {
-			printf("WARNING %s %d  : [%ld] sem_trywait on semptr4 index %d ptn %d\n", __FILE__, __LINE__, cnt, index, ptn);
+			printf("WARNING %s %d  : [%ld] sem_trywait on semptr4 index %d ptn %d\n", __FILE__, __LINE__, semval-cnt, index, ptn);
 			fflush(stdout);
             sem_trywait(gpumatmultconf[index].semptr4[ptn]);
 		}
@@ -2005,7 +2005,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
         sem_getvalue(gpumatmultconf[index].semptr5[ptn], &semval);
         for(cnt=0; cnt<semval; cnt++)
         {
-			printf("WARNING %s %d  : [%ld] sem_trywait on semptr5 index %d ptn %d\n", __FILE__, __LINE__, cnt, index, ptn);
+			printf("WARNING %s %d  : [%ld] sem_trywait on semptr5 index %d ptn %d\n", __FILE__, __LINE__, semval-cnt, index, ptn);
 			fflush(stdout);
             sem_trywait(gpumatmultconf[index].semptr5[ptn]);
 		}
