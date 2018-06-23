@@ -5446,7 +5446,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     }
     else // USE STREAM, DO NOT COMPUTE IT
     {
-		printf("Using pre-existing stream %s\n", IDmodes_val_name);
+		printf("======== Using pre-existing stream %s, insem = %d\n", IDmodes_val_name, insem);
 		fflush(stdout);
         MODEVALCOMPUTE = 0;
         // drive semaphore to zero
