@@ -5156,7 +5156,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
  *
  */
 
-int CUDACOMP_extractModesLoop(
+int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     const char *in_stream,
     const char *intot_stream,
     const char *IDmodes_name,
@@ -5847,7 +5847,7 @@ int CUDACOMP_extractModesLoop(
 
 		if(tdiffv>1.0e-3)
 		{
-			printf("  ... function CUDACOMP_extractModesLoop - TIMING GLITCH: \n");
+			printf("  ... function CUDACOMP_extractModesLoop - TIMING GLITCH  [%09ld] \n", t0.=.tv_nsec);
 			printf("       %ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
 			fflush(stdout);
 			
