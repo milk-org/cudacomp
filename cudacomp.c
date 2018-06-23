@@ -1136,9 +1136,11 @@ void __attribute__((hot)) *compute_function( void *ptr )
 
 			//
 			// Post semaphore #2 when starting computation
-			//
+			// Enable if listening to semptr2
+			/*
             if(gpumatmultconf[index].sem==1)
                 sem_post(gpumatmultconf[index].semptr2[device]);
+                */
 
             stat = cublasSgemv(gpumatmultconf[index].handle[device], CUBLAS_OP_N, gpumatmultconf[index].M, gpumatmultconf[index].Nsize[device], &cublasSgemv_alpha, gpumatmultconf[index].d_cMat[device], gpumatmultconf[index].M, gpumatmultconf[index].d_wfsVec[device], 1, &cublasSgemv_beta, gpumatmultconf[index].d_dmVec[device], 1);
 
