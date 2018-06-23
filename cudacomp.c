@@ -993,7 +993,7 @@ void *compute_function( void *ptr )
                 {
 					printf("================================================\n");
 					printf("================================================\n");
-					printf("======== %s  %s  semptr1 decrement ============\n", __FILE__, __LINE__);
+					printf("======== %s  %d  semptr1 decrement ============\n", __FILE__, __LINE__);
 					printf("================================================\n");
 					printf("================================================\n");
 					sem_trywait(gpumatmultconf[index].semptr1[device]);					
