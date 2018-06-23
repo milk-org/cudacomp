@@ -5742,8 +5742,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
         }
         else // WAIT FOR NEW MODEVAL
         {
-            sem_wait(data.image[ID_modeval].semptr[1]);
-//            sem_wait(data.image[ID_modeval].semptr[insem]);
+            sem_wait(data.image[ID_modeval].semptr[insem]);
         }
 
 
