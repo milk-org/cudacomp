@@ -930,7 +930,7 @@ void __attribute__((hot)) *compute_function( void *ptr )
 	struct timespec t00;
 
 
-	int ComputeGPU_FLAG = 0; //TEST
+	int ComputeGPU_FLAG = 1; //TEST
 
     thdata = (THDATA*) ptr;
     device = thdata->thread_no;
