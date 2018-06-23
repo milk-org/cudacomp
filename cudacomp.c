@@ -5588,6 +5588,9 @@ int CUDACOMP_extractModesLoop(
 
     twait1 = twait;
 
+	printf("LOOP START   MODEVALCOMPUTE = %d\n", MODEVALCOMPUTE);
+	fflush(stdout);
+	
     while(loopOK == 1)
     {
         clock_gettime(CLOCK_REALTIME, &t0);
@@ -5829,7 +5832,7 @@ int CUDACOMP_extractModesLoop(
 
 		if(tdiffv>1.0e-3)
 		{
-			printf("  function CUDACOMP_extractModesLoop - TIMING GLITCH: \n");
+			printf("  ... function CUDACOMP_extractModesLoop - TIMING GLITCH: \n");
 			printf("       %ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
 			fflush(stdout);
 			
