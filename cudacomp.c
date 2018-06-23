@@ -5923,7 +5923,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 			printf("  ... function CUDACOMP_extractModesLoop - TIMING GLITCH  [%09ld] [%d]\n", t0.tv_nsec, insem);
 			printf("       %ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
 			fflush(stdout);
-			
+/*			
 			tdiff = info_time_diff(t0, t00);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
 			printf(" %d            t00: %8.3lf\n", t00OK, 1.0e3*tdiffv);
@@ -5954,7 +5954,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 			
 			printf("---\n");
 			
-			
+	*/		
 			
 			tdiff = info_time_diff(t0, t04);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
