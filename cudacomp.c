@@ -5256,7 +5256,7 @@ int CUDACOMP_extractModesLoop(
     int MODEVALCOMPUTE = 1; // 1 if compute, 0 if import
 
 
-    int RT_priority = 80; //any number from 0-99
+    int RT_priority = 91; //any number from 0-99
     struct sched_param schedpar;
 
 
@@ -5862,7 +5862,34 @@ int CUDACOMP_extractModesLoop(
 			
 			tdiff = info_time_diff(t0, t06);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             t06: %8.3lf\n", 1.0e3*tdiffv);			
+			printf("             t06: %8.3lf\n", 1.0e3*tdiffv);	
+			
+			printf("---\n");
+			
+			tdiff = info_time_diff(t00, t01);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             00 -> 01: %8.3lf\n", 1.0e3*tdiffv);		
+			
+			tdiff = info_time_diff(t01, t02);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             01 -> 02: %8.3lf\n", 1.0e3*tdiffv);
+			
+			tdiff = info_time_diff(t02, t03);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             02 -> 03: %8.3lf\n", 1.0e3*tdiffv);		
+			
+			tdiff = info_time_diff(t03, t04);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             03 -> 04: %8.3lf\n", 1.0e3*tdiffv);
+
+			tdiff = info_time_diff(t04, t05);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             04 -> 05: %8.3lf\n", 1.0e3*tdiffv);		
+			
+			tdiff = info_time_diff(t05, t06);
+			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+			printf("             05 -> 06: %8.3lf\n", 1.0e3*tdiffv);
+								
 		}
 	
         if((data.signal_INT == 1)||(data.signal_TERM == 1)||(data.signal_ABRT==1)||(data.signal_BUS==1)||(data.signal_SEGV==1)||(data.signal_HUP==1)||(data.signal_PIPE==1))
