@@ -982,6 +982,7 @@ void *compute_function( void *ptr )
         //
         // Wait for semaphore #1 to be posted to transfer from CPU to GPU
         //
+        printf("%s %d      index = %d  sem = %d\n", __FILE__, __LINE__, index, gpumatmultconf[index].sem);
         if(gpumatmultconf[index].sem==1)
         {
             sem_wait(gpumatmultconf[index].semptr1[device]);
@@ -1000,6 +1001,7 @@ void *compute_function( void *ptr )
 				}
             }
         }
+
 
 		thdata->t0->tv_sec = t00.tv_sec;
 		thdata->t0->tv_nsec = t00.tv_nsec;
