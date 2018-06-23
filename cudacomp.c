@@ -930,7 +930,7 @@ void __attribute__((hot)) *compute_function( void *ptr )
 	struct timespec t00;
 
 
-	int OKcomputeGPU = 0; //TEST
+	int ComputeGPU_FLAG = 0; //TEST
 
     thdata = (THDATA*) ptr;
     device = thdata->thread_no;
@@ -948,8 +948,7 @@ void __attribute__((hot)) *compute_function( void *ptr )
     ptr0 += sizeof(float)*gpumatmultconf[index].Noffset[device];
     ptr0f = (float*) ptr0;
 
-// TBR: why include this line ?
-  //  if((index==0)||(index==2))
+
     cudaSetDevice(gpumatmultconf[index].GPUdevice[device]);
 
     cublasSetStream( gpumatmultconf[index].handle[device], gpumatmultconf[index].stream[device] );
@@ -971,6 +970,8 @@ void __attribute__((hot)) *compute_function( void *ptr )
 		clock_gettime(CLOCK_REALTIME, &t00);
 		
         // copy DM reference to output to prepare computation:   d_dmVec <- d_dmRef
+        if(ComputeGPU_FLAG == 1)
+        {
         error = cudaMemcpy(gpumatmultconf[index].d_dmVec[device], gpumatmultconf[index].d_dmRef[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToDevice);
         if (error != cudaSuccess)
         {
@@ -978,6 +979,7 @@ void __attribute__((hot)) *compute_function( void *ptr )
             fflush(stdout);
             exit(EXIT_FAILURE);
         }
+		}
 
         *ptrstat = 2; // wait for image
         
@@ -1147,7 +1149,7 @@ void __attribute__((hot)) *compute_function( void *ptr )
                 sem_post(gpumatmultconf[index].semptr2[device]);
                 */
 
-			if(OKcomputeGPU == 1)
+			if(ComputeGPU_FLAG == 1)
 			{
             stat = cublasSgemv(gpumatmultconf[index].handle[device], CUBLAS_OP_N, gpumatmultconf[index].M, gpumatmultconf[index].Nsize[device], &cublasSgemv_alpha, gpumatmultconf[index].d_cMat[device], gpumatmultconf[index].M, gpumatmultconf[index].d_wfsVec[device], 1, &cublasSgemv_beta, gpumatmultconf[index].d_dmVec[device], 1);
 
@@ -1211,7 +1213,7 @@ void __attribute__((hot)) *compute_function( void *ptr )
 			//cudaMemcpy ( gpumatmultconf[index].dmVec_part[device], gpumatmultconf[index].d_dmVec[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToHost);
             // result is on gpumatmultconf[index].d_dmVec[device]
             
-            if(OKcomputeGPU == 1)
+            if(ComputeGPU_FLAG == 1)
             {
             stat = cublasGetVector(gpumatmultconf[index].M, sizeof(float), gpumatmultconf[index].d_dmVec[device], 1, gpumatmultconf[index].dmVec_part[device], 1);
             if (stat != CUBLAS_STATUS_SUCCESS)
