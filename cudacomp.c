@@ -5826,7 +5826,6 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 
 
 
-
         if(TRACEMODE == 1)
         {
             data.image[ID_modeval].md[0].write = 1;
@@ -5917,13 +5916,14 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
             twait1 ++;
         else
             twait1 --;
-
+//TEST TIMING
+/*
 		if(tdiffv>1.0e-3)
 		{
 			printf("  ... function CUDACOMP_extractModesLoop - TIMING GLITCH  [%09ld] [%d]\n", t0.tv_nsec, insem);
 			printf("       %ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
 			fflush(stdout);
-/*			
+			
 			tdiff = info_time_diff(t0, t00);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
 			printf(" %d            t00: %8.3lf\n", t00OK, 1.0e3*tdiffv);
@@ -5954,7 +5954,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 			
 			printf("---\n");
 			
-	*/		
+			
 			
 			tdiff = info_time_diff(t0, t04);
 			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
@@ -5969,6 +5969,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 			printf("             05 -> 06: %8.3lf\n", 1.0e3*tdiffv);
 								
 		}
+	*/
 	
         if((data.signal_INT == 1)||(data.signal_TERM == 1)||(data.signal_ABRT==1)||(data.signal_BUS==1)||(data.signal_SEGV==1)||(data.signal_HUP==1)||(data.signal_PIPE==1))
         {
