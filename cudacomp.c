@@ -1516,14 +1516,17 @@ int GPU_loop_MultMat_setup(
 
         gpumatmultconf[index].dmVecTMP = data.image[gpumatmultconf[index].IDout].array.F;
 
-printf("--- TEST POINT --- %d\n", __LINE__);
-sleep(10000.0); //TEST
+
+
         printf("Scanning for GPU devices ...\n");
         fflush(stdout);
 
         cudaGetDeviceCount(&deviceCount);
         printf("%d devices found\n", deviceCount);
         fflush(stdout);
+
+printf("--- TEST POINT --- %d\n", __LINE__);
+sleep(10000.0); //TEST
 
         printf("\n");
         for (device = 0; device < deviceCount; ++device) {
