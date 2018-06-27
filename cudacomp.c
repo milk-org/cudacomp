@@ -1560,6 +1560,9 @@ int GPU_loop_MultMat_setup(
 
 
 		// This section will create a thread
+		
+		if(1==1)
+		{
 		pthread_t GPUscan_thread;
 		
 		pthread_create( &GPUscan_thread, NULL, GPU_scanDevices, (void*) &deviceCount);
@@ -1568,8 +1571,9 @@ int GPU_loop_MultMat_setup(
 			fprintf(stderr, "Error joining thread\n");
 			exit(0);
 		}
-		
-		/*
+		}
+		else
+		{
         
         printf("Scanning for GPU devices ...\n");
         fflush(stdout);
@@ -1591,7 +1595,7 @@ int GPU_loop_MultMat_setup(
 
         printf("Done scanning for GPU devices\n");
         fflush(stdout);
-*/
+		}
 
 
         gpumatmultconf[index].NBstreams = deviceCount;
@@ -1935,9 +1939,7 @@ int GPU_loop_MultMat_setup(
                 gpumatmultconf[index].wfsRef_part[device][n-gpumatmultconf[index].Noffset[device]] = gpumatmultconf[index].wfsRef[n];
             }
 
-		printf("TEST %s  %d\n", __FILE__, __LINE__);
-		fflush(stdout);
-
+	
 
 
         // copy memory to devices
@@ -1962,14 +1964,11 @@ int GPU_loop_MultMat_setup(
             }
         }
 
-		printf("TEST %s  %d\n", __FILE__, __LINE__);
-		fflush(stdout);
 
 
         GPUloadCmat(index);
 
-		printf("TEST %s  %d\n", __FILE__, __LINE__);
-		fflush(stdout);
+
 
 
 
