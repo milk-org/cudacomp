@@ -1893,6 +1893,8 @@ int GPU_loop_MultMat_setup(
 		fflush(stdout);
 
 
+printf("--- TEST POINT --- %d\n", __LINE__);
+sleep(10000.0); //TEST
 
         // copy memory to devices
         for(device=0; device<gpumatmultconf[index].NBstreams; device++)
@@ -1961,11 +1963,7 @@ int GPU_loop_MultMat_setup(
         gpumatmultconf[index].init = 1;
 
         printf(". . . \n");
-        fflush(stdout);
-
-printf("--- TEST POINT --- %d\n", __LINE__);
-sleep(10000.0); //TEST
-    
+        fflush(stdout);    
     }
 
     for(device=0; device<gpumatmultconf[index].NBstreams; device++)
