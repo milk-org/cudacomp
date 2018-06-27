@@ -1543,7 +1543,8 @@ int GPU_loop_MultMat_setup(
             gpumatmultconf[index].NBstreams = NBGPUs;
 
 
-
+printf("--- TEST POINT --- %d\n", __LINE__);
+sleep(10000.0); //TEST
 
         gpumatmultconf[index].Nsize = (uint_fast32_t*) malloc(sizeof(long)*gpumatmultconf[index].NBstreams);
         gpumatmultconf[index].Noffset = (uint_fast32_t*) malloc(sizeof(long)*gpumatmultconf[index].NBstreams);
@@ -1792,8 +1793,7 @@ int GPU_loop_MultMat_setup(
         }
 
 
-printf("--- TEST POINT --- %d\n", __LINE__);
-sleep(10000.0); //TEST
+
 
         for (device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
