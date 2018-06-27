@@ -1518,14 +1518,15 @@ int GPU_loop_MultMat_setup(
 
 
 
+
+
+
         printf("Scanning for GPU devices ...\n");
         fflush(stdout);
 
         cudaGetDeviceCount(&deviceCount);
         printf("%d devices found\n", deviceCount);
         fflush(stdout);
-
-
 
         printf("\n");
         for (device = 0; device < deviceCount; ++device) {
@@ -1541,8 +1542,7 @@ int GPU_loop_MultMat_setup(
         printf("Done scanning for GPU devices\n");
         fflush(stdout);
 
-printf("--- TEST POINT --- %d\n", __LINE__);
-sleep(10000.0); //TEST
+
 
         gpumatmultconf[index].NBstreams = deviceCount;
         if(NBGPUs<deviceCount)
@@ -1962,10 +1962,16 @@ sleep(10000.0); //TEST
 
         printf(". . . \n");
         fflush(stdout);
+
+printf("--- TEST POINT --- %d\n", __LINE__);
+sleep(10000.0); //TEST
+    
     }
 
     for(device=0; device<gpumatmultconf[index].NBstreams; device++)
         gpumatmultconf[index].refWFSinit[device] = initWFSref;
+
+
 
     // printf("CONFIGURATION DONE \n");
     // fflush(stdout);
