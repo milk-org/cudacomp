@@ -1525,8 +1525,7 @@ int GPU_loop_MultMat_setup(
         printf("%d devices found\n", deviceCount);
         fflush(stdout);
 
-printf("--- TEST POINT --- %d\n", __LINE__);
-sleep(10000.0); //TEST
+
 
         printf("\n");
         for (device = 0; device < deviceCount; ++device) {
@@ -1541,6 +1540,9 @@ sleep(10000.0); //TEST
 
         printf("Done scanning for GPU devices\n");
         fflush(stdout);
+
+printf("--- TEST POINT --- %d\n", __LINE__);
+sleep(10000.0); //TEST
 
         gpumatmultconf[index].NBstreams = deviceCount;
         if(NBGPUs<deviceCount)
