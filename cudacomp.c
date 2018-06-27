@@ -1516,7 +1516,8 @@ int GPU_loop_MultMat_setup(
 
         gpumatmultconf[index].dmVecTMP = data.image[gpumatmultconf[index].IDout].array.F;
 
-
+printf("--- TEST POINT --- %d\n", __LINE__);
+sleep(10000.0); //TEST
         printf("Scanning for GPU devices ...\n");
         fflush(stdout);
 
@@ -1542,9 +1543,6 @@ int GPU_loop_MultMat_setup(
         if(NBGPUs<deviceCount)
             gpumatmultconf[index].NBstreams = NBGPUs;
 
-
-printf("--- TEST POINT --- %d\n", __LINE__);
-sleep(10000.0); //TEST
 
         gpumatmultconf[index].Nsize = (uint_fast32_t*) malloc(sizeof(long)*gpumatmultconf[index].NBstreams);
         gpumatmultconf[index].Noffset = (uint_fast32_t*) malloc(sizeof(long)*gpumatmultconf[index].NBstreams);
