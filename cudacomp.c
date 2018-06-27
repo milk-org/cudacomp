@@ -1560,13 +1560,13 @@ int GPU_loop_MultMat_setup(
 
 
 		// This section will create a thread
-		
-		if(0==1)
+		deviceCount = 10;
+/*		if(0==1)
 		{
 			pthread_t GPUscan_thread;
 		
 			pthread_create( &GPUscan_thread, NULL, GPU_scanDevices, (void*) &deviceCount);
-			/* wait for the second thread to finish */
+		
 			if(pthread_join(GPUscan_thread, NULL)) {
 				fprintf(stderr, "Error joining thread\n");
 				exit(0);
@@ -1574,7 +1574,6 @@ int GPU_loop_MultMat_setup(
 		}
 		else
 		{
-        
         printf("Scanning for GPU devices ...\n");
         fflush(stdout);
 
@@ -1596,7 +1595,7 @@ int GPU_loop_MultMat_setup(
         printf("Done scanning for GPU devices\n");
         fflush(stdout);
 		}
-
+*/
 
         gpumatmultconf[index].NBstreams = deviceCount;
         if(NBGPUs<deviceCount)
