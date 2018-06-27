@@ -1328,6 +1328,8 @@ void *GPU_scanDevices( void *deviceCount_void_ptr)
 {
     int *devcnt_ptr = (int *) deviceCount_void_ptr;
     int deviceCount;
+	int device;
+	struct cudaDeviceProp deviceProp;
 
     printf("Scanning for GPU devices ...\n");
     fflush(stdout);
