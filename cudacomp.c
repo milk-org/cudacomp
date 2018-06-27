@@ -1323,6 +1323,43 @@ int GPUloadCmat(int index)
 
 
 
+
+void *GPU_scanDevices( void *deviceCount_void_ptr)
+{
+    int *devcnt_ptr = (int *) deviceCount_void_ptr;
+    int deviceCount;
+
+    printf("Scanning for GPU devices ...\n");
+    fflush(stdout);
+
+    cudaGetDeviceCount(&deviceCount);
+    printf("%d devices found\n", deviceCount);
+    fflush(stdout);
+
+    printf("\n");
+    for (device = 0; device < deviceCount; ++device) {
+        cudaGetDeviceProperties(&deviceProp, device);
+        printf("Device %d [ %20s ]  has compute capability %d.%d.\n",
+               device, deviceProp.name, deviceProp.major, deviceProp.minor);
+        printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n", (float)deviceProp.totalGlobalMem/1048576.0f, (unsigned long long) deviceProp.totalGlobalMem);
+        printf("  (%2d) Multiprocessors\n", deviceProp.multiProcessorCount);
+        printf("  GPU Clock rate:                                %.0f MHz (%0.2f GHz)\n", deviceProp.clockRate * 1e-3f, deviceProp.clockRate * 1e-6f);
+        printf("\n");
+    }
+
+    printf("Done scanning for GPU devices\n");
+    fflush(stdout);
+
+    *devcnt_ptr = deviceCount;
+
+    return NULL;
+}
+
+
+
+
+
+
 /** setup matrix multiplication using multiple GPUs */
 /*
  *
@@ -1520,7 +1557,18 @@ int GPU_loop_MultMat_setup(
 
 
 
-
+		// This section will create a thread
+		pthread_t GPUscan_thread;
+		
+		pthread_create( &GPUscan_thread, NULL, GPU_scanDevices, (void*) &deviceCount);
+		/* wait for the second thread to finish */
+		if(pthread_join(GPUscan_thread, NULL)) {
+			fprintf(stderr, "Error joining thread\n");
+			exit(0);
+		}
+		
+		/*
+        
         printf("Scanning for GPU devices ...\n");
         fflush(stdout);
 
@@ -1541,7 +1589,7 @@ int GPU_loop_MultMat_setup(
 
         printf("Done scanning for GPU devices\n");
         fflush(stdout);
-
+*/
 
 
         gpumatmultconf[index].NBstreams = deviceCount;
@@ -1797,18 +1845,14 @@ int GPU_loop_MultMat_setup(
 
 
 
-
-// PR 1
-
+		// this create two threads per device
         for (device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             cudaSetDevice(GPUdevice[device]);
             cudaStreamCreate( &gpumatmultconf[index].stream[device]);
         }
 
-// PR 3
-printf("--- TEST POINT --- %d   %d\n", __LINE__, gpumatmultconf[index].NBstreams);
-sleep(10000.0); //TEST
+
 
         for(device=0; device<gpumatmultconf[index].NBstreams; device++)
         {
@@ -1881,14 +1925,6 @@ sleep(10000.0); //TEST
             }
 
         }
-
-// PR 3
-
-
-
-
-
-
 
         for(device = 0; device < gpumatmultconf[index].NBstreams; device++)
             for (n=gpumatmultconf[index].Noffset[device]; n<gpumatmultconf[index].Noffset[device]+gpumatmultconf[index].Nsize[device]; n++)
