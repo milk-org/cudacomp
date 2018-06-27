@@ -1806,8 +1806,8 @@ int GPU_loop_MultMat_setup(
             cudaStreamCreate( &gpumatmultconf[index].stream[device]);
         }
 
-
-printf("--- TEST POINT --- %d\n", __LINE__);
+// PR 3
+printf("--- TEST POINT --- %d   %d\n", __LINE__, gpumatmultconf[index].NBstreams);
 sleep(10000.0); //TEST
 
         for(device=0; device<gpumatmultconf[index].NBstreams; device++)
