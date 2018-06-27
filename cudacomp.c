@@ -902,7 +902,7 @@ void matrixMulCPU(float *cMat, float *wfsVec, float *dmVec, int M, int N)
  */
 
 
-void __attribute__((hot)) *compute_function( void *ptr )
+void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
 {
     THDATA *thdata;
     int device;
@@ -941,6 +941,12 @@ void __attribute__((hot)) *compute_function( void *ptr )
     *ptrstat = 1;
 
 
+	// LOG function start
+	int logfunc_level = 0;
+	int logfunc_level_max = 1;
+	char commentstring[200];
+	sprintf(commentstring, "MVM compute on GPU");
+	CORE_logFunctionCall( logfunc_level, logfunc_level_max, 0, __FILE__, __func__, __LINE__, commentstring);
 	
 	
 	
@@ -959,6 +965,10 @@ void __attribute__((hot)) *compute_function( void *ptr )
         itermax = -1;
     else
         itermax = 1;
+
+
+	
+
 
     iter = 0;
     while(iter != itermax)
@@ -1249,6 +1259,9 @@ void __attribute__((hot)) *compute_function( void *ptr )
         iter++;
     }
 
+
+	// LOG function / process end
+	CORE_logFunctionCall( logfunc_level, logfunc_level_max, 1, __FILE__, __func__, __LINE__, commentstring);
 
     pthread_exit(0);
 }
@@ -2083,7 +2096,7 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
             gpumatmultconf[index].thdata[ptn].t3 = &tdt3[ptn];
             gpumatmultconf[index].thdata[ptn].t4 = &tdt4[ptn];
             gpumatmultconf[index].thdata[ptn].t5 = &tdt5[ptn];
-            gpumatmultconf[index].iret[ptn] = pthread_create( &gpumatmultconf[index].threadarray[ptn], NULL, compute_function, (void*) &gpumatmultconf[index].thdata[ptn]);
+            gpumatmultconf[index].iret[ptn] = pthread_create( &gpumatmultconf[index].threadarray[ptn], NULL, GPUcomputeMVM_function, (void*) &gpumatmultconf[index].thdata[ptn]);
             if(gpumatmultconf[index].iret[ptn])
             {
                 fprintf(stderr,"Error - pthread_create() return code: %d\n", gpumatmultconf[index].iret[ptn]);
