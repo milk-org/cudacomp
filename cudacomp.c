@@ -1561,16 +1561,16 @@ int GPU_loop_MultMat_setup(
 
 		// This section will create a thread
 		
-		if(1==1)
+		if(0==1)
 		{
-		pthread_t GPUscan_thread;
+			pthread_t GPUscan_thread;
 		
-		pthread_create( &GPUscan_thread, NULL, GPU_scanDevices, (void*) &deviceCount);
-		/* wait for the second thread to finish */
-		if(pthread_join(GPUscan_thread, NULL)) {
-			fprintf(stderr, "Error joining thread\n");
-			exit(0);
-		}
+			pthread_create( &GPUscan_thread, NULL, GPU_scanDevices, (void*) &deviceCount);
+			/* wait for the second thread to finish */
+			if(pthread_join(GPUscan_thread, NULL)) {
+				fprintf(stderr, "Error joining thread\n");
+				exit(0);
+			}
 		}
 		else
 		{
