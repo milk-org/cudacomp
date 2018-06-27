@@ -1792,6 +1792,9 @@ int GPU_loop_MultMat_setup(
         }
 
 
+printf("--- TEST POINT --- %d\n", __LINE__);
+sleep(10000.0); //TEST
+
         for (device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             cudaSetDevice(GPUdevice[device]);
