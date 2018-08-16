@@ -1367,33 +1367,47 @@ void *GPU_scanDevices( void *deviceCount_void_ptr)
  * 
  * Setup matrix multiplication using multiple GPUs 
  * 
+ * ## Parameters
  * 
+ * @param[in]	index
+ * 		Configuration index
  * 
+ * @param[in]   IDcontrM_name
+ * 		Control matrix image name
+ * 				 
+ * @param[in]	IDwfsim_name
+ * 		Wavefront sensor image stream
+ * 
+ * @param[out]	IDoutdmmodes_name
+ * 		Output DM modes
  *
  *  IDoutdmmodes_name  = alpha * IDcontrM_name x IDwfsim_name
  *
+ * ## Details
+ * 
  * upon setup, IDwfsim_name is the WFS ref and initWFSref = 0
  *
 */
 
 int GPU_loop_MultMat_setup(
-	int index, 
+	int         index, 
 	const char *IDcontrM_name, 
 	const char *IDwfsim_name, 
 	const char *IDoutdmmodes_name, 
-	long NBGPUs, 
-	int *GPUdevice, 
-	int orientation, 
-	int USEsem, 
-	int initWFSref, 
-	long loopnb
+	long        NBGPUs, 
+	int        *GPUdevice, 
+	int         orientation, 
+	int         USEsem, 
+	int         initWFSref, 
+	long        loopnb
 	)
 {
     int device;
 
 	//CUDACOMP_printGPUMATMULTCONF(index);
 
-
+	/// This function will not do anything if the initialization has already been performed
+	
     if(gpumatmultconf[index].init == 0)
     {
 		int pid;		

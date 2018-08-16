@@ -189,7 +189,8 @@ void *compute_function( void *ptr );
 int GPUloadCmat(int index);
 
 
-/** @brief Setup memory and process for GPU-based matrix-vector multiply */
+/** @brief Setup memory and process for GPU-based matrix-vector multiply 
+ */
 int GPU_loop_MultMat_setup(
 	int         index, 
 	const char *IDcontrM_name, 
