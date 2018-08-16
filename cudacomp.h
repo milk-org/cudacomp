@@ -190,10 +190,29 @@ int GPUloadCmat(int index);
 
 
 /** @brief Setup memory and process for GPU-based matrix-vector multiply */
-int GPU_loop_MultMat_setup(int index, const char *IDcontrM_name, const char *IDwfsim_name, const char *IDoutdmmodes_name, long NBGPUs, int *GPUdevice, int orientation, int USEsem, int initWFSref, long loopnb);
+int GPU_loop_MultMat_setup(
+	int         index, 
+	const char *IDcontrM_name, 
+	const char *IDwfsim_name, 
+	const char *IDoutdmmodes_name, 
+	long        NBGPUs, 
+	int        *GPUdevice, 
+	int         orientation, 
+	int         USEsem, 
+	int         initWFSref, 
+	long        loopnb
+	);
 
 
-int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUstatus, float alpha, float beta, int timing, int TimerOffsetIndex);
+int GPU_loop_MultMat_execute(
+	int          index, 
+	int_fast8_t *status, 
+	int_fast8_t *GPUstatus, 
+	float        alpha, 
+	float        beta, 
+	int          timing, 
+	int          TimerOffsetIndex
+	);
 
 
 int GPU_loop_MultMat_free(int index);
@@ -213,14 +232,24 @@ int GPU_loop_MultMat_free(int index);
 /* =============================================================================================== */
 
 
-long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *IDmatAinv_name, const char *IDmatOut_name);
+long CUDACOMP_MatMatMult_testPseudoInverse(
+	const char *IDmatA_name, 
+	const char *IDmatAinv_name, 
+	const char *IDmatOut_name
+	);
 
 
 
 /**
  * @brief Compute pseudoinverse using MAGMA-based SVD
  */
-int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name);
+int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
+	const char  *ID_Rmatrix_name, 
+	const char  *ID_Cmatrix_name, 
+	double       SVDeps, 
+	long         MaxNBmodes, 
+	const char  *ID_VTmatrix_name
+	);
 
 
 
@@ -243,11 +272,28 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name, con
  * 
  * @warning Requires M>N (tall matrix)
  */
-int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, double qdwh_s, float qdwh_tol, int testmode);
+int CUDACOMP_magma_compute_SVDpseudoInverse(
+	const char *ID_Rmatrix_name,    
+	const char *ID_Cmatrix_name, 
+	double SVDeps, 
+	long MaxNBmodes, 
+	const char *ID_VTmatrix_name, 
+	int LOOPmode, 
+	int PSINV_MODE, 
+	double qdwh_s, 
+	float qdwh_tol, 
+	int testmode
+	);
 
 
 
-int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, const char *ID_VTmatrix_name);
+int GPU_SVD_computeControlMatrix(
+	int         device, 
+	const char *ID_Rmatrix_name, 
+	const char *ID_Cmatrix_name, 
+	double      SVDeps, 
+	const char *ID_VTmatrix_name
+	);
 
 ///@}
 
@@ -293,7 +339,21 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
  * 
  * @note if IDrefout_name exists, match output image size to IDrefout_name
  */
-int CUDACOMP_extractModesLoop(const char *in_stream, const char *intot_stream, const char *IDmodes_name, const char *IDrefin_name, const char *IDrefout_name, const char *IDmodes_val_name, int GPUindex, int PROCESS, int TRACEMODE, int MODENORM, int insem, int axmode, long twait);
+int CUDACOMP_extractModesLoop(
+	const char *in_stream, 
+	const char *intot_stream, 
+	const char *IDmodes_name, 
+	const char *IDrefin_name, 
+	const char *IDrefout_name, 
+	const char *IDmodes_val_name, 
+	int         GPUindex, 
+	int         PROCESS, 
+	int         TRACEMODE, 
+	int         MODENORM, 
+	int         insem, 
+	int         axmode, 
+	long        twait
+	);
 
 
 

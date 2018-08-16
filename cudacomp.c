@@ -1081,7 +1081,7 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
 
                 printf("CUBLAS_OP_N                         = %d\n", CUBLAS_OP_N);
                 printf("alpha                               = %f\n", alpharef);
-                printf("alpha                               = %f\n", betaref);
+                printf("beta                                = %f\n", betaref);
                 printf("gpumatmultconf[index].M             = %d\n", (int) gpumatmultconf[index].M);
                 printf("gpumatmultconf[index].Nsize[device] = %d\n", (int) gpumatmultconf[index].Nsize[device]);
                 fflush(stdout);
@@ -1362,8 +1362,13 @@ void *GPU_scanDevices( void *deviceCount_void_ptr)
 
 
 
-/** setup matrix multiplication using multiple GPUs */
-/*
+/** 
+ * ## Purpose
+ * 
+ * Setup matrix multiplication using multiple GPUs 
+ * 
+ * 
+ * 
  *
  *  IDoutdmmodes_name  = alpha * IDcontrM_name x IDwfsim_name
  *
@@ -1560,42 +1565,16 @@ int GPU_loop_MultMat_setup(
 
 
 		// This section will create a thread
-		deviceCount = 10;
-/*		if(0==1)
-		{
+	
+
 			pthread_t GPUscan_thread;
 		
 			pthread_create( &GPUscan_thread, NULL, GPU_scanDevices, (void*) &deviceCount);
-		
 			if(pthread_join(GPUscan_thread, NULL)) {
 				fprintf(stderr, "Error joining thread\n");
 				exit(0);
 			}
-		}
-		else
-		{
-        printf("Scanning for GPU devices ...\n");
-        fflush(stdout);
-
-        cudaGetDeviceCount(&deviceCount);
-        printf("%d devices found\n", deviceCount);
-        fflush(stdout);
-
-        printf("\n");
-        for (device = 0; device < deviceCount; ++device) {
-            cudaGetDeviceProperties(&deviceProp, device);
-            printf("Device %d [ %20s ]  has compute capability %d.%d.\n",
-                   device, deviceProp.name, deviceProp.major, deviceProp.minor);
-            printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n", (float)deviceProp.totalGlobalMem/1048576.0f, (unsigned long long) deviceProp.totalGlobalMem);
-            printf("  (%2d) Multiprocessors\n", deviceProp.multiProcessorCount);
-            printf("  GPU Clock rate:                                %.0f MHz (%0.2f GHz)\n", deviceProp.clockRate * 1e-3f, deviceProp.clockRate * 1e-6f);
-            printf("\n");
-        }
-
-        printf("Done scanning for GPU devices\n");
-        fflush(stdout);
-		}
-*/
+		
 
         gpumatmultconf[index].NBstreams = deviceCount;
         if(NBGPUs<deviceCount)
