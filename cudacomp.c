@@ -5295,10 +5295,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     long        twait                // if >0, insert time wait [us] at each iteration
 )
 {
-    long IDin;
-    long IDintot;
     long IDmodes;
-    long IDref;
     long ID;
     long ID_modeval;
     cublasHandle_t cublasH = NULL;
@@ -5410,13 +5407,20 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 	printf("\n");
 
 
+
+
+	// CONNECT TO INPUT STREAM
+	long IDin;
     IDin = image_ID(in_stream);
     m = data.image[IDin].md[0].size[0]*data.image[IDin].md[0].size[1];
     COREMOD_MEMORY_image_set_createsem(in_stream, 10);
 
-    // total flux
-    IDintot = image_ID(intot_stream);
 
+
+
+    // CONNECT TO TOTAL FLUX STREAM
+	long IDintot;
+    IDintot = image_ID(intot_stream);
     if(IDintot==-1)
     {
         INNORMMODE = 0;
@@ -5426,7 +5430,11 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     else
         INNORMMODE = 1;
 
-    // reference
+
+
+
+    // CONNECT TO WFS REFERENCE STREAM
+    long IDref;
     IDref = image_ID(IDrefin_name);
     if(IDref==-1)
     {
@@ -5736,7 +5744,13 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 	printf("LOOP START   MODEVALCOMPUTE = %d\n", MODEVALCOMPUTE);
 	fflush(stdout);
 	
-
+	if(MODEVALCOMPUTE == 0)
+	{
+		printf("\n");
+		printf("This function is NOT computing mode values\n");
+		printf("Pre-existing stream %s was detected\n", IDmodes_val_name);
+		printf("\n");
+	}
 	
     while(loopOK == 1)
     {
