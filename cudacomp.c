@@ -5280,19 +5280,19 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
  */
 
 int  __attribute__((hot)) CUDACOMP_extractModesLoop(
-    const char *in_stream,
-    const char *intot_stream,
-    const char *IDmodes_name,
-    const char *IDrefin_name,
-    const char *IDrefout_name,
-    const char *IDmodes_val_name,
-    int GPUindex,
-    int PROCESS,
-    int TRACEMODE,
-    int MODENORM,
-    int insem,
-    int axmode,
-    long twait
+    const char *in_stream,           // input stream
+    const char *intot_stream,        // [optional]   input normalization stream
+    const char *IDmodes_name,        // Modes
+    const char *IDrefin_name,        // [optional] input reference  - to be subtracted
+    const char *IDrefout_name,       // [optional] output reference - to be added
+    const char *IDmodes_val_name,    // ouput stream
+    int         GPUindex,            // GPU index
+    int         PROCESS,             // 1 if postprocessing
+    int         TRACEMODE,           // 1 if writing trace
+    int         MODENORM,            // 1 if input modes should be normalized
+    int         insem,               // input semaphore index
+    int         axmode,              // 0 for normal mode extraction, 1 for expansion
+    long        twait                // if >0, insert time wait [us] at each iteration
 )
 {
     long IDin;
@@ -5385,12 +5385,29 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 
 
 
+
     schedpar.sched_priority = RT_priority;
 #ifndef __MACH__
     sched_setscheduler(0, SCHED_FIFO, &schedpar);
 #endif
 
 
+	// Review input parameters
+	printf("\n");
+	printf("in_stream        : %16s  input stream\n", in_stream);
+    printf("intot_stream     : %16s  [optional] input normalization stream\n", intot_stream);
+    printf("IDmodes_name     : %16s  Modes\n", IDmodes_name);
+    printf("IDrefin_name     : %16s  [optional] input reference  - to be subtracted\n", IDrefin_name);
+    printf("IDrefout_name    : %16s  [optional] output reference - to be added\n", IDrefout_name);
+    printf("IDmodes_val_name : %16s  ouput stream\n", IDmodes_val_name);
+    printf("GPUindex         : %16d  GPU index\n", GPUindex);
+    printf("PROCESS          : %16d  1 if postprocessing\n", PROCESS);
+    printf("TRACEMODE        : %16d  1 if writing trace\n", TRACEMODE);
+    printf("MODENORM         : %16d  1 if input modes should be normalized\n", MODENORM);
+    printf("insem            : %16d  input semaphore index\n", insem);
+    printf("axmode           : %16d  0 for normal mode extraction, 1 for expansion\n", axmode);
+    printf("twait            : %16d  if >0, insert time wait [us] at each iteration\n", twait);
+	printf("\n");
 
 
     IDin = image_ID(in_stream);
