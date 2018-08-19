@@ -2192,6 +2192,11 @@ int GPU_loop_MultMat_execute(
 
     if(gpumatmultconf[index].sem==0)
     {
+	#ifdef _PRINT_TEST
+    printf("[%s] [%d] - pthread join\n", __FILE__, __LINE__);
+    fflush(stdout);
+#endif	
+		
         for(ptn=0; ptn<gpumatmultconf[index].NBstreams; ptn++)
             pthread_join( gpumatmultconf[index].threadarray[ptn], NULL);
     }
