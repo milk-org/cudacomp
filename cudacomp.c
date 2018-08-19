@@ -2185,7 +2185,7 @@ int GPU_loop_MultMat_execute(
 
 
 #ifdef _PRINT_TEST
-    printf("[%s] [%d] - START COMPUTATION\n", __FILE__, __LINE__);
+    printf("[%s] [%d] - START COMPUTATION   gpumatmultconf[%d].sem = %d\n", __FILE__, __LINE__, index, gpumatmultconf[index].sem);
     fflush(stdout);
 #endif
 
@@ -2203,8 +2203,20 @@ int GPU_loop_MultMat_execute(
             sem_post(gpumatmultconf[index].semptr4[ptn]);
         }
 
+#ifdef _PRINT_TEST
+    printf("[%s] [%d] - posted input semaphores  ( %d streams )\n", __FILE__, __LINE__, gpumatmultconf[index].NBstreams);
+    fflush(stdout);
+#endif
+
+
         for(ptn=0; ptn<gpumatmultconf[index].NBstreams; ptn++)
             sem_wait(gpumatmultconf[index].semptr5[ptn]); // WAIT FOR RESULT
+
+#ifdef _PRINT_TEST
+    printf("[%s] [%d] - output semaphores wait complete\n", __FILE__, __LINE__);
+    fflush(stdout);
+#endif
+
 
         // for safety, set semaphores to zerosem_getvalue(data.image[IDarray[i]].semptr[s], &semval);
         if(FORCESEMINIT==1)
