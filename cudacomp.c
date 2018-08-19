@@ -13,6 +13,10 @@
  */
 
 
+// uncomment for test print statements to stdout
+#define _PRINT_TEST
+
+
 /* =============================================================================================== */
 /* =============================================================================================== */
 /*                                        HEADER FILES                                             */
@@ -2024,7 +2028,15 @@ int GPU_loop_MultMat_setup(
 //
 // increments status by 4
 // 
-int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUstatus, float alpha, float beta, int timing, int TimerOffsetIndex)
+int GPU_loop_MultMat_execute(
+	int          index, 
+	int_fast8_t *status, 
+	int_fast8_t *GPUstatus, 
+	float        alpha, 
+	float        beta, 
+	int          timing, 
+	int          TimerOffsetIndex
+	)
 {
     int m;
     int ptn;
@@ -2039,6 +2051,11 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
     struct timespec tdt3[10];
     struct timespec tdt4[10];
     struct timespec tdt5[10];
+
+#ifdef _PRINT_TEST
+    printf("[%s] [%d]  Start (index %d)\n", __FILE__, __LINE__, index);
+    fflush(stdout);
+#endif
 
 
 	TimerIndex = TimerOffsetIndex;
@@ -2091,6 +2108,11 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
 		}
     }
 
+
+#ifdef _PRINT_TEST
+    printf("[%s] [%d]  semaphores flushed\n", __FILE__, __LINE__);
+    fflush(stdout);
+#endif
 
     if(timing==1)
     {
@@ -2162,6 +2184,12 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
     }
 
 
+#ifdef _PRINT_TEST
+    printf("[%s] [%d] - START COMPUTATION\n", __FILE__, __LINE__);
+    fflush(stdout);
+#endif
+
+
     if(gpumatmultconf[index].sem==0)
     {
         for(ptn=0; ptn<gpumatmultconf[index].NBstreams; ptn++)
@@ -2192,6 +2220,12 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
             }
     }
 
+#ifdef _PRINT_TEST
+    printf("[%s] [%d] - \n", __FILE__, __LINE__);
+    fflush(stdout);
+#endif
+
+
 	if(timing == 1)
 	{
 		tdiff = info_time_diff(tdt0[0], tdt1[0]);
@@ -2220,7 +2254,16 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
 		TimerIndex++;
 	}
 
+
+
+
     // SUM RESULTS FROM SEPARATE GPUs
+#ifdef _PRINT_TEST
+    printf("[%s] [%d] - SUM RESULTS FROM SEPARATE GPUs\n", __FILE__, __LINE__);
+    fflush(stdout);
+#endif
+
+
     if(timing == 1)
     {
         *status = *status + 1;  // -> 9
@@ -2280,6 +2323,12 @@ int GPU_loop_MultMat_execute(int index, int_fast8_t *status, int_fast8_t *GPUsta
     data.image[gpumatmultconf[index].IDout].md[0].cnt0++;
     COREMOD_MEMORY_image_set_sempost_byID(gpumatmultconf[index].IDout, -1);
     data.image[gpumatmultconf[index].IDout].md[0].write = 0;
+
+#ifdef _PRINT_TEST
+    printf("[%s] [%d] - DONE\n", __FILE__, __LINE__);
+    fflush(stdout);
+#endif
+
 
 
     return(0);
