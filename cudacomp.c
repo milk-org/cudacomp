@@ -2193,7 +2193,7 @@ int GPU_loop_MultMat_execute(
     if(gpumatmultconf[index].sem==0)
     {
 	#ifdef _PRINT_TEST
-    printf("[%s] [%d] - pthread join\n", __FILE__, __LINE__);
+    printf("[%s] [%d] - pthread join     %d streams\n", __FILE__, __LINE__, gpumatmultconf[index].NBstreams);
     fflush(stdout);
 #endif	
 		
