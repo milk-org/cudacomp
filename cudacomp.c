@@ -5908,7 +5908,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 							fflush(stdout);
 						}
                     }
-                    printf("\n");
+
                 }
             }
             else // compute response of reference immediately
