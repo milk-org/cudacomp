@@ -5478,6 +5478,30 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 	// CONNECT TO INPUT STREAM
 	long IDin;
     IDin = image_ID(in_stream);
+    
+    // ERROR HANDLING
+	if(IDin == -1)
+	{
+		struct timespec errtime; 
+		struct tm *errtm;
+		
+		clock_gettime(CLOCK_REALTIME, &errtime); 
+		errtm = gmtime(&errtime.tv_sec);
+		
+		fprintf(stderr, 
+			"%02d:%02d:%02d.%09ld  ERROR [%s %s %d] Input stream %s does not exist, cannot proceed\n", 
+			errtm->tm_hour,
+			errtm->tm_min,
+			errtm->tm_sec, 
+			errtime.tv_nsec,
+			__FILE__, 
+			__FUNCTION__, 
+			__LINE__, 
+			IDin_name);
+		return 1;
+	}
+    
+    
     m = data.image[IDin].md[0].size[0]*data.image[IDin].md[0].size[1];
     COREMOD_MEMORY_image_set_createsem(in_stream, 10);
 
