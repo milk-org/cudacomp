@@ -5497,7 +5497,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 			__FILE__, 
 			__FUNCTION__, 
 			__LINE__, 
-			IDin_name);
+			in_stream);
 		return 1;
 	}
     
