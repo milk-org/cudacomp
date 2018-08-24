@@ -335,6 +335,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
  * @param[in]   insem                input semaphore index
  * @param[in]   axmode               0 for normal mode extraction, 1 for expansion
  * @param[in]   twait		         if >0, insert time wait [us] at each iteration
+ * @param[in]   semwarn              1 if warning when input stream semaphore >1 
  * 
  * @note IMPORTANT: if IDmodes_val_name exits, use it and do not compute it
  * 
@@ -353,7 +354,8 @@ int CUDACOMP_extractModesLoop(
 	int         MODENORM, 
 	int         insem, 
 	int         axmode, 
-	long        twait
+	long        twait,
+	int         semwarn
 	);
 
 

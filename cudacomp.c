@@ -375,8 +375,8 @@ int_fast8_t CUDACOMP_Coeff2Map_offset_Loop_cli()
 
 int_fast8_t CUDACOMP_extractModesLoop_cli()
 {
-    if(CLI_checkarg(1,4)+CLI_checkarg(2,5)+CLI_checkarg(3,4)+CLI_checkarg(4,5)+CLI_checkarg(5,5)+CLI_checkarg(6,5)+CLI_checkarg(7,2)+CLI_checkarg(8,2)+CLI_checkarg(9,2)+CLI_checkarg(10,2)+CLI_checkarg(11,2)+CLI_checkarg(12,2)+CLI_checkarg(13,2)==0)
-        CUDACOMP_extractModesLoop(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.string, data.cmdargtoken[4].val.string, data.cmdargtoken[5].val.string, data.cmdargtoken[6].val.string, data.cmdargtoken[7].val.numl, data.cmdargtoken[8].val.numl, data.cmdargtoken[9].val.numl, data.cmdargtoken[10].val.numl, data.cmdargtoken[11].val.numl, data.cmdargtoken[12].val.numl, data.cmdargtoken[13].val.numl);
+    if(CLI_checkarg(1,4)+CLI_checkarg(2,5)+CLI_checkarg(3,4)+CLI_checkarg(4,5)+CLI_checkarg(5,5)+CLI_checkarg(6,5)+CLI_checkarg(7,2)+CLI_checkarg(8,2)+CLI_checkarg(9,2)+CLI_checkarg(10,2)+CLI_checkarg(11,2)+CLI_checkarg(12,2)+CLI_checkarg(13,2)+CLI_checkarf(14,2)==0)
+        CUDACOMP_extractModesLoop(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.string, data.cmdargtoken[4].val.string, data.cmdargtoken[5].val.string, data.cmdargtoken[6].val.string, data.cmdargtoken[7].val.numl, data.cmdargtoken[8].val.numl, data.cmdargtoken[9].val.numl, data.cmdargtoken[10].val.numl, data.cmdargtoken[11].val.numl, data.cmdargtoken[12].val.numl, data.cmdargtoken[13].val.numl, data.cmdargtoken[14].val.numl);
     else
         return 1;
 }
@@ -545,9 +545,9 @@ int_fast8_t init_cudacomp()
     strcpy(data.cmd[data.NBcmd].module,__FILE__);
     data.cmd[data.NBcmd].fp = CUDACOMP_extractModesLoop_cli;
     strcpy(data.cmd[data.NBcmd].info,"CUDA extract mode values loop. Note that intot and refout parameters can be NULL");
-    strcpy(data.cmd[data.NBcmd].syntax,"<inval stream> <intot stream> <modes> <refin val> <refout_val> <outmode vals> <GPU index [long]> <PROCESS flag> <TRACEMODE flag> <MODE norm flag> <input semaphore> <axis orientation> <twait [us]>");
+    strcpy(data.cmd[data.NBcmd].syntax,"<inval stream> <intot stream> <modes> <refin val> <refout_val> <outmode vals> <GPU index [long]> <PROCESS flag> <TRACEMODE flag> <MODE norm flag> <input semaphore> <axis orientation> <twait [us]> <semwarn>");
     strcpy(data.cmd[data.NBcmd].example,"cudaextrmodes inmap inmaptot modes imref imoutref modeval 3 1 1 1 3 0 0");
-    strcpy(data.cmd[data.NBcmd].Ccall,"int CUDACOMP_extractModesLoop(const char *in_stream, const char *intot_stream, const char *IDmodes_name, const char *IDrefin_name, const char *IDrefout_name, const char *IDmodes_val_name, int GPUindex, int PROCESS, int TRACEMODE, int MODENORM, int insem, int axmode, long twait)");
+    strcpy(data.cmd[data.NBcmd].Ccall,"int CUDACOMP_extractModesLoop(const char *in_stream, const char *intot_stream, const char *IDmodes_name, const char *IDrefin_name, const char *IDrefout_name, const char *IDmodes_val_name, int GPUindex, int PROCESS, int TRACEMODE, int MODENORM, int insem, int axmode, long twait, int semwarn)");
     data.NBcmd++;
     
 
@@ -5341,7 +5341,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
 
 
 
-/** @brief extract mode coefficients from data stream
+/** @brief extract mode coefficients from data stream (MVM)
  *
  */
 
@@ -5358,7 +5358,8 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     int         MODENORM,            // 1 if input modes should be normalized
     int         insem,               // input semaphore index
     int         axmode,              // 0 for normal mode extraction, 1 for expansion
-    long        twait                // if >0, insert time wait [us] at each iteration
+    long        twait,               // if >0, insert time wait [us] at each iteration
+    int         semwarn              // 1 if warning when input stream semaphore >1 
 )
 {
     long IDmodes;
@@ -5470,6 +5471,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     printf("insem            : %16d  input semaphore index\n", insem);
     printf("axmode           : %16d  0 for normal mode extraction, 1 for expansion\n", axmode);
     printf("twait            : %16d  if >0, insert time wait [us] at each iteration\n", twait);
+    printf("semwarn          : %16d  1 if warning when input stream semaphore >1\n", semwarn);
     printf("\n");
 
 
@@ -5896,14 +5898,15 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
                     ts.tv_sec += 1;
                     semr = sem_timedwait(data.image[IDin].semptr[insem], &ts);
 
-					printf("\n");
-					int semval;
-					sem_getvalue(data.image[IDin].semptr[insem], &semval);
-					printf("  semval = %d\n", semval);
-                    // drive semaphore to zero
+                    // drive semaphore to zero if it isn't already
                     while(sem_trywait(data.image[IDin].semptr[insem])==0) {
-                        printf("WARNING %s %d  : sem_trywait on IDin\n", __FILE__, __LINE__);
-                        fflush(stdout);
+                        if(semwarn==1)
+                        {
+							int semval;
+							sem_getvalue(data.image[IDin].semptr[insem], &semval);
+							printf("WARNING %s %d  : sem_trywait on IDin  seval = %d\n", __FILE__, __LINE__, semval);
+							fflush(stdout);
+						}
                     }
                     printf("\n");
                 }
