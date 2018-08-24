@@ -5427,7 +5427,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     long refindex;
     long twait1;
     struct timespec t0;
-    
+
     struct timespec t00;
     struct timespec t01;
     struct timespec t02;
@@ -5435,8 +5435,8 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     struct timespec t04;
     struct timespec t05;
     struct timespec t06;
-    
-    
+
+
     struct timespec t1;
 
     int MODEVALCOMPUTE = 1; // 1 if compute, 0 if import
@@ -5455,9 +5455,9 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 #endif
 
 
-	// Review input parameters
-	printf("\n");
-	printf("in_stream        : %16s  input stream\n", in_stream);
+    // Review input parameters
+    printf("\n");
+    printf("in_stream        : %16s  input stream\n", in_stream);
     printf("intot_stream     : %16s  [optional] input normalization stream\n", intot_stream);
     printf("IDmodes_name     : %16s  Modes\n", IDmodes_name);
     printf("IDrefin_name     : %16s  [optional] input reference  - to be subtracted\n", IDrefin_name);
@@ -5470,38 +5470,38 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     printf("insem            : %16d  input semaphore index\n", insem);
     printf("axmode           : %16d  0 for normal mode extraction, 1 for expansion\n", axmode);
     printf("twait            : %16d  if >0, insert time wait [us] at each iteration\n", twait);
-	printf("\n");
+    printf("\n");
 
 
 
 
-	// CONNECT TO INPUT STREAM
-	long IDin;
+    // CONNECT TO INPUT STREAM
+    long IDin;
     IDin = image_ID(in_stream);
-    
+
     // ERROR HANDLING
-	if(IDin == -1)
-	{
-		struct timespec errtime; 
-		struct tm *errtm;
-		
-		clock_gettime(CLOCK_REALTIME, &errtime); 
-		errtm = gmtime(&errtime.tv_sec);
-		
-		fprintf(stderr, 
-			"%02d:%02d:%02d.%09ld  ERROR [%s %s %d] Input stream %s does not exist, cannot proceed\n", 
-			errtm->tm_hour,
-			errtm->tm_min,
-			errtm->tm_sec, 
-			errtime.tv_nsec,
-			__FILE__, 
-			__FUNCTION__, 
-			__LINE__, 
-			in_stream);
-		return 1;
-	}
-    
-    
+    if(IDin == -1)
+    {
+        struct timespec errtime;
+        struct tm *errtm;
+
+        clock_gettime(CLOCK_REALTIME, &errtime);
+        errtm = gmtime(&errtime.tv_sec);
+
+        fprintf(stderr,
+                "%02d:%02d:%02d.%09ld  ERROR [%s %s %d] Input stream %s does not exist, cannot proceed\n",
+                errtm->tm_hour,
+                errtm->tm_min,
+                errtm->tm_sec,
+                errtime.tv_nsec,
+                __FILE__,
+                __FUNCTION__,
+                __LINE__,
+                in_stream);
+        return 1;
+    }
+
+
     m = data.image[IDin].md[0].size[0]*data.image[IDin].md[0].size[1];
     COREMOD_MEMORY_image_set_createsem(in_stream, 10);
 
@@ -5509,7 +5509,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 
 
     // CONNECT TO TOTAL FLUX STREAM
-	long IDintot;
+    long IDintot;
     IDintot = image_ID(intot_stream);
     if(IDintot==-1)
     {
@@ -5619,14 +5619,14 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
     }
     else // USE STREAM, DO NOT COMPUTE IT
     {
-		printf("======== Using pre-existing stream %s, insem = %d\n", IDmodes_val_name, insem);
-		fflush(stdout);
+        printf("======== Using pre-existing stream %s, insem = %d\n", IDmodes_val_name, insem);
+        fflush(stdout);
         MODEVALCOMPUTE = 0;
         // drive semaphore to zero
         while(sem_trywait(data.image[ID_modeval].semptr[insem])==0) {
-			printf("WARNING %s %d  : sem_trywait on ID_modeval\n", __FILE__, __LINE__);
-			fflush(stdout);	
-			}
+            printf("WARNING %s %d  : sem_trywait on ID_modeval\n", __FILE__, __LINE__);
+            fflush(stdout);
+        }
     }
 
     free(arraytmp);
@@ -5831,41 +5831,54 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 
     twait1 = twait;
 
-	printf("LOOP START   MODEVALCOMPUTE = %d\n", MODEVALCOMPUTE);
-	fflush(stdout);
-	
-	if(MODEVALCOMPUTE == 0)
-	{
-		printf("\n");
-		printf("This function is NOT computing mode values\n");
-		printf("Pre-existing stream %s was detected\n", IDmodes_val_name);
-		printf("\n");
-	}
-	
+    printf("LOOP START   MODEVALCOMPUTE = %d\n", MODEVALCOMPUTE);
+    fflush(stdout);
+
+    if(MODEVALCOMPUTE == 0)
+    {
+        printf("\n");
+        printf("This function is NOT computing mode values\n");
+        printf("Pre-existing stream %s was detected\n", IDmodes_val_name);
+        printf("\n");
+    }
+
     while(loopOK == 1)
     {
-	int t00OK = 0;
-	int t01OK = 0;
-	int t02OK = 0;
-	int t03OK = 0;
-	int t04OK = 0;
-	int t05OK = 0;
-	int t06OK = 0;
+        int t00OK = 0;
+        int t01OK = 0;
+        int t02OK = 0;
+        int t03OK = 0;
+        int t04OK = 0;
+        int t05OK = 0;
+        int t06OK = 0;
 
         clock_gettime(CLOCK_REALTIME, &t0);
 
+
+		// We either compute the result in this function (MODEVALCOMPUTE = 1)
+		// or we read it from ID_modeval stream (MODEVALCOMPUTE = 0)
+		
         if(MODEVALCOMPUTE==1)
         {
+			
+			// Are we computing a new reference ?
+			// if yes, set initref to 0 (reference is NOT initialized)
+			//
             if(refindex != data.image[IDref].md[0].cnt0)
             {
                 initref = 0;
                 refindex = data.image[IDref].md[0].cnt0;
             }
 
+
             if(initref==1)
             {
+				// Reference is already initialized
+				// wait for input stream to be changed to start computation
+				//
                 if(data.image[IDin].md[0].sem==0)
                 {
+					// if not using semaphore, use counter #0
                     while(data.image[IDin].md[0].cnt0==cnt) // test if new frame exists
                         usleep(5);
                     cnt = data.image[IDin].md[0].cnt0;
@@ -5873,6 +5886,9 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
                 }
                 else
                 {
+					// if using semaphore
+					
+					// we wait for 1 sec max
                     if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
                         perror("clock_gettime");
                         exit(EXIT_FAILURE);
@@ -5880,11 +5896,16 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
                     ts.tv_sec += 1;
                     semr = sem_timedwait(data.image[IDin].semptr[insem], &ts);
 
+					printf("\n");
+					int semval;
+					sem_getvalue(data.image[IDin].semptr[insem], &semval);
+					printf("  semval = %d\n", semval);
                     // drive semaphore to zero
                     while(sem_trywait(data.image[IDin].semptr[insem])==0) {
-					printf("WARNING %s %d  : sem_trywait on IDin\n", __FILE__, __LINE__);
-					fflush(stdout);						
-						}
+                        printf("WARNING %s %d  : sem_trywait on IDin\n", __FILE__, __LINE__);
+                        fflush(stdout);
+                    }
+                    printf("\n");
                 }
             }
             else // compute response of reference immediately
@@ -5893,8 +5914,8 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
                 semr = 0;
             }
 
-			t00OK = 1;
-			clock_gettime(CLOCK_REALTIME, &t00);
+            t00OK = 1;
+            clock_gettime(CLOCK_REALTIME, &t00);
 
             if(semr==0)
             {
@@ -5911,16 +5932,16 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
                     printf("cudaMemcpy returned error code %d, line %d\n", cudaStat, __LINE__);
                     exit(EXIT_FAILURE);
                 }
-				
-				t01OK = 1;
-				clock_gettime(CLOCK_REALTIME, &t01);
+
+                t01OK = 1;
+                clock_gettime(CLOCK_REALTIME, &t01);
 
                 if(BETAMODE == 1)
                 {
                     beta = -1.0;
                     cudaStat = cudaMemcpy(d_modeval, modevalarrayref, sizeof(float)*NBmodes, cudaMemcpyHostToDevice);
                 }
-                
+
                 t02OK = 1;
                 clock_gettime(CLOCK_REALTIME, &t02);
 
@@ -5953,8 +5974,8 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
                 // copy result
                 data.image[ID_modeval].md[0].write = 1;
 
-				t03OK = 1;
-				clock_gettime(CLOCK_REALTIME, &t03);
+                t03OK = 1;
+                clock_gettime(CLOCK_REALTIME, &t03);
 
                 if(initref==0) // construct reference to be subtracted
                 {
@@ -6000,8 +6021,8 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
 
 
 
-		t04OK = 1;
-		clock_gettime(CLOCK_REALTIME, &t04);
+        t04OK = 1;
+        clock_gettime(CLOCK_REALTIME, &t04);
 
 
 
@@ -6030,8 +6051,8 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
             }
         }
 
-		t05OK = 1;
-		clock_gettime(CLOCK_REALTIME, &t05);
+        t05OK = 1;
+        clock_gettime(CLOCK_REALTIME, &t05);
 
         if(PROCESS==1)
         {
@@ -6073,7 +6094,7 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
             data.image[IDprocrms].md[0].cnt0++;
             data.image[IDprocrms].md[0].write = 0;
         }
-        
+
         t06OK = 1;
         clock_gettime(CLOCK_REALTIME, &t06);
 
@@ -6095,61 +6116,61 @@ int  __attribute__((hot)) CUDACOMP_extractModesLoop(
             twait1 ++;
         else
             twait1 --;
-//TEST TIMING
-/*
-		if(tdiffv>1.0e-3)
-		{
-			printf("  ... function CUDACOMP_extractModesLoop - TIMING GLITCH  [%09ld] [%d]\n", t0.tv_nsec, insem);
-			printf("       %ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
-			fflush(stdout);
-			
-			tdiff = info_time_diff(t0, t00);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf(" %d            t00: %8.3lf\n", t00OK, 1.0e3*tdiffv);
+        //TEST TIMING
+        /*
+        		if(tdiffv>1.0e-3)
+        		{
+        			printf("  ... function CUDACOMP_extractModesLoop - TIMING GLITCH  [%09ld] [%d]\n", t0.tv_nsec, insem);
+        			printf("       %ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
+        			fflush(stdout);
 
-			tdiff = info_time_diff(t0, t01);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf(" %d            t01: %8.3lf\n", t01OK, 1.0e3*tdiffv);
+        			tdiff = info_time_diff(t0, t00);
+        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        			printf(" %d            t00: %8.3lf\n", t00OK, 1.0e3*tdiffv);
 
-			tdiff = info_time_diff(t0, t02);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf(" %d            t02: %8.3lf\n", t02OK, 1.0e3*tdiffv);
+        			tdiff = info_time_diff(t0, t01);
+        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        			printf(" %d            t01: %8.3lf\n", t01OK, 1.0e3*tdiffv);
 
-			tdiff = info_time_diff(t0, t03);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf(" %d            t03: %8.3lf\n", t03OK, 1.0e3*tdiffv);			
+        			tdiff = info_time_diff(t0, t02);
+        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        			printf(" %d            t02: %8.3lf\n", t02OK, 1.0e3*tdiffv);
 
-			tdiff = info_time_diff(t0, t04);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf(" %d            t04: %8.3lf\n", t04OK, 1.0e3*tdiffv);
+        			tdiff = info_time_diff(t0, t03);
+        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        			printf(" %d            t03: %8.3lf\n", t03OK, 1.0e3*tdiffv);
 
-			tdiff = info_time_diff(t0, t05);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf(" %d            t05: %8.3lf\n", t05OK, 1.0e3*tdiffv);
-			
-			tdiff = info_time_diff(t0, t06);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf(" %d            t06: %8.3lf\n", t06OK, 1.0e3*tdiffv);	
-			
-			printf("---\n");
-			
-			
-			
-			tdiff = info_time_diff(t0, t04);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             0  -> 04: %8.3lf\n", 1.0e3*tdiffv);
+        			tdiff = info_time_diff(t0, t04);
+        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        			printf(" %d            t04: %8.3lf\n", t04OK, 1.0e3*tdiffv);
 
-			tdiff = info_time_diff(t04, t05);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             04 -> 05: %8.3lf\n", 1.0e3*tdiffv);		
-			
-			tdiff = info_time_diff(t05, t06);
-			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-			printf("             05 -> 06: %8.3lf\n", 1.0e3*tdiffv);
-								
-		}
-	*/
-	
+        			tdiff = info_time_diff(t0, t05);
+        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        			printf(" %d            t05: %8.3lf\n", t05OK, 1.0e3*tdiffv);
+
+        			tdiff = info_time_diff(t0, t06);
+        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        			printf(" %d            t06: %8.3lf\n", t06OK, 1.0e3*tdiffv);
+
+        			printf("---\n");
+
+
+
+        			tdiff = info_time_diff(t0, t04);
+        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        			printf("             0  -> 04: %8.3lf\n", 1.0e3*tdiffv);
+
+        			tdiff = info_time_diff(t04, t05);
+        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        			printf("             04 -> 05: %8.3lf\n", 1.0e3*tdiffv);
+
+        			tdiff = info_time_diff(t05, t06);
+        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+        			printf("             05 -> 06: %8.3lf\n", 1.0e3*tdiffv);
+
+        		}
+        	*/
+
         if((data.signal_INT == 1)||(data.signal_TERM == 1)||(data.signal_ABRT==1)||(data.signal_BUS==1)||(data.signal_SEGV==1)||(data.signal_HUP==1)||(data.signal_PIPE==1))
         {
             loopOK = 0;
