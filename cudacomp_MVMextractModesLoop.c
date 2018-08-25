@@ -622,7 +622,14 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         printf("This function is NOT computing mode values\n");
         printf("Pre-existing stream %s was detected\n", IDmodes_val_name);
         printf("\n");
+        strcpy(processinfo->statusmsg, "Passing stream, no computation");
     }
+    else
+    {
+		char msgstring[200];
+		sprintf(msgstring, "Running on GPU %d", GPUindex);
+		strcpy(processinfo->statusmsg, msgstring);
+	}
 
     while(loopOK == 1)
     {
