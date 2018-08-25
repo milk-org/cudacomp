@@ -238,7 +238,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     printf("MODENORM         : %16d  1 if input modes should be normalized\n", MODENORM);
     printf("insem            : %16d  input semaphore index\n", insem);
     printf("axmode           : %16d  0 for normal mode extraction, 1 for expansion\n", axmode);
-    printf("twait            : %16d  if >0, insert time wait [us] at each iteration\n", twait);
+    printf("twait            : %16ld  if >0, insert time wait [us] at each iteration\n", twait);
     printf("semwarn          : %16d  1 if warning when input stream semaphore >1\n", semwarn);
     printf("\n");
 
@@ -616,6 +616,9 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
     while(loopOK == 1)
     {
+		struct timespec tdiff;
+		double tdiffv;
+		
         int t00OK = 0;
         int t01OK = 0;
         int t02OK = 0;
@@ -800,10 +803,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
 
         if(TRACEMODE == 1)
-        {
-			struct timespec tdiff;
-			double tdiffv;
-			
+        {			
             data.image[ID_modeval].md[0].write = 1;
 
             for(k=0; k<NBmodes; k++)
