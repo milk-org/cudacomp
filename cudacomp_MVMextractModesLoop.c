@@ -230,7 +230,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 	processinfo = processinfo_shm_create(pinfoname);
 	
 
-
+	processinfo->loopstat = 0; // loop initialization
 
 
 
@@ -631,6 +631,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 		strcpy(processinfo->statusmsg, msgstring);
 	}
 
+	processinfo->loopstat = 1; // loop running
     while(loopOK == 1)
     {
 		struct timespec tdiff;
@@ -1011,6 +1012,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 				strncpy(processinfo->statusmsg, msgstring, 200);
 			}			
 			
+			processinfo->loopstat = 3; // clean exit
 			
             loopOK = 0;
             printf("Exiting loop\n");
