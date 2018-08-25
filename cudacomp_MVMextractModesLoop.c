@@ -230,7 +230,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 	processinfo = processinfo_shm_create(pinfoname);
 	
 	struct tm *pinfotm;
-	pinfotm = gmtime(&processinfo->createtime);
+	pinfotm = gmtime(processinfo->createtime);
 	printf("Created at %02d:%02d:%02d.%09ld\n", pinfotm->tm_hour, pinfotm->tm_min, pinfotm->tm_sec, processinfo->createtime.tv_nsec);
 
 
