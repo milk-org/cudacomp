@@ -341,7 +341,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
  * 
  * @note if IDrefout_name exists, match output image size to IDrefout_name
  */
-int CUDACOMP_extractModesLoop(
+int CUDACOMP_MVMextractModesLoop(
 	const char *in_stream, 
 	const char *intot_stream, 
 	const char *IDmodes_name, 

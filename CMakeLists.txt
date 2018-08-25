@@ -2,7 +2,9 @@ project(lib_cudacomp_project)
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 include_directories ("${PROJECT_SOURCE_DIR}/..")
-add_library(cudacomp SHARED cudacomp.c)
+add_library(cudacomp SHARED cudacomp.c
+cudacomp_MVMextractModesLoop.c
+)
 
 message("---- module cudacomp ------------------")
 

@@ -1,5 +1,6 @@
 lib_LTLIBRARIES = libcudacomp.la
 libcudacomp_la_SOURCES = cudacomp.c cudacomp.h
+libcudacomp_la_SOURCES += cudacomp_MVMextractModesLoop.c
 
 #AM_CFLAGS = $(CFLAGS)
 #AM_CFLAGS += -fPIC
