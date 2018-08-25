@@ -969,6 +969,49 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
         if((data.signal_INT == 1)||(data.signal_TERM == 1)||(data.signal_ABRT==1)||(data.signal_BUS==1)||(data.signal_SEGV==1)||(data.signal_HUP==1)||(data.signal_PIPE==1))
         {
+			struct timespec tstop;
+			struct tm *tstoptm;
+			char msgstring[200];
+			
+			clock_gettime(CLOCK_REALTIME, &tstop);
+			tstoptm = gmtime(&tstop.tv_sec);
+			
+			if(data.signal_INT == 1){
+				sprintf(msgstring, "Received SIGINT at %02d:%02d:%02d.%09ld", tstoptm>tm_hour, tstoptm>tm_min, tstoptm>tm_sec, tstop.nsec);
+				strcpy(processinfo->statusmsg, msgstring);
+			}
+			
+			if(data.signal_TERM == 1){
+				sprintf(msgstring, "Received SIGTERM at %02d:%02d:%02d.%09ld", tstoptm>tm_hour, tstoptm>tm_min, tstoptm>tm_sec, tstop.nsec);
+				strcpy(processinfo->statusmsg, msgstring);
+			}
+			
+			if(data.signal_ABRT == 1){
+				sprintf(msgstring, "Received SIGABRT at %02d:%02d:%02d.%09ld", tstoptm>tm_hour, tstoptm>tm_min, tstoptm>tm_sec, tstop.nsec);
+				strcpy(processinfo->statusmsg, msgstring);
+			}
+			
+			if(data.signal_BUS == 1){
+				sprintf(msgstring, "Received SIGBUS at %02d:%02d:%02d.%09ld", tstoptm>tm_hour, tstoptm>tm_min, tstoptm>tm_sec, tstop.nsec);
+				strcpy(processinfo->statusmsg, msgstring);
+			}
+			
+			if(data.signal_SEGV == 1){
+				sprintf(msgstring, "Received SIGSEGV at %02d:%02d:%02d.%09ld", tstoptm>tm_hour, tstoptm>tm_min, tstoptm>tm_sec, tstop.nsec);
+				strcpy(processinfo->statusmsg, msgstring);
+			}
+			
+			if(data.signal_HUP == 1){
+				sprintf(msgstring, "Received SIGHUP at %02d:%02d:%02d.%09ld", tstoptm>tm_hour, tstoptm>tm_min, tstoptm>tm_sec, tstop.nsec);
+				strcpy(processinfo->statusmsg, msgstring);
+			}
+
+			if(data.signal_PIPE == 1){
+				sprintf(msgstring, "Received SIGPIPE at %02d:%02d:%02d.%09ld", tstoptm>tm_hour, tstoptm>tm_min, tstoptm>tm_sec, tstop.nsec);
+				strcpy(processinfo->statusmsg, msgstring);
+			}			
+			
+			
             loopOK = 0;
             printf("Exiting loop\n");
             fflush(stdout);
