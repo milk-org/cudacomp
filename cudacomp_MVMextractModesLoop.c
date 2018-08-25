@@ -958,7 +958,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         	*/
 
 
-		processinfo->cnt = loopcnt;
+		processinfo->loopcnt = loopcnt;
 
         if((data.signal_INT == 1)||(data.signal_TERM == 1)||(data.signal_ABRT==1)||(data.signal_BUS==1)||(data.signal_SEGV==1)||(data.signal_HUP==1)||(data.signal_PIPE==1))
         {
