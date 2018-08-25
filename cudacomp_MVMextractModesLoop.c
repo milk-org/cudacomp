@@ -227,7 +227,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 	PROCESSINFO *processinfo;
 	char pinfoname[200];
 	sprintf(pinfoname, "%s", __FUNCTION__);	
-	processinfo = processinfo_shm_create(pname);
+	processinfo = processinfo_shm_create(pinfoname);
 	
 	
 
