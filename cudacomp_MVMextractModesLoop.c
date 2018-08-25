@@ -149,7 +149,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     float beta = 0.0;
     int loopOK;
     struct timespec ts;
-    long iter;
+    long loopcnt;
     long long cnt = -1;
     long scnt;
     int semval;
@@ -232,6 +232,8 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 	struct tm *pinfotm;
 	pinfotm = gmtime(&processinfo->createtime);
 	printf("Created at %02d:%02d:%02d.%09ld\n", pinfotm->tm_hour, pinfotm->tm_min, pinfotm->tm_sec, processinfo->createtime.tv_nsec);
+
+
 
 
     // Review input parameters
@@ -524,7 +526,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
 
     loopOK = 1;
-    iter = 0;
+    loopcnt = 0;
 
 
 
@@ -957,6 +959,9 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         		}
         	*/
 
+
+		processinfo->cnt = loopcnt;
+
         if((data.signal_INT == 1)||(data.signal_TERM == 1)||(data.signal_ABRT==1)||(data.signal_BUS==1)||(data.signal_SEGV==1)||(data.signal_HUP==1)||(data.signal_PIPE==1))
         {
             loopOK = 0;
@@ -966,7 +971,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         }
 
         initref = 1;
-        iter++;
+        loopcnt++;
     }
 
     if(MODEVALCOMPUTE==1)
