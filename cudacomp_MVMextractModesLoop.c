@@ -223,6 +223,14 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     sched_setscheduler(0, SCHED_FIFO, &schedpar);
 #endif
 
+	// CREATE PROCESSINFO ENTRY
+	PROCESSINFO *processinfo;
+	char pinfoname[200];
+	sprintf(pinfoname, "%s", __FUNCTION__);	
+	processinfo = processinfo_shm_create(pname);
+	
+	
+
 
     // Review input parameters
     printf("\n");
