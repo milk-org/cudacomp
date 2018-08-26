@@ -223,7 +223,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     sched_setscheduler(0, SCHED_FIFO, &schedpar);
 #endif
 
-	PROCESSINFO *processinfo;
+    PROCESSINFO *processinfo;
     if(data.processinfo==1)
     {
         // CREATE PROCESSINFO ENTRY
@@ -639,6 +639,8 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     if(data.processinfo==1)
         processinfo->loopstat = 1; // loop running
 
+    int loopSTOP = 0; // toggles to 1 when loop is set to exit cleanly
+
     while(loopOK == 1)
     {
         struct timespec tdiff;
@@ -653,17 +655,18 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         int t06OK = 0;
 
 
-		if(data.processinfo==1)
-		{
-			while(processinfo->CTRLval == 1)  // pause
-				usleep(50);
-			
-			if(processinfo->CTRLval == 2) // single iteration
-				processinfo->CTRLval = 1;
-			
-			if(processinfo->CTRLval == 3) // exit loop
-				loopOK = 0;
-		}	
+        if(data.processinfo==1)
+        {
+            while(processinfo->CTRLval == 1)  // pause
+                usleep(50);
+
+            if(processinfo->CTRLval == 2) // single iteration
+                processinfo->CTRLval = 1;
+
+            if(processinfo->CTRLval == 3) // exit loop
+                loopSTOP = 1;
+
+        }
 
         clock_gettime(CLOCK_REALTIME, &t0);
 
@@ -1042,6 +1045,27 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
             fflush(stdout);
             sleep(1.0);
         }
+
+
+        if(loopSTOP == 1)
+        {
+            loopOK = 0;
+            if(data.processinfo==1)
+            {
+                struct timespec tstop;
+                struct tm *tstoptm;
+                char msgstring[200];
+
+                clock_gettime(CLOCK_REALTIME, &tstop);
+                tstoptm = gmtime(&tstop.tv_sec);
+
+                sprintf(msgstring, "Received loop exit CTRL at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
+                strncpy(processinfo->statusmsg, msgstring, 200);
+
+                processinfo->loopstat = 3; // clean exit
+            }
+        }
+
 
         initref = 1;
         loopcnt++;
