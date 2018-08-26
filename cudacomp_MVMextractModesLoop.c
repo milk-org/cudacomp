@@ -1059,7 +1059,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
                 clock_gettime(CLOCK_REALTIME, &tstop);
                 tstoptm = gmtime(&tstop.tv_sec);
 
-                sprintf(msgstring, "Received loop exit CTRL at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) 0.000001*tstop.tv_nsec);
+                sprintf(msgstring, "Received loop exit CTRL at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*(tstop.tv_nsec)));
                 strncpy(processinfo->statusmsg, msgstring, 200);
 
                 processinfo->loopstat = 3; // clean exit
