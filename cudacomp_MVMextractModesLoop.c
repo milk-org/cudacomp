@@ -1003,37 +1003,37 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
                 tstoptm = gmtime(&tstop.tv_sec);
 
                 if(data.signal_INT == 1) {
-                    sprintf(msgstring, "SIGINT at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) 0.000001*tstop.tv_nsec);
+                    sprintf(msgstring, "SIGINT at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
                     strncpy(processinfo->statusmsg, msgstring, 200);
                 }
 
                 if(data.signal_TERM == 1) {
-                    sprintf(msgstring, "SIGTERM at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) 0.000001*tstop.tv_nsec);
+                    sprintf(msgstring, "SIGTERM at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
                     strncpy(processinfo->statusmsg, msgstring, 200);
                 }
 
                 if(data.signal_ABRT == 1) {
-                    sprintf(msgstring, "SIGABRT at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) 0.000001*tstop.tv_nsec);
+                    sprintf(msgstring, "SIGABRT at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
                     strncpy(processinfo->statusmsg, msgstring, 200);
                 }
 
                 if(data.signal_BUS == 1) {
-                    sprintf(msgstring, "SIGBUS at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) 0.000001*tstop.tv_nsec);
+                    sprintf(msgstring, "SIGBUS at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
                     strncpy(processinfo->statusmsg, msgstring, 200);
                 }
 
                 if(data.signal_SEGV == 1) {
-                    sprintf(msgstring, "SIGSEGV at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) 0.000001*tstop.tv_nsec);
+                    sprintf(msgstring, "SIGSEGV at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
                     strncpy(processinfo->statusmsg, msgstring, 200);
                 }
 
                 if(data.signal_HUP == 1) {
-                    sprintf(msgstring, "SIGHUP at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) 0.000001*tstop.tv_nsec);
+                    sprintf(msgstring, "SIGHUP at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
                     strncpy(processinfo->statusmsg, msgstring, 200);
                 }
 
                 if(data.signal_PIPE == 1) {
-                    sprintf(msgstring, "SIGPIPE at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) 0.000001*tstop.tv_nsec);
+                    sprintf(msgstring, "SIGPIPE at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
                     strncpy(processinfo->statusmsg, msgstring, 200);
                 }
 
