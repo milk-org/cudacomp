@@ -127,7 +127,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     int         insem,               // input semaphore index
     int         axmode,              // 0 for normal mode extraction, 1 for expansion
     long        twait,               // if >0, insert time wait [us] at each iteration
-    int         semwarn              // 1 if warning when input stream semaphore >1 
+    int         semwarn              // 1 if warning when input stream semaphore >1
 )
 {
     long IDmodes;
@@ -224,14 +224,17 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 #endif
 
 
-	
-	// CREATE PROCESSINFO ENTRY
-	PROCESSINFO *processinfo;
-	char pinfoname[200];
-	sprintf(pinfoname, "%s", __FUNCTION__);	
-	processinfo = processinfo_shm_create(pinfoname);	
-	processinfo->loopstat = 0; // loop initialization
-
+    if(data.processinfo==1)
+    {
+        // CREATE PROCESSINFO ENTRY
+        // see processtools.c in module CommandLineInterface for details
+        //
+        PROCESSINFO *processinfo;
+        char pinfoname[200];
+        sprintf(pinfoname, "%s", __FUNCTION__);
+        processinfo = processinfo_shm_create(pinfoname, 0);
+        processinfo->loopstat = 0; // loop initialization
+    }
 
 
     // Review input parameters
@@ -417,8 +420,8 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
     if(MODEVALCOMPUTE == 1)
     {
-		int deviceCount;
-		
+        int deviceCount;
+
         cudaGetDeviceCount(&deviceCount);
         printf("%d devices found\n", deviceCount);
         fflush(stdout);
@@ -622,21 +625,26 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         printf("This function is NOT computing mode values\n");
         printf("Pre-existing stream %s was detected\n", IDmodes_val_name);
         printf("\n");
-        strcpy(processinfo->statusmsg, "Passing stream, no computation");
+        if(data.processinfo==1)
+            strcpy(processinfo->statusmsg, "Passing stream, no computation");
     }
     else
     {
-		char msgstring[200];
-		sprintf(msgstring, "Running on GPU %d", GPUindex);
-		strcpy(processinfo->statusmsg, msgstring);
-	}
+        char msgstring[200];
+        sprintf(msgstring, "Running on GPU %d", GPUindex);
+        if(data.processinfo==1)
+            strcpy(processinfo->statusmsg, msgstring);
+    }
 
-	processinfo->loopstat = 1; // loop running
+
+    if(data.processinfo==1)
+        processinfo->loopstat = 1; // loop running
+
     while(loopOK == 1)
     {
-		struct timespec tdiff;
-		double tdiffv;
-		
+        struct timespec tdiff;
+        double tdiffv;
+
         int t00OK = 0;
         int t01OK = 0;
         int t02OK = 0;
@@ -645,18 +653,31 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         int t05OK = 0;
         int t06OK = 0;
 
+
+		if(data.processinfo==1)
+		{
+			while(processinfo->CTRLval == 1)  // pause
+				usleep(50);
+			
+			if(processinfo->CTRLval == 2) // single iteration
+				processinfo->CTRLval = 1;
+			
+			if(processinfo->CTRLval == 3) // exit loop
+				loopOK = 0;
+		}	
+
         clock_gettime(CLOCK_REALTIME, &t0);
 
 
-		// We either compute the result in this function (MODEVALCOMPUTE = 1)
-		// or we read it from ID_modeval stream (MODEVALCOMPUTE = 0)
-		
+        // We either compute the result in this function (MODEVALCOMPUTE = 1)
+        // or we read it from ID_modeval stream (MODEVALCOMPUTE = 0)
+
         if(MODEVALCOMPUTE==1)
         {
-			
-			// Are we computing a new reference ?
-			// if yes, set initref to 0 (reference is NOT initialized)
-			//
+
+            // Are we computing a new reference ?
+            // if yes, set initref to 0 (reference is NOT initialized)
+            //
             if(refindex != data.image[IDref].md[0].cnt0)
             {
                 initref = 0;
@@ -666,12 +687,12 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
             if(initref==1)
             {
-				// Reference is already initialized
-				// wait for input stream to be changed to start computation
-				//
+                // Reference is already initialized
+                // wait for input stream to be changed to start computation
+                //
                 if(data.image[IDin].md[0].sem==0)
                 {
-					// if not using semaphore, use counter #0
+                    // if not using semaphore, use counter #0
                     while(data.image[IDin].md[0].cnt0==cnt) // test if new frame exists
                         usleep(5);
                     cnt = data.image[IDin].md[0].cnt0;
@@ -679,9 +700,9 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
                 }
                 else
                 {
-					// if using semaphore
-					
-					// we wait for 1 sec max
+                    // if using semaphore
+
+                    // we wait for 1 sec max
                     if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
                         perror("clock_gettime");
                         exit(EXIT_FAILURE);
@@ -693,11 +714,11 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
                     while(sem_trywait(data.image[IDin].semptr[insem])==0) {
                         if(semwarn==1)
                         {
-							int semval;
-							sem_getvalue(data.image[IDin].semptr[insem], &semval);
-							printf("WARNING %s %d  : sem_trywait on IDin  seval = %d\n", __FILE__, __LINE__, semval);
-							fflush(stdout);
-						}
+                            int semval;
+                            sem_getvalue(data.image[IDin].semptr[insem], &semval);
+                            printf("WARNING %s %d  : sem_trywait on IDin  seval = %d\n", __FILE__, __LINE__, semval);
+                            fflush(stdout);
+                        }
                     }
 
                 }
@@ -821,7 +842,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
 
         if(TRACEMODE == 1)
-        {			
+        {
             data.image[ID_modeval].md[0].write = 1;
 
             for(k=0; k<NBmodes; k++)
@@ -965,55 +986,58 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         		}
         	*/
 
-
-		processinfo->loopcnt = loopcnt;
+        if(data.processinfo==1)
+            processinfo->loopcnt = loopcnt;
 
         if((data.signal_INT == 1)||(data.signal_TERM == 1)||(data.signal_ABRT==1)||(data.signal_BUS==1)||(data.signal_SEGV==1)||(data.signal_HUP==1)||(data.signal_PIPE==1))
         {
-			struct timespec tstop;
-			struct tm *tstoptm;
-			char msgstring[200];
-			
-			clock_gettime(CLOCK_REALTIME, &tstop);
-			tstoptm = gmtime(&tstop.tv_sec);
-			
-			if(data.signal_INT == 1){
-				sprintf(msgstring, "Received SIGINT at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
-				strncpy(processinfo->statusmsg, msgstring, 200);
-			}
-			
-			if(data.signal_TERM == 1){
-				sprintf(msgstring, "Received SIGTERM at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
-				strncpy(processinfo->statusmsg, msgstring, 200);
-			}
-			
-			if(data.signal_ABRT == 1){
-				sprintf(msgstring, "Received SIGABRT at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
-				strncpy(processinfo->statusmsg, msgstring, 200);
-			}
-			
-			if(data.signal_BUS == 1){
-				sprintf(msgstring, "Received SIGBUS at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
-				strncpy(processinfo->statusmsg, msgstring, 200);
-			}
-			
-			if(data.signal_SEGV == 1){
-				sprintf(msgstring, "Received SIGSEGV at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
-				strncpy(processinfo->statusmsg, msgstring, 200);
-			}
-			
-			if(data.signal_HUP == 1){
-				sprintf(msgstring, "Received SIGHUP at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
-				strncpy(processinfo->statusmsg, msgstring, 200);
-			}
+            if(data.processinfo==1)
+            {
+                struct timespec tstop;
+                struct tm *tstoptm;
+                char msgstring[200];
 
-			if(data.signal_PIPE == 1){
-				sprintf(msgstring, "Received SIGPIPE at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
-				strncpy(processinfo->statusmsg, msgstring, 200);
-			}			
-			
-			processinfo->loopstat = 3; // clean exit
-			
+                clock_gettime(CLOCK_REALTIME, &tstop);
+                tstoptm = gmtime(&tstop.tv_sec);
+
+                if(data.signal_INT == 1) {
+                    sprintf(msgstring, "Received SIGINT at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
+                    strncpy(processinfo->statusmsg, msgstring, 200);
+                }
+
+                if(data.signal_TERM == 1) {
+                    sprintf(msgstring, "Received SIGTERM at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
+                    strncpy(processinfo->statusmsg, msgstring, 200);
+                }
+
+                if(data.signal_ABRT == 1) {
+                    sprintf(msgstring, "Received SIGABRT at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
+                    strncpy(processinfo->statusmsg, msgstring, 200);
+                }
+
+                if(data.signal_BUS == 1) {
+                    sprintf(msgstring, "Received SIGBUS at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
+                    strncpy(processinfo->statusmsg, msgstring, 200);
+                }
+
+                if(data.signal_SEGV == 1) {
+                    sprintf(msgstring, "Received SIGSEGV at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
+                    strncpy(processinfo->statusmsg, msgstring, 200);
+                }
+
+                if(data.signal_HUP == 1) {
+                    sprintf(msgstring, "Received SIGHUP at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
+                    strncpy(processinfo->statusmsg, msgstring, 200);
+                }
+
+                if(data.signal_PIPE == 1) {
+                    sprintf(msgstring, "Received SIGPIPE at %02d:%02d:%02d.%09ld", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, tstop.tv_nsec);
+                    strncpy(processinfo->statusmsg, msgstring, 200);
+                }
+
+                processinfo->loopstat = 3; // clean exit
+            }
+
             loopOK = 0;
             printf("Exiting loop\n");
             fflush(stdout);
