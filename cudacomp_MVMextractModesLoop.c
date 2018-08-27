@@ -639,7 +639,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     if(data.processinfo==1)
         processinfo->loopstat = 1; // loop running
 
-    int loopSTOP = 0; // toggles to 1 when loop is set to exit cleanly
+    int loopCTRLexit = 0; // toggles to 1 when loop is set to exit cleanly
 
     while(loopOK == 1)
     {
@@ -664,8 +664,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
                 processinfo->CTRLval = 1;
 
             if(processinfo->CTRLval == 3) // exit loop
-                loopSTOP = 1;
-
+                loopCTRLexit = 1;
         }
 
         clock_gettime(CLOCK_REALTIME, &t0);
@@ -998,45 +997,37 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
                 struct timespec tstop;
                 struct tm *tstoptm;
                 char msgstring[200];
+                char timestring[200];
+
 
                 clock_gettime(CLOCK_REALTIME, &tstop);
                 tstoptm = gmtime(&tstop.tv_sec);
+                sprintf(timestring, "%02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
 
-                if(data.signal_INT == 1) {
-                    sprintf(msgstring, "SIGINT at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
-                    strncpy(processinfo->statusmsg, msgstring, 200);
-                }
+                sprintf(msgstring, "Unknown signal at %s", timestring); // default
 
-                if(data.signal_TERM == 1) {
-                    sprintf(msgstring, "SIGTERM at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
-                    strncpy(processinfo->statusmsg, msgstring, 200);
-                }
+                if(data.signal_INT == 1)
+                    sprintf(msgstring, "SIGINT at %s", timestring);
 
-                if(data.signal_ABRT == 1) {
-                    sprintf(msgstring, "SIGABRT at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
-                    strncpy(processinfo->statusmsg, msgstring, 200);
-                }
+                if(data.signal_TERM == 1)
+                    sprintf(msgstring, "SIGTERM at %s", timestring);
 
-                if(data.signal_BUS == 1) {
-                    sprintf(msgstring, "SIGBUS at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
-                    strncpy(processinfo->statusmsg, msgstring, 200);
-                }
+                if(data.signal_ABRT == 1)
+                    sprintf(msgstring, "SIGABRT at %s", timestring);
 
-                if(data.signal_SEGV == 1) {
-                    sprintf(msgstring, "SIGSEGV at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
-                    strncpy(processinfo->statusmsg, msgstring, 200);
-                }
+                if(data.signal_BUS == 1)
+                    sprintf(msgstring, "SIGBUS at %s", timestring);
 
-                if(data.signal_HUP == 1) {
-                    sprintf(msgstring, "SIGHUP at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
-                    strncpy(processinfo->statusmsg, msgstring, 200);
-                }
+                if(data.signal_SEGV == 1)
+                    sprintf(msgstring, "SIGSEGV at %s", timestring);
 
-                if(data.signal_PIPE == 1) {
-                    sprintf(msgstring, "SIGPIPE at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
-                    strncpy(processinfo->statusmsg, msgstring, 200);
-                }
+                if(data.signal_HUP == 1)
+                    sprintf(msgstring, "SIGHUP at %s", timestring);
 
+                if(data.signal_PIPE == 1)
+                    sprintf(msgstring, "SIGPIPE at %s", timestring);
+
+                strncpy(processinfo->statusmsg, msgstring, 200);
                 processinfo->loopstat = 3; // clean exit
             }
 
@@ -1047,7 +1038,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         }
 
 
-        if(loopSTOP == 1)
+        if(loopCTRLexit == 1)
         {
             loopOK = 0;
             if(data.processinfo==1)
@@ -1059,7 +1050,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
                 clock_gettime(CLOCK_REALTIME, &tstop);
                 tstoptm = gmtime(&tstop.tv_sec);
 
-                sprintf(msgstring, "Exit CTRL at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*(tstop.tv_nsec)));
+                sprintf(msgstring, "[CTRL] -> exit at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*(tstop.tv_nsec)));
                 strncpy(processinfo->statusmsg, msgstring, 200);
 
                 processinfo->loopstat = 3; // clean exit
