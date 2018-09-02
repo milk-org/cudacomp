@@ -239,7 +239,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         processinfo->source_LINE = __LINE__;
 
         char msgstring[200];
-        sprintf(msgstring, "%s->%s", IDinname, IDoutname);
+        sprintf(msgstring, "Input: %s", in_stream);
         processinfo_WriteMessage(processinfo, msgstring);
     }
 
