@@ -233,7 +233,40 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         sprintf(pinfoname, "%s", __FUNCTION__);
         processinfo = processinfo_shm_create(pinfoname, 0);
         processinfo->loopstat = 0; // loop initialization
+
+        strcpy(processinfo->source_FUNCTION, __FUNCTION__);
+        strcpy(processinfo->source_FILE,     __FILE__);
+        processinfo->source_LINE = __LINE__;
+
+        char msgstring[200];
+        sprintf(msgstring, "%s->%s", IDinname, IDoutname);
+        processinfo_WriteMessage(processinfo, msgstring);
     }
+
+
+// CATCH SIGNALS
+ 	
+	if (sigaction(SIGTERM, &data.sigact, NULL) == -1)
+        printf("\ncan't catch SIGTERM\n");
+
+	if (sigaction(SIGINT, &data.sigact, NULL) == -1)
+        printf("\ncan't catch SIGINT\n");    
+
+	if (sigaction(SIGABRT, &data.sigact, NULL) == -1)
+        printf("\ncan't catch SIGABRT\n");     
+
+	if (sigaction(SIGBUS, &data.sigact, NULL) == -1)
+        printf("\ncan't catch SIGBUS\n");
+
+	if (sigaction(SIGSEGV, &data.sigact, NULL) == -1)
+        printf("\ncan't catch SIGSEGV\n");         
+
+	if (sigaction(SIGHUP, &data.sigact, NULL) == -1)
+        printf("\ncan't catch SIGHUP\n");         
+
+	if (sigaction(SIGPIPE, &data.sigact, NULL) == -1)
+        printf("\ncan't catch SIGPIPE\n");   
+
 
 
     // Review input parameters
@@ -490,7 +523,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     }
 
 
-
+/*
     if (sigaction(SIGINT, &data.sigact, NULL) == -1) {
         perror("sigaction");
         exit(EXIT_FAILURE);
@@ -523,7 +556,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
-
+*/
 
     loopOK = 1;
     loopcnt = 0;
@@ -990,79 +1023,57 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
         if(data.processinfo==1)
             processinfo->loopcnt = loopcnt;
+   
+   
+     // process signals
+     
+		if(data.signal_INT == 1){
+			loopOK = 0;
+			if(data.processinfo==1)
+				processinfo_SIGexit(processinfo, SIGINT);
+		}
 
-        if((data.signal_INT == 1)||(data.signal_TERM == 1)||(data.signal_ABRT==1)||(data.signal_BUS==1)||(data.signal_SEGV==1)||(data.signal_HUP==1)||(data.signal_PIPE==1))
-        {
-            if(data.processinfo==1)
-            {
-                struct timespec tstop;
-                struct tm *tstoptm;
-                char msgstring[200];
-                char timestring[200];
+		if(data.signal_ABRT == 1){
+			loopOK = 0;
+			if(data.processinfo==1)
+				processinfo_SIGexit(processinfo, SIGABRT);
+		}
 
-
-                clock_gettime(CLOCK_REALTIME, &tstop);
-                tstoptm = gmtime(&tstop.tv_sec);
-                sprintf(timestring, "%02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*tstop.tv_nsec));
-
-                sprintf(msgstring, "Unknown signal at %s", timestring); // default
-
-                if(data.signal_INT == 1)
-                    sprintf(msgstring, "SIGINT at %s", timestring);
-
-                if(data.signal_TERM == 1)
-                    sprintf(msgstring, "SIGTERM at %s", timestring);
-
-                if(data.signal_ABRT == 1)
-                    sprintf(msgstring, "SIGABRT at %s", timestring);
-
-                if(data.signal_BUS == 1)
-                    sprintf(msgstring, "SIGBUS at %s", timestring);
-
-                if(data.signal_SEGV == 1)
-                    sprintf(msgstring, "SIGSEGV at %s", timestring);
-
-                if(data.signal_HUP == 1)
-                    sprintf(msgstring, "SIGHUP at %s", timestring);
-
-                if(data.signal_PIPE == 1)
-                    sprintf(msgstring, "SIGPIPE at %s", timestring);
-
-                strncpy(processinfo->statusmsg, msgstring, 200);
-                processinfo->loopstat = 3; // clean exit
-            }
-
-            loopOK = 0;
-            printf("Exiting loop\n");
-            fflush(stdout);
-            sleep(1.0);
-        }
-
-
-        if(loopCTRLexit == 1)
-        {
-            loopOK = 0;
-            if(data.processinfo==1)
-            {
-                struct timespec tstop;
-                struct tm *tstoptm;
-                char msgstring[200];
-
-                clock_gettime(CLOCK_REALTIME, &tstop);
-                tstoptm = gmtime(&tstop.tv_sec);
-
-                sprintf(msgstring, "CTRLexit at %02d:%02d:%02d.%03d", tstoptm->tm_hour, tstoptm->tm_min, tstoptm->tm_sec, (int) (0.000001*(tstop.tv_nsec)));
-                strncpy(processinfo->statusmsg, msgstring, 200);
-
-                processinfo->loopstat = 3; // clean exit
-            }
-        }
-
+		if(data.signal_BUS == 1){
+			loopOK = 0;
+			if(data.processinfo==1)
+				processinfo_SIGexit(processinfo, SIGBUS);
+		}
+		
+		if(data.signal_SEGV == 1){
+			loopOK = 0;
+			if(data.processinfo==1)
+				processinfo_SIGexit(processinfo, SIGSEGV);
+		}
+		
+		if(data.signal_HUP == 1){
+			loopOK = 0;
+			if(data.processinfo==1)
+				processinfo_SIGexit(processinfo, SIGHUP);
+		}
+		
+		if(data.signal_PIPE == 1){
+			loopOK = 0;
+			if(data.processinfo==1)
+				processinfo_SIGexit(processinfo, SIGPIPE);
+		}	
+     
+     
 
         initref = 1;
         loopcnt++;
     }
-
+    
+	if(data.processinfo==1)
+        processinfo_cleanExit(processinfo);
+        
+        
+        
     if(MODEVALCOMPUTE==1)
     {
         cudaFree(d_modes);
