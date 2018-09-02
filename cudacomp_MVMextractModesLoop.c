@@ -230,7 +230,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         // see processtools.c in module CommandLineInterface for details
         //
         char pinfoname[200];
-        sprintf(pinfoname, "%s", __FUNCTION__);
+        sprintf(pinfoname, "cudaMVMextract_%s", in_stream);
         processinfo = processinfo_shm_create(pinfoname, 0);
         processinfo->loopstat = 0; // loop initialization
 
