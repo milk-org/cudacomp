@@ -766,6 +766,9 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
             t00OK = 1;
             clock_gettime(CLOCK_REALTIME, &t00);
+            
+            if((data.processinfo==1)&&(processinfo->MeasureTiming==1))
+				processinfo_exec_start(processinfo);
 
             if(semr==0)
             {
@@ -866,6 +869,9 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         else // WAIT FOR NEW MODEVAL
         {
             sem_wait(data.image[ID_modeval].semptr[insem]);
+            
+		if((data.processinfo==1)&&(processinfo->MeasureTiming==1))
+			processinfo_exec_start(processinfo);
         }
 
 
@@ -948,6 +954,9 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         t06OK = 1;
         clock_gettime(CLOCK_REALTIME, &t06);
 
+
+		if((data.processinfo==1)&&(processinfo->MeasureTiming==1))
+			processinfo_exec_end(processinfo);
 
         //	printf("wait\n");
         //	fflush(stdout);
