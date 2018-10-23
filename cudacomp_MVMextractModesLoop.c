@@ -238,6 +238,8 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         strcpy(processinfo->source_FILE,     __FILE__);
         processinfo->source_LINE = __LINE__;
 
+		sprintf(processinfo->description, "Input:%s", in_stream);
+		
         char msgstring[200];
         sprintf(msgstring, "Input: %s", in_stream);
         processinfo_WriteMessage(processinfo, msgstring);
@@ -657,8 +659,10 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         printf("This function is NOT computing mode values\n");
         printf("Pre-existing stream %s was detected\n", IDmodes_val_name);
         printf("\n");
-        if(data.processinfo==1)
+        if(data.processinfo==1){
             strcpy(processinfo->statusmsg, "Passing stream, no computation");
+			sprintf(processinfo->description, "passthrough, no comp");
+		}		
     }
     else
     {
