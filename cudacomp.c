@@ -419,11 +419,11 @@ void __attribute__ ((constructor)) libinit_cudacomp()
 		INITSTATUS_cudacomp = 1;
 		
 		#ifdef HAVE_CUDA
-		printf("[HAVE_CUDA]\n");
+		printf("[CUDA]");
 		#endif
 		
 		#ifdef HAVE_MAGMA
-		printf("[HAVE_MAGMA]\n");
+		printf("[MAGMA]");
 		#endif
 	}
 }
