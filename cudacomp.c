@@ -2118,7 +2118,7 @@ int GPU_loop_MultMat_execute(
     {
         *status = *status + 1;  // ->7
         clock_gettime(CLOCK_REALTIME, &tnow);
-        tdiff = info_time_diff(data.image[IDtiming].md[0].atime.ts, tnow);
+        tdiff = info_time_diff(data.image[IDtiming].md[0].atime, tnow);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //25
         TimerIndex++;
@@ -2177,7 +2177,7 @@ int GPU_loop_MultMat_execute(
     {
         *status = *status + 1;  // -> 8
         clock_gettime(CLOCK_REALTIME, &tnow);
-        tdiff = info_time_diff(data.image[IDtiming].md[0].atime.ts, tnow);
+        tdiff = info_time_diff(data.image[IDtiming].md[0].atime, tnow);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //26
 		TimerIndex++;
@@ -2285,7 +2285,7 @@ int GPU_loop_MultMat_execute(
     {
         *status = *status + 1;  // -> 9
         clock_gettime(CLOCK_REALTIME, &tnow);
-        tdiff = info_time_diff(data.image[IDtiming].md[0].atime.ts, tnow);
+        tdiff = info_time_diff(data.image[IDtiming].md[0].atime, tnow);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //32
 		TimerIndex++;
@@ -2331,7 +2331,7 @@ int GPU_loop_MultMat_execute(
 				
         *status = *status + 1; // -> 10
         clock_gettime(CLOCK_REALTIME, &tnow);
-        tdiff = info_time_diff(data.image[IDtiming].md[0].atime.ts, tnow);
+        tdiff = info_time_diff(data.image[IDtiming].md[0].atime, tnow);
         tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //33
 		TimerIndex++;
@@ -2643,7 +2643,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
     long m, n, ii, jj, k;
     long ID_Rmatrix;
     long ID_Cmatrix;
-    uint8_t atype;
+    uint8_t datatype;
 
     magma_int_t lda, ldu, ldv;
     float dummy[1];
@@ -2666,7 +2666,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
     arraysizetmp = (uint32_t*) malloc(sizeof(uint32_t)*3);
 
     ID_Rmatrix = image_ID(ID_Rmatrix_name);
-    atype = data.image[ID_Rmatrix].md[0].atype;
+    datatype = data.image[ID_Rmatrix].md[0].datatype;
 
 
     if(data.image[ID_Rmatrix].md[0].naxis==3)
@@ -2719,7 +2719,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
 
 
     // write input h_R matrix
-    if(atype==_DATATYPE_FLOAT)
+    if(datatype==_DATATYPE_FLOAT)
     {
         for(k=0; k<m; k++)
             for(ii=0; ii<n; ii++)
@@ -2773,7 +2773,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
     // Write rotation matrix
     arraysizetmp[0] = m;
     arraysizetmp[1] = m;
-    if(atype==_DATATYPE_FLOAT)
+    if(datatype==_DATATYPE_FLOAT)
     {
         ID_VTmatrix = create_image_ID(ID_VTmatrix_name, 2, arraysizetmp, _DATATYPE_FLOAT, 0, 0);
         for(ii=0; ii<m; ii++) // modes
@@ -2801,7 +2801,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
         arraysizetmp[1] = m;
     }
 
-    if(atype==_DATATYPE_FLOAT)
+    if(datatype==_DATATYPE_FLOAT)
         ID_Cmatrix = create_image_ID(ID_Cmatrix_name, data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, _DATATYPE_FLOAT, 0, 0);
     else
         ID_Cmatrix = create_image_ID(ID_Cmatrix_name, data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, _DATATYPE_DOUBLE, 0, 0);
@@ -2999,7 +2999,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 )
 {
     long ID_Rmatrix;
-    uint8_t atype;
+    uint8_t datatype;
     uint32_t *arraysizetmp;
     int size; // variable for memory allocations
     magma_int_t N, M;
@@ -3085,7 +3085,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     arraysizetmp = (uint32_t*) malloc(sizeof(uint32_t)*3);
 
     ID_Rmatrix = image_ID(ID_Rmatrix_name);
-    atype = data.image[ID_Rmatrix].md[0].atype;
+    datatype = data.image[ID_Rmatrix].md[0].datatype;
 
     if(data.image[ID_Rmatrix].md[0].naxis==3)
     {
@@ -3325,7 +3325,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 	// 
 
 
-    if(atype==_DATATYPE_FLOAT)
+    if(datatype==_DATATYPE_FLOAT)
     {
         if(MAGMAfloat==1)
         {
@@ -4270,7 +4270,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
             arraysizetmp[1] = N;
         }
 
-        if(atype==_DATATYPE_FLOAT)
+        if(datatype==_DATATYPE_FLOAT)
             ID_Cmatrix = create_image_ID(ID_Cmatrix_name, data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, _DATATYPE_FLOAT, 0, 0);
         else
             ID_Cmatrix = create_image_ID(ID_Cmatrix_name, data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, _DATATYPE_DOUBLE, 0, 0);
@@ -4289,7 +4289,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     }
 
 
-    if(atype==_DATATYPE_FLOAT)
+    if(datatype==_DATATYPE_FLOAT)
     {
         if(MAGMAfloat==1)
         {
@@ -4596,7 +4596,7 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
     int k;
 
     long ID_Rmatrix, ID_Cmatrix, ID_VTmatrix;
-    uint8_t atype;
+    uint8_t datatype;
     int m;
     int n;
     uint32_t *arraysizetmp;
@@ -4702,11 +4702,11 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
    
     ID_Rmatrix = image_ID(ID_Rmatrix_name);
 
-    atype = data.image[ID_Rmatrix].md[0].atype;
-    if(atype!=_DATATYPE_FLOAT)
+    datatype = data.image[ID_Rmatrix].md[0].datatype;
+    if(datatype!=_DATATYPE_FLOAT)
     {
         printf("wrong type\n");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
 
     if(data.image[ID_Rmatrix].md[0].naxis==3)
@@ -4727,7 +4727,7 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
     if(m!=n)
     {
         printf("ERROR: m must be equal to n\n");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
 
 
