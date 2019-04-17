@@ -212,90 +212,29 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     int RT_priority = 91; //any number from 0-99
 
 
-//    struct sched_param schedpar;
+    char pinfoname[200];
+    sprintf(pinfoname, "cudaMVMextract-%s", in_stream);
 
-	char pinfoname[200];
-	sprintf(pinfoname, "cudaMVMextract-%s", in_stream);
-	
-	char pinfodescr[200];
-	sprintf(pinfodescr, "%s->%s", in_stream, IDmodes_val_name);
+    char pinfodescr[200];
+    sprintf(pinfodescr, "%s->%s", in_stream, IDmodes_val_name);
 
-	char pinfomsg[200];
-	sprintf(pinfodescr, "Setup");
+    char pinfomsg[200];
+    sprintf(pinfomsg, "Setup");
 
     PROCESSINFO *processinfo;
     processinfo = processinfo_setup(
-        pinfoname,             // short name for the processinfo instance, no spaces, no dot, name should be human-readable
-        pinfodescr,    // description
-        pinfomsg,  // message on startup
-        __FUNCTION__, __FILE__, __LINE__
-        );
-        
+                      pinfoname,             // short name for the processinfo instance, no spaces, no dot, name should be human-readable
+                      pinfodescr,    // description
+                      pinfomsg,  // message on startup
+                      __FUNCTION__, __FILE__, __LINE__
+                  );
+
     // OPTIONAL SETTINGS
-    processinfo->MeasureTiming = 1; // Measure timing 
+    processinfo->MeasureTiming = 1; // Measure timing
     processinfo->RT_priority = RT_priority;  // RT_priority, 0-99. Larger number = higher priority. If <0, ignore
 
-	int loopOK = 1;
+    int loopOK = 1;
 
-/*
-
-    schedpar.sched_priority = RT_priority;
-#ifndef __MACH__
-    sched_setscheduler(0, SCHED_FIFO, &schedpar);
-#endif
-
-    PROCESSINFO *processinfo;
-    if(data.processinfo == 1) {
-        // CREATE PROCESSINFO ENTRY
-        // see processtools.c in module CommandLineInterface for details
-        //
-        char pinfoname[200];
-        sprintf(pinfoname, "cudaMVMextract-%s", in_stream);
-        processinfo = processinfo_shm_create(pinfoname, 0);
-        processinfo->loopstat = 0; // loop initialization
-
-        strcpy(processinfo->source_FUNCTION, __FUNCTION__);
-        strcpy(processinfo->source_FILE,     __FILE__);
-        processinfo->source_LINE = __LINE__;
-
-        sprintf(processinfo->description, "Input:%s", in_stream);
-
-        char msgstring[200];
-        sprintf(msgstring, "Input: %s", in_stream);
-        processinfo_WriteMessage(processinfo, msgstring);
-    }
-*/
-
-// CATCH SIGNALS
-/*
-    if(sigaction(SIGTERM, &data.sigact, NULL) == -1) {
-        printf("\ncan't catch SIGTERM\n");
-    }
-
-    if(sigaction(SIGINT, &data.sigact, NULL) == -1) {
-        printf("\ncan't catch SIGINT\n");
-    }
-
-    if(sigaction(SIGABRT, &data.sigact, NULL) == -1) {
-        printf("\ncan't catch SIGABRT\n");
-    }
-
-    if(sigaction(SIGBUS, &data.sigact, NULL) == -1) {
-        printf("\ncan't catch SIGBUS\n");
-    }
-
-    if(sigaction(SIGSEGV, &data.sigact, NULL) == -1) {
-        printf("\ncan't catch SIGSEGV\n");
-    }
-
-    if(sigaction(SIGHUP, &data.sigact, NULL) == -1) {
-        printf("\ncan't catch SIGHUP\n");
-    }
-
-    if(sigaction(SIGPIPE, &data.sigact, NULL) == -1) {
-        printf("\ncan't catch SIGPIPE\n");
-    }
-*/
 
 
     // Review input parameters
@@ -640,19 +579,12 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         }
     }
 
-/*
-    if(data.processinfo == 1) {
-        processinfo->loopstat = 1;    // loop running
-    }*/
-
-   // int loopCTRLexit = 0; // toggles to 1 when loop is set to exit cleanly
-
 
     // ==================================
     // STARTING LOOP
     // ==================================
     processinfo_loopstart(processinfo); // Notify processinfo that we are entering loop
-
+	processinfo_WriteMessage(processinfo, "running loop");
 
     while(loopOK == 1) {
         struct timespec tdiff;
@@ -666,22 +598,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         int t05OK = 0;
         int t06OK = 0;
 
-		loopOK = processinfo_loopstep(processinfo);
-        
-        // processinfo control
-        /*if(data.processinfo == 1) {
-            while(processinfo->CTRLval == 1) { // pause
-                usleep(50);
-            }
-
-            if(processinfo->CTRLval == 2) { // single iteration
-                processinfo->CTRLval = 1;
-            }
-
-            if(processinfo->CTRLval == 3) { // exit loop
-                loopCTRLexit = 1;
-            }
-        }*/
+        loopOK = processinfo_loopstep(processinfo);
 
         clock_gettime(CLOCK_REALTIME, &t0);
 
@@ -741,8 +658,8 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
             t00OK = 1;
             clock_gettime(CLOCK_REALTIME, &t00);
 
-           // if((data.processinfo == 1) && (processinfo->MeasureTiming == 1)) {
-                processinfo_exec_start(processinfo);
+            // if((data.processinfo == 1) && (processinfo->MeasureTiming == 1)) {
+            processinfo_exec_start(processinfo);
             //}
 
             if(semr == 0) {
@@ -842,10 +759,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
             }
         } else { // WAIT FOR NEW MODEVAL
             sem_wait(data.image[ID_modeval].semptr[insem]);
-
-         //   if((data.processinfo == 1) && (processinfo->MeasureTiming == 1)) {
-                processinfo_exec_start(processinfo);
-           // }
+            processinfo_exec_start(processinfo);
         }
 
 
@@ -927,12 +841,8 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         clock_gettime(CLOCK_REALTIME, &t06);
 
 
-     //   if((data.processinfo == 1) && (processinfo->MeasureTiming == 1)) {
-            processinfo_exec_end(processinfo);
-      //  }
+        processinfo_exec_end(processinfo);
 
-        //	printf("wait\n");
-        //	fflush(stdout);
 
         if(twait1 < 0) {
             twait1 = 0;
@@ -1006,64 +916,12 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         		}
         	*/
 
-    /*    if(data.processinfo == 1) {
-            processinfo->loopcnt = loopcnt;
-        }*/
 
-
-        // process signals
-/*
-        if(data.signal_INT == 1) {
-            loopOK = 0;
-            if(data.processinfo == 1) {
-                processinfo_SIGexit(processinfo, SIGINT);
-            }
-        }
-
-        if(data.signal_ABRT == 1) {
-            loopOK = 0;
-            if(data.processinfo == 1) {
-                processinfo_SIGexit(processinfo, SIGABRT);
-            }
-        }
-
-        if(data.signal_BUS == 1) {
-            loopOK = 0;
-            if(data.processinfo == 1) {
-                processinfo_SIGexit(processinfo, SIGBUS);
-            }
-        }
-
-        if(data.signal_SEGV == 1) {
-            loopOK = 0;
-            if(data.processinfo == 1) {
-                processinfo_SIGexit(processinfo, SIGSEGV);
-            }
-        }
-
-        if(data.signal_HUP == 1) {
-            loopOK = 0;
-            if(data.processinfo == 1) {
-                processinfo_SIGexit(processinfo, SIGHUP);
-            }
-        }
-
-        if(data.signal_PIPE == 1) {
-            loopOK = 0;
-            if(data.processinfo == 1) {
-                processinfo_SIGexit(processinfo, SIGPIPE);
-            }
-        }
-
-*/
 
         initref = 1;
-  //      loopcnt++;
     }
 
-    //if(data.processinfo == 1) {
-        processinfo_cleanExit(processinfo);
-   // }
+    processinfo_cleanExit(processinfo);
 
 
 
