@@ -146,7 +146,6 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
     float alpha = 1.0;
     float beta = 0.0;
-    int loopOK;
     struct timespec ts;
     long loopcnt;
     long long cnt = -1;
@@ -236,7 +235,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     processinfo->MeasureTiming = 1; // Measure timing 
     processinfo->RT_priority = RT_priority;  // RT_priority, 0-99. Larger number = higher priority. If <0, ignore
 
-	int loopOK;
+	int loopOK = 1;
 
 /*
 
