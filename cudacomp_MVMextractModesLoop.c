@@ -584,7 +584,13 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     // STARTING LOOP
     // ==================================
     processinfo_loopstart(processinfo); // Notify processinfo that we are entering loop
-	processinfo_WriteMessage(processinfo, "running loop");
+
+    if(MODEVALCOMPUTE == 1) {
+        sprintf(pinfomsg, "MVM %s %s -> %s TRACE=%d PROC=%d", IDmodes_name, in_stream, IDmodes_val_name, TRACEMODE, PROCESS);
+    } else {
+        sprintf(pinfomsg, "passthrough %s TRACE=%d PROC=%d", IDmodes_val_name, TRACEMODE, PROCESS);
+    }
+    processinfo_WriteMessage(processinfo, pinfomsg);
 
     while(loopOK == 1) {
         struct timespec tdiff;
