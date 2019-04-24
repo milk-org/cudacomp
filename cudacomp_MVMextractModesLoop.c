@@ -105,6 +105,133 @@
 
 
 
+//
+// manages configuration parameters
+// initializes configuration parameters structure
+//
+
+int CUDACOMP_MVMextractModesLoop_FPCONF(
+    char *fpsname,
+    uint32_t CMDmode
+) {
+	    uint16_t loopstatus;
+
+    // SETUP FPS
+    FUNCTION_PARAMETER_STRUCT fps = function_parameter_FPCONFsetup(fpsname, CMDmode, &loopstatus);
+    if(loopstatus == 0) { // stop fps
+        return 0;
+    }
+
+    // ALLOCATE FPS ENTRIES
+
+    void *pNull = NULL;
+    uint64_t FPFLAG;
+
+    FPFLAG = FPFLAG_DEFAULT_INPUT | FPFLAG_MINLIMIT | FPFLAG_MAXLIMIT;
+    FPFLAG &= ~FPFLAG_WRITECONF;
+    FPFLAG &= ~FPFLAG_WRITERUN;
+
+/*    long DMindex_default[4] = { DMindex, 0, 9, DMindex };
+    long fp_DMindex = function_parameter_add_entry(&fps, "AOCONF.DMindex", "Deformable mirror index", FPTYPE_INT64, FPFLAG, &DMindex_default);
+
+    FPFLAG = FPFLAG_DEFAULT_INPUT | FPFLAG_MINLIMIT;
+    FPFLAG &= ~FPFLAG_WRITERUN;
+    long DMsize_default[4] = { 1, 1, 1000, 1 };
+    long fp_DMxsize = function_parameter_add_entry(&fps, "AOCONF.DMxsize", "Deformable mirror X size", FPTYPE_INT64, FPFLAG, &DMsize_default);
+    long fp_DMysize = function_parameter_add_entry(&fps, "AOCONF.DMysize", "Deformable mirror Y size", FPTYPE_INT64, FPFLAG, &DMsize_default);
+
+    FPFLAG = FPFLAG_DEFAULT_INPUT | FPFLAG_MINLIMIT;
+    FPFLAG &= ~FPFLAG_WRITERUN;
+    long NBchannel_default[4] = { 12, 1, 20, 12 };
+    long fp_NBchannel = function_parameter_add_entry(&fps, ".NBchannel", "Number of channels", FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, &NBchannel_default);
+
+    FPFLAG = FPFLAG_DEFAULT_INPUT | FPFLAG_MINLIMIT | FPFLAG_MAXLIMIT;
+    FPFLAG &= ~FPFLAG_WRITERUN;
+    long AveMode_default[4] = { 0, 0, 2, 0 };
+    long fp_AveMode = function_parameter_add_entry(&fps, ".AveMode", "Averaging mode", FPTYPE_INT64, FPFLAG, &AveMode_default);
+
+    //long dm2dm_mode_default[4] = { 0, 0, 1, 0 };
+    long fp_dm2dm_mode     = function_parameter_add_entry(&fps, ".option.dm2dm_mode", "DM to DM offset mode", FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull); //&dm2dm_mode_default);
+
+    long fp_dm2dm_DMmodes  = function_parameter_add_entry(&fps, ".option.dm2dm_DMmodes", "Output stream DM to DM", FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_dm2dm_outdisp  = function_parameter_add_entry(&fps, ".option.dm2dm_outdisp", "data stream to which output DM is written", FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_wfsrefmode     = function_parameter_add_entry(&fps, ".option.wfsrefmode", "WFS ref mode", FPTYPE_ONOFF, FPFLAG, pNull);
+
+    long fp_wfsref_WFSRespMat = function_parameter_add_entry(&fps, ".option.wfsref_WFSRespMat", "Output WFS resp matrix", FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_wfsref_out     = function_parameter_add_entry(&fps, ".option.wfsref_out", "Output WFS", FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_voltmode       = function_parameter_add_entry(&fps, ".option.voltmode", "Volt mode", FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_volttype       = function_parameter_add_entry(&fps, ".option.volttype", "Volt type", FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_stroke100      = function_parameter_add_entry(&fps, ".option.stroke100", "Stroke for 100 V [um]", FPTYPE_FLOAT64, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_voltname       = function_parameter_add_entry(&fps, ".option.voltname", "Stream name for volt output", FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT, pNull);
+
+    double DClevel_default[4] = { 0.0, 0.0, 100.0, 0.0 };
+    long fp_DClevel = function_parameter_add_entry(&fps, ".option.DClevel", "DC level [um]", FPTYPE_FLOAT64, FPFLAG_DEFAULT_INPUT, &DClevel_default);
+
+    long fp_maxvolt = function_parameter_add_entry(&fps, ".option.maxvolt", "Maximum voltage", FPTYPE_FLOAT64, FPFLAG_DEFAULT_INPUT, pNull);
+
+    // status (RO)
+    long fp_loopcnt = function_parameter_add_entry(&fps, ".status.loopcnt", "Loop counter", FPTYPE_INT64, FPFLAG_DEFAULT_STATUS, pNull);
+
+
+*/
+
+
+    // RUN UPDATE LOOP
+    while(loopstatus == 1) {
+        if(function_parameter_FPCONFloopstep(&fps, CMDmode, &loopstatus) == 1) { // if update needed
+            // here goes the logic
+  /*          if(fps.parray[fp_dm2dm_mode].fpflag & FPFLAG_ONOFF) {   // ON state
+                fps.parray[fp_dm2dm_DMmodes].fpflag |= FPFLAG_USED;
+                fps.parray[fp_dm2dm_outdisp].fpflag |= FPFLAG_USED;
+                fps.parray[fp_dm2dm_DMmodes].fpflag |= FPFLAG_VISIBLE;
+                fps.parray[fp_dm2dm_outdisp].fpflag |= FPFLAG_VISIBLE;
+            } else { // OFF state
+                fps.parray[fp_dm2dm_DMmodes].fpflag &= ~FPFLAG_USED;
+                fps.parray[fp_dm2dm_outdisp].fpflag &= ~FPFLAG_USED;
+                fps.parray[fp_dm2dm_DMmodes].fpflag &= ~FPFLAG_VISIBLE;
+                fps.parray[fp_dm2dm_outdisp].fpflag &= ~FPFLAG_VISIBLE;
+            }
+
+
+            if(fps.parray[fp_wfsrefmode].fpflag & FPFLAG_ONOFF) {  // ON state
+                fps.parray[fp_wfsref_WFSRespMat].fpflag |= FPFLAG_USED;
+                fps.parray[fp_wfsref_WFSRespMat].fpflag |= FPFLAG_VISIBLE;
+                fps.parray[fp_wfsref_out].fpflag |= FPFLAG_USED;
+                fps.parray[fp_wfsref_out].fpflag |= FPFLAG_VISIBLE;
+            } else { // OFF state
+                fps.parray[fp_wfsref_WFSRespMat].fpflag &= ~FPFLAG_USED;
+                fps.parray[fp_wfsref_WFSRespMat].fpflag &= ~FPFLAG_VISIBLE;
+                fps.parray[fp_wfsref_out].fpflag &= ~FPFLAG_USED;
+                fps.parray[fp_wfsref_out].fpflag &= ~FPFLAG_VISIBLE;
+            }
+
+
+
+            if(fps.parray[fp_voltmode].fpflag & FPFLAG_ONOFF) {  // ON state
+                fps.parray[fp_voltname].fpflag |= FPFLAG_USED;
+                fps.parray[fp_voltname].fpflag |= FPFLAG_VISIBLE;
+            } else { // OFF state
+                fps.parray[fp_voltname].fpflag &= ~FPFLAG_USED;
+                fps.parray[fp_voltname].fpflag &= ~FPFLAG_VISIBLE;
+            }
+*/
+            functionparameter_CheckParametersAll(&fps);  // check all parameter values
+        }
+    }
+    function_parameter_FPCONFexit(&fps);
+
+
+    return EXIT_SUCCESS;
+}
+
+
 
 
 
@@ -413,10 +540,10 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
         printf("%d devices found\n", deviceCount);
         fflush(stdout);
         printf("\n");
-        for(k = 0; k < deviceCount; ++k) {
+        for(k = 0; k < deviceCount; k++) {
             cudaGetDeviceProperties(&deviceProp, k);
-            printf("Device %d [ %20s ]  has compute capability %d.%d.\n",
-                   k, deviceProp.name, deviceProp.major, deviceProp.minor);
+            printf("Device %d / %d [ %20s ]  has compute capability %d.%d.\n",
+                   k, deviceCount, deviceProp.name, deviceProp.major, deviceProp.minor);
             printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n", (float)deviceProp.totalGlobalMem / 1048576.0f, (unsigned long long) deviceProp.totalGlobalMem);
             printf("  (%2d) Multiprocessors\n", deviceProp.multiProcessorCount);
             printf("  GPU Clock rate:                                %.0f MHz (%0.2f GHz)\n", deviceProp.clockRate * 1e-3f, deviceProp.clockRate * 1e-6f);
