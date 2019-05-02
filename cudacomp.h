@@ -315,6 +315,8 @@ int GPU_SVD_computeControlMatrix(
 int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, int GPUindex, const char *IDoutmap_name, int offsetmode, const char *IDoffset_name);
 
 
+errno_t CUDACOMP_MVMextractModesLoop_FPCONF(char *fpsname, uint32_t CMDmode);
+errno_t CUDACOMP_MVMextractModesLoop_RUN(char *fpsname);
 
 /**
  * @brief extract mode coefficients from data stream

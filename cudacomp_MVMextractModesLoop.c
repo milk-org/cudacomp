@@ -4,9 +4,6 @@
  * 
  * Requires CUDA library
  *  
- * @author  O. Guyon
- * @date    24 Aug 2018
- *
  */
 
 
@@ -110,118 +107,99 @@
 // initializes configuration parameters structure
 //
 
-int CUDACOMP_MVMextractModesLoop_FPCONF(
+errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
     char *fpsname,
     uint32_t CMDmode
 ) {
-	    uint16_t loopstatus;
 
+    // ===========================
     // SETUP FPS
+    // ===========================
+    uint16_t loopstatus;
     FUNCTION_PARAMETER_STRUCT fps = function_parameter_FPCONFsetup(fpsname, CMDmode, &loopstatus);
     if(loopstatus == 0) { // stop fps
         return 0;
     }
 
+
+
+    // ===========================
     // ALLOCATE FPS ENTRIES
+    // ===========================
+
 
     void *pNull = NULL;
+
     uint64_t FPFLAG;
-
-    FPFLAG = FPFLAG_DEFAULT_INPUT | FPFLAG_MINLIMIT | FPFLAG_MAXLIMIT;
-    FPFLAG &= ~FPFLAG_WRITECONF;
+    FPFLAG = FPFLAG_DEFAULT_INPUT;
+    FPFLAG &= FPFLAG_WRITECONF;
     FPFLAG &= ~FPFLAG_WRITERUN;
 
-/*    long DMindex_default[4] = { DMindex, 0, 9, DMindex };
-    long fp_DMindex = function_parameter_add_entry(&fps, "AOCONF.DMindex", "Deformable mirror index", FPTYPE_INT64, FPFLAG, &DMindex_default);
-
-    FPFLAG = FPFLAG_DEFAULT_INPUT | FPFLAG_MINLIMIT;
-    FPFLAG &= ~FPFLAG_WRITERUN;
-    long DMsize_default[4] = { 1, 1, 1000, 1 };
-    long fp_DMxsize = function_parameter_add_entry(&fps, "AOCONF.DMxsize", "Deformable mirror X size", FPTYPE_INT64, FPFLAG, &DMsize_default);
-    long fp_DMysize = function_parameter_add_entry(&fps, "AOCONF.DMysize", "Deformable mirror Y size", FPTYPE_INT64, FPFLAG, &DMsize_default);
-
-    FPFLAG = FPFLAG_DEFAULT_INPUT | FPFLAG_MINLIMIT;
-    FPFLAG &= ~FPFLAG_WRITERUN;
-    long NBchannel_default[4] = { 12, 1, 20, 12 };
-    long fp_NBchannel = function_parameter_add_entry(&fps, ".NBchannel", "Number of channels", FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, &NBchannel_default);
-
-    FPFLAG = FPFLAG_DEFAULT_INPUT | FPFLAG_MINLIMIT | FPFLAG_MAXLIMIT;
-    FPFLAG &= ~FPFLAG_WRITERUN;
-    long AveMode_default[4] = { 0, 0, 2, 0 };
-    long fp_AveMode = function_parameter_add_entry(&fps, ".AveMode", "Averaging mode", FPTYPE_INT64, FPFLAG, &AveMode_default);
-
-    //long dm2dm_mode_default[4] = { 0, 0, 1, 0 };
-    long fp_dm2dm_mode     = function_parameter_add_entry(&fps, ".option.dm2dm_mode", "DM to DM offset mode", FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull); //&dm2dm_mode_default);
-
-    long fp_dm2dm_DMmodes  = function_parameter_add_entry(&fps, ".option.dm2dm_DMmodes", "Output stream DM to DM", FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT, pNull);
-
-    long fp_dm2dm_outdisp  = function_parameter_add_entry(&fps, ".option.dm2dm_outdisp", "data stream to which output DM is written", FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT, pNull);
-
-    long fp_wfsrefmode     = function_parameter_add_entry(&fps, ".option.wfsrefmode", "WFS ref mode", FPTYPE_ONOFF, FPFLAG, pNull);
-
-    long fp_wfsref_WFSRespMat = function_parameter_add_entry(&fps, ".option.wfsref_WFSRespMat", "Output WFS resp matrix", FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT, pNull);
-
-    long fp_wfsref_out     = function_parameter_add_entry(&fps, ".option.wfsref_out", "Output WFS", FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT, pNull);
-
-    long fp_voltmode       = function_parameter_add_entry(&fps, ".option.voltmode", "Volt mode", FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
-
-    long fp_volttype       = function_parameter_add_entry(&fps, ".option.volttype", "Volt type", FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
-
-    long fp_stroke100      = function_parameter_add_entry(&fps, ".option.stroke100", "Stroke for 100 V [um]", FPTYPE_FLOAT64, FPFLAG_DEFAULT_INPUT, pNull);
-
-    long fp_voltname       = function_parameter_add_entry(&fps, ".option.voltname", "Stream name for volt output", FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT, pNull);
-
-    double DClevel_default[4] = { 0.0, 0.0, 100.0, 0.0 };
-    long fp_DClevel = function_parameter_add_entry(&fps, ".option.DClevel", "DC level [um]", FPTYPE_FLOAT64, FPFLAG_DEFAULT_INPUT, &DClevel_default);
-
-    long fp_maxvolt = function_parameter_add_entry(&fps, ".option.maxvolt", "Maximum voltage", FPTYPE_FLOAT64, FPFLAG_DEFAULT_INPUT, pNull);
-
-    // status (RO)
-    long fp_loopcnt = function_parameter_add_entry(&fps, ".status.loopcnt", "Loop counter", FPTYPE_INT64, FPFLAG_DEFAULT_STATUS, pNull);
 
 
-*/
+	long GPUindex_default[4] = { 0, 0, 9, 0 };
+    long fp_GPUindex        = function_parameter_add_entry(&fps, ".GPUindex", "GPU index",
+                              FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, &GPUindex_default);
 
 
-    // RUN UPDATE LOOP
+    long fp_streamname_in          = function_parameter_add_entry(&fps, ".sname_in",  "input stream vector",
+                                     FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT_STREAM, pNull);
+
+    long fp_streamname_modes       = function_parameter_add_entry(&fps, ".sname_modes",  "input modes matrix",
+                                     FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT_STREAM, pNull);
+
+	FPFLAG = FPFLAG_DEFAULT_INPUT_STREAM;
+	FPFLAG &= ~FPFLAG_STREAM_RUN_REQUIRED;
+    long fp_streamname_intot       = function_parameter_add_entry(&fps, ".option.sname_intot",  "optional input normalization stream",
+                                     FPTYPE_STREAMNAME, FPFLAG, pNull);
+
+    long fp_streamname_refin       = function_parameter_add_entry(&fps, ".option.sname_refin",  "optional input reference to be subtracted stream",
+                                     FPTYPE_STREAMNAME, FPFLAG, pNull);
+
+    long fp_streamname_refout      = function_parameter_add_entry(&fps, ".option.sname_refout",  "optional output reference to be subtracted stream",
+                                     FPTYPE_STREAMNAME, FPFLAG, pNull);
+
+    long fp_stream_outmodesval     = function_parameter_add_entry(&fps, ".sname_outmodesval", "output mode coefficients stream",
+                                     FPTYPE_STREAMNAME, FPFLAG, pNull);
+
+
+
+    long fp_PROCESS         = function_parameter_add_entry(&fps, ".option.PROCESS", "1 if processing",
+                              FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_TRACEMODE       = function_parameter_add_entry(&fps, ".option.TRACEMODE", "1 if writing trace",
+                              FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_MODENORM        = function_parameter_add_entry(&fps, ".option.MODENORM", "1 if input modes should be normalized",
+                              FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_insem           = function_parameter_add_entry(&fps, ".option.insem", "input semaphore index",
+                              FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_axmode          = function_parameter_add_entry(&fps, ".option.axmode", "0 for normal mode extraction, 1 for expansion",
+                              FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_twait           = function_parameter_add_entry(&fps, ".option.twait", "if >0, insert time wait [us] at each iteration",
+                              FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
+
+    long fp_semwarn         = function_parameter_add_entry(&fps, ".option.semwarn", "issue warning when input stream semaphore >1",
+                              FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+
+
+
+
+    // =====================================
+    // PARAMETER LOGIC AND UPDATE LOOP
+    // =====================================
+
+
     while(loopstatus == 1) {
-        if(function_parameter_FPCONFloopstep(&fps, CMDmode, &loopstatus) == 1) { // if update needed
+        if(function_parameter_FPCONFloopstep(&fps, CMDmode, &loopstatus) == 1) { // Apply logic if update is needed
             // here goes the logic
-  /*          if(fps.parray[fp_dm2dm_mode].fpflag & FPFLAG_ONOFF) {   // ON state
-                fps.parray[fp_dm2dm_DMmodes].fpflag |= FPFLAG_USED;
-                fps.parray[fp_dm2dm_outdisp].fpflag |= FPFLAG_USED;
-                fps.parray[fp_dm2dm_DMmodes].fpflag |= FPFLAG_VISIBLE;
-                fps.parray[fp_dm2dm_outdisp].fpflag |= FPFLAG_VISIBLE;
-            } else { // OFF state
-                fps.parray[fp_dm2dm_DMmodes].fpflag &= ~FPFLAG_USED;
-                fps.parray[fp_dm2dm_outdisp].fpflag &= ~FPFLAG_USED;
-                fps.parray[fp_dm2dm_DMmodes].fpflag &= ~FPFLAG_VISIBLE;
-                fps.parray[fp_dm2dm_outdisp].fpflag &= ~FPFLAG_VISIBLE;
-            }
+            
+            
+            
 
-
-            if(fps.parray[fp_wfsrefmode].fpflag & FPFLAG_ONOFF) {  // ON state
-                fps.parray[fp_wfsref_WFSRespMat].fpflag |= FPFLAG_USED;
-                fps.parray[fp_wfsref_WFSRespMat].fpflag |= FPFLAG_VISIBLE;
-                fps.parray[fp_wfsref_out].fpflag |= FPFLAG_USED;
-                fps.parray[fp_wfsref_out].fpflag |= FPFLAG_VISIBLE;
-            } else { // OFF state
-                fps.parray[fp_wfsref_WFSRespMat].fpflag &= ~FPFLAG_USED;
-                fps.parray[fp_wfsref_WFSRespMat].fpflag &= ~FPFLAG_VISIBLE;
-                fps.parray[fp_wfsref_out].fpflag &= ~FPFLAG_USED;
-                fps.parray[fp_wfsref_out].fpflag &= ~FPFLAG_VISIBLE;
-            }
-
-
-
-            if(fps.parray[fp_voltmode].fpflag & FPFLAG_ONOFF) {  // ON state
-                fps.parray[fp_voltname].fpflag |= FPFLAG_USED;
-                fps.parray[fp_voltname].fpflag |= FPFLAG_VISIBLE;
-            } else { // OFF state
-                fps.parray[fp_voltname].fpflag &= ~FPFLAG_USED;
-                fps.parray[fp_voltname].fpflag &= ~FPFLAG_VISIBLE;
-            }
-*/
             functionparameter_CheckParametersAll(&fps);  // check all parameter values
         }
     }
@@ -236,25 +214,9 @@ int CUDACOMP_MVMextractModesLoop_FPCONF(
 
 
 
-/** @brief extract mode coefficients from data stream (MVM)
- *
- */
 
-int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
-    const char *in_stream,           // input stream
-    const char *intot_stream,        // [optional]   input normalization stream
-    const char *IDmodes_name,        // Modes matrix
-    const char *IDrefin_name,        // [optional] input reference  - to be subtracted
-    const char *IDrefout_name,       // [optional] output reference - to be added
-    const char *IDmodes_val_name,    // ouput stream
-    int         GPUindex,            // GPU index
-    int         PROCESS,             // 1 if postprocessing
-    int         TRACEMODE,           // 1 if writing trace
-    int         MODENORM,            // 1 if input modes should be normalized
-    int         insem,               // input semaphore index
-    int         axmode,              // 0 for normal mode extraction, 1 for expansion
-    long        twait,               // if >0, insert time wait [us] at each iteration
-    int         semwarn              // 1 if warning when input stream semaphore >1
+errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
+    char *fpsname
 ) {
     long IDmodes;
     long ID;
@@ -339,6 +301,79 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     int RT_priority = 91; //any number from 0-99
 
 
+
+    // ===========================
+    // CONNECT TO FPS
+    // ===========================
+    FUNCTION_PARAMETER_STRUCT fps;
+    if(function_parameter_struct_connect(fpsname, &fps, FPSCONNECT_RUN) == -1) {
+        printf("ERROR: fps \"%s\" does not exist -> running without FPS interface\n", fpsname);
+        return RETURN_FAILURE;
+    }
+
+    // ===============================
+    // GET FUNCTION PARAMETER VALUES
+    // ===============================
+
+	char in_stream[200];
+    strncpy(in_stream,  functionparameter_GetParamPtr_STRING(&fps, ".sname_in"),  FUNCTION_PARAMETER_STRMAXLEN);
+
+	char IDmodes_name[200];
+    strncpy(IDmodes_name,  functionparameter_GetParamPtr_STRING(&fps, ".sname_modes"),  FUNCTION_PARAMETER_STRMAXLEN);
+
+
+	char intot_stream[200];
+    strncpy(intot_stream,  functionparameter_GetParamPtr_STRING(&fps, ".option.sname_intot"),  FUNCTION_PARAMETER_STRMAXLEN);
+
+	char IDrefin_name[200];
+    strncpy(IDrefin_name,  functionparameter_GetParamPtr_STRING(&fps, ".option.sname_refin"),  FUNCTION_PARAMETER_STRMAXLEN);
+
+	char IDrefout_name[200];
+    strncpy(IDrefout_name,  functionparameter_GetParamPtr_STRING(&fps, ".option.sname_refout"),  FUNCTION_PARAMETER_STRMAXLEN);
+
+	char IDmodes_val_name[200];
+    strncpy(IDmodes_val_name,  functionparameter_GetParamPtr_STRING(&fps, ".sname_outmodesval"),  FUNCTION_PARAMETER_STRMAXLEN);
+
+
+	int GPUindex    = functionparameter_GetParamValue_INT64(&fps, ".GPUindex");
+	int PROCESS     = functionparameter_GetParamValue_ONOFF(&fps, ".option.PROCESS");
+	int TRACEMODE   = functionparameter_GetParamValue_ONOFF(&fps, ".option.TRACEMODE");
+	int MODENORM    = functionparameter_GetParamValue_ONOFF(&fps, ".option.MODENORM");
+	int insem       = functionparameter_GetParamValue_INT64(&fps, ".option.insem");
+	int axmode      = functionparameter_GetParamValue_INT64(&fps, ".option.axmode");
+	long twait      = functionparameter_GetParamValue_INT64(&fps, ".option.twait");
+	int semwarn     = functionparameter_GetParamValue_ONOFF(&fps, ".option.semwarn");
+	
+
+
+    // ===============================
+    // Review input parameters
+    // ===============================
+
+    printf("\n");
+    printf("in_stream        : %16s  input stream\n", in_stream);
+    printf("intot_stream     : %16s  [optional] input normalization stream\n", intot_stream);
+    printf("IDmodes_name     : %16s  Modes\n", IDmodes_name);
+    printf("IDrefin_name     : %16s  [optional] input reference  - to be subtracted\n", IDrefin_name);
+    printf("IDrefout_name    : %16s  [optional] output reference - to be added\n", IDrefout_name);
+    printf("IDmodes_val_name : %16s  ouput stream\n", IDmodes_val_name);
+    
+    printf("GPUindex         : %16d  GPU index\n", GPUindex);
+    printf("PROCESS          : %16d  1 if postprocessing\n", PROCESS);
+    printf("TRACEMODE        : %16d  1 if writing trace\n", TRACEMODE);
+    printf("MODENORM         : %16d  1 if input modes should be normalized\n", MODENORM);
+    printf("insem            : %16d  input semaphore index\n", insem);
+    printf("axmode           : %16d  0 for normal mode extraction, 1 for expansion\n", axmode);
+    printf("twait            : %16ld  if >0, insert time wait [us] at each iteration\n", twait);
+    printf("semwarn          : %16d  1 if warning when input stream semaphore >1\n", semwarn);
+    printf("\n");
+
+
+
+    // ===========================
+    // processinfo support 
+    // ===========================
+
     char pinfoname[200];
     sprintf(pinfoname, "cudaMVMextract-%s", in_stream);
 
@@ -364,25 +399,15 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
 
 
-    // Review input parameters
-    printf("\n");
-    printf("in_stream        : %16s  input stream\n", in_stream);
-    printf("intot_stream     : %16s  [optional] input normalization stream\n", intot_stream);
-    printf("IDmodes_name     : %16s  Modes\n", IDmodes_name);
-    printf("IDrefin_name     : %16s  [optional] input reference  - to be subtracted\n", IDrefin_name);
-    printf("IDrefout_name    : %16s  [optional] output reference - to be added\n", IDrefout_name);
-    printf("IDmodes_val_name : %16s  ouput stream\n", IDmodes_val_name);
-    printf("GPUindex         : %16d  GPU index\n", GPUindex);
-    printf("PROCESS          : %16d  1 if postprocessing\n", PROCESS);
-    printf("TRACEMODE        : %16d  1 if writing trace\n", TRACEMODE);
-    printf("MODENORM         : %16d  1 if input modes should be normalized\n", MODENORM);
-    printf("insem            : %16d  input semaphore index\n", insem);
-    printf("axmode           : %16d  0 for normal mode extraction, 1 for expansion\n", axmode);
-    printf("twait            : %16ld  if >0, insert time wait [us] at each iteration\n", twait);
-    printf("semwarn          : %16d  1 if warning when input stream semaphore >1\n", semwarn);
-    printf("\n");
 
 
+
+
+
+
+    // ===========================
+    // INITIALIZATIONS 
+    // ===========================
 
 
     // CONNECT TO INPUT STREAM
@@ -413,8 +438,6 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
     m = data.image[IDin].md[0].size[0] * data.image[IDin].md[0].size[1];
     COREMOD_MEMORY_image_set_createsem(in_stream, 10);
-
-
 
 
     // CONNECT TO TOTAL FLUX STREAM
@@ -601,7 +624,6 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
 
 
-    loopOK = 1;
     loopcnt = 0;
 
 
@@ -705,6 +727,11 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
             strcpy(processinfo->statusmsg, msgstring);
         }
     }
+
+
+
+
+
 
 
     // ==================================
@@ -1077,8 +1104,102 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
 
 
-    return(0);
+
+    return RETURN_SUCCESS;
 }
+
+
+
+
+
+
+
+
+
+
+
+/** @brief extract mode coefficients from data stream (MVM)
+ *
+ */
+
+int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
+    const char *in_stream,           // input stream
+    const char *intot_stream,        // [optional]   input normalization stream
+    const char *IDmodes_name,        // Modes matrix
+    const char *IDrefin_name,        // [optional] input reference  - to be subtracted
+    const char *IDrefout_name,       // [optional] output reference - to be added
+    const char *IDmodes_val_name,    // ouput stream
+    int         GPUindex,            // GPU index
+    int         PROCESS,             // 1 if postprocessing
+    int         TRACEMODE,           // 1 if writing trace
+    int         MODENORM,            // 1 if input modes should be normalized
+    int         insem,               // input semaphore index
+    int         axmode,              // 0 for normal mode extraction, 1 for expansion
+    long        twait,               // if >0, insert time wait [us] at each iteration
+    int         semwarn              // 1 if warning when input stream semaphore >1
+) {
+
+
+    // ==================================
+    // CREATE FPS AND START CONF
+    // ==================================
+
+    char fpsname[200];
+    long pindex = (long) getpid();  // index used to differentiate multiple calls to function
+    // if we don't have anything more informative, we use PID
+    FUNCTION_PARAMETER_STRUCT fps;
+    sprintf(fpsname, "cudaMVMextmodes-%06ld", pindex);
+    CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, CMDCODE_CONFINIT);
+
+
+
+
+    // ==================================
+    // SET PARAMETER VALUES
+    // ==================================
+
+    function_parameter_struct_connect(fpsname, &fps, FPSCONNECT_SIMPLE);
+
+    functionparameter_SetParamValue_STRING(&fps, ".sname_in", in_stream);
+    functionparameter_SetParamValue_STRING(&fps, ".sname_modes", IDmodes_name);
+    functionparameter_SetParamValue_STRING(&fps, ".option.sname_intot", intot_stream);
+    functionparameter_SetParamValue_STRING(&fps, ".option.sname_refin", IDrefin_name);
+    functionparameter_SetParamValue_STRING(&fps, ".option.sname_refout", IDrefout_name);
+    functionparameter_SetParamValue_STRING(&fps, ".sname_outmodesval", IDmodes_val_name);
+
+    functionparameter_SetParamValue_INT64(&fps, ".GPUindex", GPUindex);
+    functionparameter_SetParamValue_ONOFF(&fps, ".option.PROCESS", PROCESS);
+    functionparameter_SetParamValue_ONOFF(&fps, ".option.TRACEMODE", TRACEMODE);
+    functionparameter_SetParamValue_ONOFF(&fps, ".option.MODENORM", MODENORM);
+    functionparameter_SetParamValue_INT64(&fps, ".option.insem", insem);
+    functionparameter_SetParamValue_INT64(&fps, ".option.axmode", axmode);
+    functionparameter_SetParamValue_INT64(&fps, ".option.twait", twait);
+    functionparameter_SetParamValue_ONOFF(&fps, ".option.semwarn", semwarn);
+
+    function_parameter_struct_disconnect(&fps);
+
+
+
+
+    // ==================================
+    // START RUN PROCESS
+    // ==================================
+
+    CUDACOMP_MVMextractModesLoop_RUN(fpsname);
+
+
+    return RETURN_SUCCESS;
+}
+
+
+
+
+
+
+
+
+
+	
 
 
 

@@ -372,7 +372,7 @@ int_fast8_t CUDACOMP_Coeff2Map_offset_Loop_cli()
         return 1;
 }
 
-
+/*
 int_fast8_t CUDACOMP_MVMextractModesLoop_cli()
 {
     if(CLI_checkarg(1,4)+CLI_checkarg(2,5)+CLI_checkarg(3,4)+CLI_checkarg(4,5)+CLI_checkarg(5,5)+CLI_checkarg(6,5)+CLI_checkarg(7,2)+CLI_checkarg(8,2)+CLI_checkarg(9,2)+CLI_checkarg(10,2)+CLI_checkarg(11,2)+CLI_checkarg(12,2)+CLI_checkarg(13,2)+CLI_checkarg(14,2)==0)
@@ -380,7 +380,87 @@ int_fast8_t CUDACOMP_MVMextractModesLoop_cli()
     else
         return 1;
 }
+*/
+
+
+
+
+
+
+
+int_fast8_t CUDACOMP_MVMextractModesLoop_cli() {
+    char fpsname[200];
+    
+    // First, we try to execute function through FPS interface
+    if(CLI_checkarg(1, 5) == 0) { // check that first arg is string, second arg is int
+        //unsigned int OptionalArg00 = data.cmdargtoken[2].val.numl;
+        // Set FPS interface name
+        // By convention, if there are optional arguments, they should be appended to the fps name
+        //
+        if(data.processnameflag == 0) { // name fps to something different than the process name
+            if(strlen(data.cmdargtoken[2].val.string)>0)
+				sprintf(fpsname, "cudaMVM-%s", data.cmdargtoken[2].val.string);
+			else
+				sprintf(fpsname, "cudaMVM");
+        } else { // Automatically set fps name to be process name up to first instance of character '.'
+            strcpy(fpsname, data.processname0);
+        }
+        if(strcmp(data.cmdargtoken[1].val.string, "_CONFINIT_") == 0) {  // Initialize FPS and conf process
+            printf("Function parameters configure\n");
+            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, CMDCODE_CONFINIT);
+            return RETURN_SUCCESS;
+        }
+        if(strcmp(data.cmdargtoken[1].val.string, "_CONFSTART_") == 0) {  // Start conf process
+            printf("Function parameters configure\n");
+            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, CMDCODE_CONFSTART);
+            return RETURN_SUCCESS;
+        }
+        if(strcmp(data.cmdargtoken[1].val.string, "_CONFSTOP_") == 0) { // Stop conf process
+            printf("Function parameters configure\n");
+            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, CMDCODE_CONFSTOP);
+            return RETURN_SUCCESS;
+        }
+        if(strcmp(data.cmdargtoken[1].val.string, "_RUNSTART_") == 0) { // Run process
+            printf("Run function\n");
+            CUDACOMP_MVMextractModesLoop_RUN(fpsname);
+            return RETURN_SUCCESS;
+        }
+        if(strcmp(data.cmdargtoken[1].val.string, "_RUNSTOP_") == 0) { // Stop process
+          // printf("Run function\n");
+           // CUDACOMP_MVMextractModesLoop_STOP(OptionalArg00);
+            return RETURN_SUCCESS;
+        }
+    }
+    // non FPS implementation - all parameters specified at function launch
+     if(CLI_checkarg(1,4)+CLI_checkarg(2,5)+CLI_checkarg(3,4)+CLI_checkarg(4,5)+CLI_checkarg(5,5)+CLI_checkarg(6,5)+CLI_checkarg(7,2)+CLI_checkarg(8,2)+CLI_checkarg(9,2)+CLI_checkarg(10,2)+CLI_checkarg(11,2)+CLI_checkarg(12,2)+CLI_checkarg(13,2)+CLI_checkarg(14,2)==0) {
+        CUDACOMP_MVMextractModesLoop(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.string, data.cmdargtoken[4].val.string, data.cmdargtoken[5].val.string, data.cmdargtoken[6].val.string, data.cmdargtoken[7].val.numl, data.cmdargtoken[8].val.numl, data.cmdargtoken[9].val.numl, data.cmdargtoken[10].val.numl, data.cmdargtoken[11].val.numl, data.cmdargtoken[12].val.numl, data.cmdargtoken[13].val.numl, data.cmdargtoken[14].val.numl);
+            return RETURN_SUCCESS;
+        } else {
+            return RETURN_FAILURE;
+        }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 #endif
+
+
+
+
+
+
+
+
+
 
 
 
