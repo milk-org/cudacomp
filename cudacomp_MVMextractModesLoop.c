@@ -914,11 +914,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                     data.image[ID_modeval].md[0].cnt0++;
                     data.image[ID_modeval].md[0].write = 0;
                 }
-            }
-            
-            sprintf(pinfomsg, "M %d B %d I %d - %f", MODENORM, BETAMODE, INNORMMODE, normcoeff[0]);
-			processinfo_WriteMessage(processinfo, pinfomsg);
-            
+            }                        
         } else { // WAIT FOR NEW MODEVAL
             sem_wait(data.image[ID_modeval].semptr[insem]);
             processinfo_exec_start(processinfo);
