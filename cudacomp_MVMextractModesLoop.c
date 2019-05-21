@@ -180,7 +180,7 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
                               FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
 
     long fp_twait           = function_parameter_add_entry(&fps, ".option.twait", "if >0, insert time wait [us] at each iteration",
-                              FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
+                              FPTYPE_INT64, FPFLAG_DEFAULT_INPUT|FPFLAG_WRITERUN, pNull);
 
     long fp_semwarn         = function_parameter_add_entry(&fps, ".option.semwarn", "issue warning when input stream semaphore >1",
                               FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
@@ -341,7 +341,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 	int MODENORM    = functionparameter_GetParamValue_ONOFF(&fps, ".option.MODENORM");
 	int insem       = functionparameter_GetParamValue_INT64(&fps, ".option.insem");
 	int axmode      = functionparameter_GetParamValue_INT64(&fps, ".option.axmode");
-	long twait      = functionparameter_GetParamValue_INT64(&fps, ".option.twait");
+	long *twait      = functionparameter_GetParamPtr_INT64(&fps, ".option.twait");
 	int semwarn     = functionparameter_GetParamValue_ONOFF(&fps, ".option.semwarn");
 	
 
@@ -364,7 +364,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     printf("MODENORM         : %16d  1 if input modes should be normalized\n", MODENORM);
     printf("insem            : %16d  input semaphore index\n", insem);
     printf("axmode           : %16d  0 for normal mode extraction, 1 for expansion\n", axmode);
-    printf("twait            : %16ld  if >0, insert time wait [us] at each iteration\n", twait);
+    printf("twait            : %16ld  if >0, insert time wait [us] at each iteration\n", *twait);
     printf("semwarn          : %16d  1 if warning when input stream semaphore >1\n", semwarn);
     printf("\n");
 
@@ -532,7 +532,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 
 
-
+	// CONNNECT TO OUTPUT STREAM
 
     ID_modeval = image_ID(IDmodes_val_name);
     if(ID_modeval == -1) { // CREATE IT
@@ -553,7 +553,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     free(arraytmp);
 
 
-
+	printf("OUTPUT STREAM : %s  ID: %ld\n", IDmodes_val_name, ID_modeval);
+	list_image_ID();
 
 
     if(MODEVALCOMPUTE == 1) {
@@ -706,7 +707,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 
 
-    twait1 = twait;
+    twait1 = *twait;
 
     printf("LOOP START   MODEVALCOMPUTE = %d\n", MODEVALCOMPUTE);
     fflush(stdout);
@@ -745,6 +746,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
         sprintf(pinfomsg, "passthrough %s TRACE=%d PROC=%d", IDmodes_val_name, TRACEMODE, PROCESS);
     }
     processinfo_WriteMessage(processinfo, pinfomsg);
+
+
 
     while(loopOK == 1) {
         struct timespec tdiff;
@@ -882,6 +885,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 clock_gettime(CLOCK_REALTIME, &t03);
 
                 if(initref == 0) { // construct reference to be subtracted
+					printf("... reference compute\n");
                     cudaStat = cudaMemcpy(modevalarrayref, d_modeval, sizeof(float) * NBmodes, cudaMemcpyDeviceToHost);
 
                     IDrefout = image_ID(IDrefout_name);
@@ -916,7 +920,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 }
             }                        
         } else { // WAIT FOR NEW MODEVAL
-            sem_wait(data.image[ID_modeval].semptr[insem]);
+            int rval;
+            rval = sem_wait(data.image[ID_modeval].semptr[insem]);
+            if(rval == -1) // interrupt
+				loopOK = 0;
+            
             processinfo_exec_start(processinfo);
         }
 
@@ -1006,7 +1014,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
             twait1 = 0;
         }
 
-        if(twait > 0) {
+        if(*twait > 0) {
             usleep(twait1);
         }
 
@@ -1014,7 +1022,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
         tdiff = info_time_diff(t0, t1);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-        if(tdiffv < 1.0e-6 * twait) {
+        if(tdiffv < 1.0e-6 * (*twait)) {
             twait1 ++;
         } else {
             twait1 --;
@@ -1158,21 +1166,21 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
     function_parameter_struct_connect(fpsname, &fps, FPSCONNECT_SIMPLE);
 
-    functionparameter_SetParamValue_STRING(&fps, ".sname_in", in_stream);
-    functionparameter_SetParamValue_STRING(&fps, ".sname_modes", IDmodes_name);
-    functionparameter_SetParamValue_STRING(&fps, ".option.sname_intot", intot_stream);
-    functionparameter_SetParamValue_STRING(&fps, ".option.sname_refin", IDrefin_name);
+    functionparameter_SetParamValue_STRING(&fps, ".sname_in",            in_stream);
+    functionparameter_SetParamValue_STRING(&fps, ".sname_modes",         IDmodes_name);
+    functionparameter_SetParamValue_STRING(&fps, ".option.sname_intot",  intot_stream);
+    functionparameter_SetParamValue_STRING(&fps, ".option.sname_refin",  IDrefin_name);
     functionparameter_SetParamValue_STRING(&fps, ".option.sname_refout", IDrefout_name);
-    functionparameter_SetParamValue_STRING(&fps, ".sname_outmodesval", IDmodes_val_name);
+    functionparameter_SetParamValue_STRING(&fps, ".sname_outmodesval",   IDmodes_val_name);
 
-    functionparameter_SetParamValue_INT64(&fps, ".GPUindex", GPUindex);
-    functionparameter_SetParamValue_ONOFF(&fps, ".option.PROCESS", PROCESS);
-    functionparameter_SetParamValue_ONOFF(&fps, ".option.TRACEMODE", TRACEMODE);
-    functionparameter_SetParamValue_ONOFF(&fps, ".option.MODENORM", MODENORM);
-    functionparameter_SetParamValue_INT64(&fps, ".option.insem", insem);
-    functionparameter_SetParamValue_INT64(&fps, ".option.axmode", axmode);
-    functionparameter_SetParamValue_INT64(&fps, ".option.twait", twait);
-    functionparameter_SetParamValue_ONOFF(&fps, ".option.semwarn", semwarn);
+    functionparameter_SetParamValue_INT64(&fps, ".GPUindex",             GPUindex);
+    functionparameter_SetParamValue_ONOFF(&fps, ".option.PROCESS",       PROCESS);
+    functionparameter_SetParamValue_ONOFF(&fps, ".option.TRACEMODE",     TRACEMODE);
+    functionparameter_SetParamValue_ONOFF(&fps, ".option.MODENORM",      MODENORM);
+    functionparameter_SetParamValue_INT64(&fps, ".option.insem",         insem);
+    functionparameter_SetParamValue_INT64(&fps, ".option.axmode",        axmode);
+    functionparameter_SetParamValue_INT64(&fps, ".option.twait",         twait);
+    functionparameter_SetParamValue_ONOFF(&fps, ".option.semwarn",       semwarn);
 
     function_parameter_struct_disconnect(&fps);
 
