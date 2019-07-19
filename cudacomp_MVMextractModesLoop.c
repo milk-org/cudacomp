@@ -341,7 +341,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 	int MODENORM    = functionparameter_GetParamValue_ONOFF(&fps, ".option.MODENORM");
 	int insem       = functionparameter_GetParamValue_INT64(&fps, ".option.insem");
 	int axmode      = functionparameter_GetParamValue_INT64(&fps, ".option.axmode");
-	long *twait      = functionparameter_GetParamPtr_INT64(&fps, ".option.twait");
+	long *twait     = functionparameter_GetParamPtr_INT64(&fps, ".option.twait");
 	int semwarn     = functionparameter_GetParamValue_ONOFF(&fps, ".option.semwarn");
 	
 
@@ -492,7 +492,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                     data.image[IDmodes].array.F[kk * data.image[IDin].md[0].size[0]*data.image[IDin].md[0].size[1] + jj * data.image[IDin].md[0].size[0] + ii] = data.image[ID].array.F[NBmodes * (jj * data.image[IDin].md[0].size[0] + ii) + kk];
                 }
             }
-        save_fits("_tmpmodes", "!_test_tmpmodes.fits");
+                
+        //save_fits("_tmpmodes", "!_test_tmpmodes.fits");
     }
 
 
