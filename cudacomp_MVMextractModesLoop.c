@@ -117,10 +117,6 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
     // ===========================
     uint16_t loopstatus;
     FUNCTION_PARAMETER_STRUCT fps = function_parameter_FPCONFsetup(fpsname, CMDmode, &loopstatus);
-    if(loopstatus == 0) { // stop fps
-        return 0;
-    }
-
 
 
     // ===========================
@@ -162,6 +158,9 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
     long fp_stream_outmodesval     = function_parameter_add_entry(&fps, ".sname_outmodesval", "output mode coefficients stream",
                                      FPTYPE_STREAMNAME, FPFLAG, pNull);
 
+    long fp_outinit                = function_parameter_add_entry(&fps, ".outinit", "output stream init mode",
+                                     FPTYPE_ONOFF, FPFLAG, pNull);
+
 
 
     long fp_PROCESS         = function_parameter_add_entry(&fps, ".option.PROCESS", "1 if processing",
@@ -186,6 +185,9 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
                               FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
 
 
+    if(loopstatus == 0) { // stop fps
+        return RETURN_SUCCESS;
+    }
 
 
     // =====================================
@@ -206,7 +208,7 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
     function_parameter_FPCONFexit(&fps);
 
 
-    return EXIT_SUCCESS;
+    return RETURN_SUCCESS;
 }
 
 
@@ -333,6 +335,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 	char IDmodes_val_name[200];
     strncpy(IDmodes_val_name,  functionparameter_GetParamPtr_STRING(&fps, ".sname_outmodesval"),  FUNCTION_PARAMETER_STRMAXLEN);
+
+	int outinit = functionparameter_GetParamValue_ONOFF(&fps, ".outinit");
 
 
 	int GPUindex    = functionparameter_GetParamValue_INT64(&fps, ".GPUindex");
@@ -543,7 +547,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     } else { // USE STREAM, DO NOT COMPUTE IT
         printf("======== Using pre-existing stream %s, insem = %d\n", IDmodes_val_name, insem);
         fflush(stdout);
-        MODEVALCOMPUTE = 0;
+        
+        if( outinit == 0 )
+			MODEVALCOMPUTE = 0;
+		else
+			MODEVALCOMPUTE = 1;
+        
         // drive semaphore to zero
         while(sem_trywait(data.image[ID_modeval].semptr[insem]) == 0) {
             printf("WARNING %s %d  : sem_trywait on ID_modeval\n", __FILE__, __LINE__);
@@ -1156,7 +1165,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     // if we don't have anything more informative, we use PID
     FUNCTION_PARAMETER_STRUCT fps;
     sprintf(fpsname, "cudaMVMextmodes-%06ld", pindex);
-    CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, CMDCODE_CONFINIT);
+    CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, CMDCODE_FPSINIT);
 
 
 
