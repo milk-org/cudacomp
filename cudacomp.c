@@ -4,8 +4,6 @@
  * 
  * Also uses MAGMA library
  *  
- * @author  O. Guyon
- * @date    3 Jul 2017
  *
  * 
  * @bug MAGMA execution can hang on dsyevd routine. This seems to be a MAGMA issue.

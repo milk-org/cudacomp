@@ -193,8 +193,6 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
     // =====================================
     // PARAMETER LOGIC AND UPDATE LOOP
     // =====================================
-
-
     while(loopstatus == 1) {
         if(function_parameter_FPCONFloopstep(&fps, CMDmode, &loopstatus) == 1) { // Apply logic if update is needed
             // here goes the logic
@@ -215,7 +213,12 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
 
 
 
-
+/**
+ * 
+ * 
+ * 
+ * 
+ */ 
 
 errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     char *fpsname
@@ -273,7 +276,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     long semnb;
     double tmpv;
 
-    int INNORMMODE = 0; // 1 if input normalized
+
 
     float *modevalarray;
     float *modevalarrayref;
@@ -444,9 +447,13 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     COREMOD_MEMORY_image_set_createsem(in_stream, 10);
 
 
+
+	// NORMALIZATION
     // CONNECT TO TOTAL FLUX STREAM
     long IDintot;
     IDintot = image_ID(intot_stream);
+    int INNORMMODE = 0; // 1 if input normalized
+
     if(IDintot == -1) {
         INNORMMODE = 0;
         IDintot = create_2Dimage_ID("intot_tmp", 1, 1);
@@ -1098,7 +1105,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     }
 
     processinfo_cleanExit(processinfo);
-
+	function_parameter_RUNexit( &fps );
 
 
     if(MODEVALCOMPUTE == 1) {
