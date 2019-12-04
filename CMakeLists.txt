@@ -8,7 +8,6 @@ cudacomp_MVMextractModesLoop.c
 
 message("---- module cudacomp ------------------")
 
-
 if(USE_CUDA)
 find_package(CUDA 9.0 REQUIRED)
 message(STATUS "Found CUDA ${CUDA_VERSION_STRING} at ${CUDA_TOOLKIT_ROOT_DIR}")
@@ -29,8 +28,10 @@ message("---- MAGMA_LIBRARY_DIRS =  ${MAGMA_LIBRARY_DIRS}")
 message("---- MAGMA_LIBRARIES    =  ${MAGMA_LIBRARIES}" )   
 message("---- MAGMA_CFLAGS_OTHER =  ${MAGMA_CFLAGS_OTHER}" ) 
 target_include_directories(cudacomp PUBLIC ${MAGMA_INCLUDE_DIRS})
-target_link_libraries(cudacomp PRIVATE ${MAGMA_LIBRARIES}) 
-target_compile_options(cudacomp PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA ${MAGMA_CFLAGS_OTHER})
+target_link_libraries(cudacomp PRIVATE ${MAGMA_LIBRARIES})
+target_compile_options(cudacomp PRIVATE ${MAGMA_CFLAGS_OTHER})
+target_compile_options(cudacomp PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA)
+#target_compile_options(cudacomp PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA)
 endif(USE_MAGMA)
 
 

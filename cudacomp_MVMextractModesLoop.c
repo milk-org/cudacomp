@@ -111,13 +111,16 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
     char *fpsname,
     uint32_t CMDmode
 ) {
+    uint16_t loopstatus;
 
     // ===========================
     // SETUP FPS
     // ===========================
-    uint16_t loopstatus;
-    FUNCTION_PARAMETER_STRUCT fps = function_parameter_FPCONFsetup(fpsname, CMDmode, &loopstatus);
-
+    int SMfd = -1;
+    FUNCTION_PARAMETER_STRUCT fps = function_parameter_FPCONFsetup(fpsname, CMDmode, &loopstatus, &SMfd);
+	strncpy(fps.md->sourcefname, __FILE__, FPS_SRCDIR_STRLENMAX);
+	fps.md->sourceline = __LINE__;
+	
 
     // ===========================
     // ALLOCATE FPS ENTRIES
@@ -203,7 +206,7 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
             functionparameter_CheckParametersAll(&fps);  // check all parameter values
         }
     }
-    function_parameter_FPCONFexit(&fps);
+    function_parameter_FPCONFexit(&fps, &SMfd);
 
 
     return RETURN_SUCCESS;
@@ -310,8 +313,9 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     // ===========================
     // CONNECT TO FPS
     // ===========================
+    int SMfd = -1;
     FUNCTION_PARAMETER_STRUCT fps;
-    if(function_parameter_struct_connect(fpsname, &fps, FPSCONNECT_RUN) == -1) {
+    if(function_parameter_struct_connect(fpsname, &fps, FPSCONNECT_RUN, &SMfd) == -1) {
         printf("ERROR: fps \"%s\" does not exist -> running without FPS interface\n", fpsname);
         return RETURN_FAILURE;
     }
@@ -1105,7 +1109,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     }
 
     processinfo_cleanExit(processinfo);
-	function_parameter_RUNexit( &fps );
+	function_parameter_RUNexit( &fps, &SMfd );
 
 
     if(MODEVALCOMPUTE == 1) {
@@ -1180,8 +1184,8 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     // ==================================
     // SET PARAMETER VALUES
     // ==================================
-
-    function_parameter_struct_connect(fpsname, &fps, FPSCONNECT_SIMPLE);
+	int SMfd = -1;
+    function_parameter_struct_connect(fpsname, &fps, FPSCONNECT_SIMPLE, &SMfd);
 
     functionparameter_SetParamValue_STRING(&fps, ".sname_in",            in_stream);
     functionparameter_SetParamValue_STRING(&fps, ".sname_modes",         IDmodes_name);
@@ -1199,7 +1203,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     functionparameter_SetParamValue_INT64(&fps, ".option.twait",         twait);
     functionparameter_SetParamValue_ONOFF(&fps, ".option.semwarn",       semwarn);
 
-    function_parameter_struct_disconnect(&fps);
+    function_parameter_struct_disconnect(&fps, &SMfd);
 
 
 

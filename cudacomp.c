@@ -15,6 +15,7 @@
 //#define _PRINT_TEST
 
 
+
 /* =============================================================================================== */
 /* =============================================================================================== */
 /*                                        HEADER FILES                                             */
@@ -319,10 +320,20 @@ int_fast8_t CUDACOMP_MatMatMult_testPseudoInverse_cli()
 }
 
 
+
 int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli()
 {
-	if(CLI_checkarg(1,4)+CLI_checkarg(2,3)+CLI_checkarg(3,1)+CLI_checkarg(4,2)+CLI_checkarg(5,3)==0)
-        CUDACOMP_magma_compute_SVDpseudoInverse_SVD(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.numf, data.cmdargtoken[4].val.numl, data.cmdargtoken[5].val.string);
+    if(CLI_checkarg(1,4)
+            + CLI_checkarg(2,3)
+            + CLI_checkarg(3,1)
+            + CLI_checkarg(4,2)
+            + CLI_checkarg(5,3)==0)
+        CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.string,
+            data.cmdargtoken[3].val.numf,
+            data.cmdargtoken[4].val.numl,
+            data.cmdargtoken[5].val.string);
     else
         return 1;
 }
@@ -330,11 +341,23 @@ int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli()
 
 int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_cli()
 {
-	if(CLI_checkarg(1,4)+CLI_checkarg(2,3)+CLI_checkarg(3,1)+CLI_checkarg(4,2)+CLI_checkarg(5,3)+\
-	CLI_checkarg(6,2)+CLI_checkarg(7,1)+CLI_checkarg(8,1)==0)
-        CUDACOMP_magma_compute_SVDpseudoInverse(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, \
-        data.cmdargtoken[3].val.numf, data.cmdargtoken[4].val.numl, data.cmdargtoken[5].val.string, 0, \
-        data.cmdargtoken[6].val.numl, data.cmdargtoken[7].val.numf, data.cmdargtoken[8].val.numf, 0);
+    if(CLI_checkarg(1,4)
+            + CLI_checkarg(2,3)
+            + CLI_checkarg(3,1)
+            + CLI_checkarg(4,2)
+            + CLI_checkarg(5,3)
+            + CLI_checkarg(6,2)
+            + CLI_checkarg(7,1)
+            + CLI_checkarg(8,1)==0)
+        CUDACOMP_magma_compute_SVDpseudoInverse(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.string,
+            data.cmdargtoken[3].val.numf,
+            data.cmdargtoken[4].val.numl,
+            data.cmdargtoken[5].val.string, 0,
+            data.cmdargtoken[6].val.numl,
+            data.cmdargtoken[7].val.numf,
+            data.cmdargtoken[8].val.numf, 0);
     else
         return 1;
 }
@@ -355,8 +378,15 @@ int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_cli()
 
 int_fast8_t CUDACOMP_Coeff2Map_Loop_cli()
 {
-    if(CLI_checkarg(1,4)+CLI_checkarg(2,4)+CLI_checkarg(3,2)+CLI_checkarg(4,4)==0)
-        CUDACOMP_Coeff2Map_Loop(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.numl, data.cmdargtoken[4].val.string, 0, " ");
+    if(CLI_checkarg(1,4)
+            + CLI_checkarg(2,4)
+            + CLI_checkarg(3,2)
+            + CLI_checkarg(4,4)==0)
+        CUDACOMP_Coeff2Map_Loop(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.string,
+            data.cmdargtoken[3].val.numl,
+            data.cmdargtoken[4].val.string, 0, " ");
     else
         return 1;
 }
@@ -364,8 +394,17 @@ int_fast8_t CUDACOMP_Coeff2Map_Loop_cli()
 
 int_fast8_t CUDACOMP_Coeff2Map_offset_Loop_cli()
 {
-    if(CLI_checkarg(1,4)+CLI_checkarg(2,4)+CLI_checkarg(3,2)+CLI_checkarg(4,4)+CLI_checkarg(5,4)==0)
-        CUDACOMP_Coeff2Map_Loop(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.numl, data.cmdargtoken[4].val.string, 1, data.cmdargtoken[5].val.string);
+    if(CLI_checkarg(1,4)
+            + CLI_checkarg(2,4)
+            + CLI_checkarg(3,2)
+            + CLI_checkarg(4,4)
+            + CLI_checkarg(5,4)==0)
+        CUDACOMP_Coeff2Map_Loop(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.string,
+            data.cmdargtoken[3].val.numl,
+            data.cmdargtoken[4].val.string, 1,
+            data.cmdargtoken[5].val.string);
     else
         return 1;
 }
@@ -387,8 +426,9 @@ int_fast8_t CUDACOMP_MVMextractModesLoop_cli()
 
 
 int_fast8_t CUDACOMP_MVMextractModesLoop_cli() {
-    char fpsname[200];
-    
+    int stringmaxlen = 200;
+    char fpsname[stringmaxlen];
+
     // First, we try to execute function through FPS interface
     if(CLI_checkarg(1, 5) == 0) { // check that first arg is string, second arg is int
         //unsigned int OptionalArg00 = data.cmdargtoken[2].val.numl;
@@ -397,9 +437,9 @@ int_fast8_t CUDACOMP_MVMextractModesLoop_cli() {
         //
         if(data.processnameflag == 0) { // name fps to something different than the process name
             if(strlen(data.cmdargtoken[2].val.string)>0)
-				sprintf(fpsname, "cudaMVM-%s", data.cmdargtoken[2].val.string);
-			else
-				sprintf(fpsname, "cudaMVM");
+                snprintf(fpsname, stringmaxlen, "cudaMVM-%s", data.cmdargtoken[2].val.string);
+            else
+                sprintf(fpsname, "cudaMVM");
         } else { // Automatically set fps name to be process name up to first instance of character '.'
             strcpy(fpsname, data.processname0);
         }
@@ -424,18 +464,45 @@ int_fast8_t CUDACOMP_MVMextractModesLoop_cli() {
             return RETURN_SUCCESS;
         }
         if(strcmp(data.cmdargtoken[1].val.string, "_RUNSTOP_") == 0) { // Stop process
-          // printf("Run function\n");
-           // CUDACOMP_MVMextractModesLoop_STOP(OptionalArg00);
+            // printf("Run function\n");
+            // CUDACOMP_MVMextractModesLoop_STOP(OptionalArg00);
             return RETURN_SUCCESS;
         }
     }
     // non FPS implementation - all parameters specified at function launch
-     if(CLI_checkarg(1,4)+CLI_checkarg(2,5)+CLI_checkarg(3,4)+CLI_checkarg(4,5)+CLI_checkarg(5,5)+CLI_checkarg(6,5)+CLI_checkarg(7,2)+CLI_checkarg(8,2)+CLI_checkarg(9,2)+CLI_checkarg(10,2)+CLI_checkarg(11,2)+CLI_checkarg(12,2)+CLI_checkarg(13,2)+CLI_checkarg(14,2)==0) {
-        CUDACOMP_MVMextractModesLoop(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.string, data.cmdargtoken[4].val.string, data.cmdargtoken[5].val.string, data.cmdargtoken[6].val.string, data.cmdargtoken[7].val.numl, data.cmdargtoken[8].val.numl, data.cmdargtoken[9].val.numl, data.cmdargtoken[10].val.numl, data.cmdargtoken[11].val.numl, data.cmdargtoken[12].val.numl, data.cmdargtoken[13].val.numl, data.cmdargtoken[14].val.numl);
-            return RETURN_SUCCESS;
-        } else {
-            return RETURN_FAILURE;
-        }
+    if(CLI_checkarg(1,4)
+            + CLI_checkarg(2,5)
+            + CLI_checkarg(3,4)
+            + CLI_checkarg(4,5)
+            + CLI_checkarg(5,5)
+            + CLI_checkarg(6,5)
+            + CLI_checkarg(7,2)
+            + CLI_checkarg(8,2)
+            + CLI_checkarg(9,2)
+            + CLI_checkarg(10,2)
+            + CLI_checkarg(11,2)
+            + CLI_checkarg(12,2)
+            + CLI_checkarg(13,2)
+            + CLI_checkarg(14,2)==0) {
+        CUDACOMP_MVMextractModesLoop(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.string,
+            data.cmdargtoken[3].val.string,
+            data.cmdargtoken[4].val.string,
+            data.cmdargtoken[5].val.string,
+            data.cmdargtoken[6].val.string,
+            data.cmdargtoken[7].val.numl,
+            data.cmdargtoken[8].val.numl,
+            data.cmdargtoken[9].val.numl,
+            data.cmdargtoken[10].val.numl,
+            data.cmdargtoken[11].val.numl,
+            data.cmdargtoken[12].val.numl,
+            data.cmdargtoken[13].val.numl,
+            data.cmdargtoken[14].val.numl);
+        return RETURN_SUCCESS;
+    } else {
+        return RETURN_FAILURE;
+    }
 }
 
 
@@ -511,27 +578,27 @@ void __attribute__ ((constructor)) libinit_cudacomp()
 int_fast8_t init_cudacomp()
 {
     long i;
-   
+
 #ifdef HAVE_CUDA
-//    printf("HAVE_CUDA defined\n");
+    //    printf("HAVE_CUDA defined\n");
     for(i=0; i<20; i++) {
         gpumatmultconf[i].init = 0;
         gpumatmultconf[i].alloc = 0;
     }
 #endif
 
-//#ifndef HAVE_CUDA
-//printf("HAVE_CUDA NOT defined\n");
-//#endif
+    //#ifndef HAVE_CUDA
+    //printf("HAVE_CUDA NOT defined\n");
+    //#endif
 
 
-/* =============================================================================================== */
-/* =============================================================================================== */
-/*                                                                                                 */
-/* 1. INITIALIZATION                                                                               */
-/*                                                                                                 */
-/* =============================================================================================== */
-/* =============================================================================================== */
+    /* =============================================================================================== */
+    /* =============================================================================================== */
+    /*                                                                                                 */
+    /* 1. INITIALIZATION                                                                               */
+    /*                                                                                                 */
+    /* =============================================================================================== */
+    /* =============================================================================================== */
 
 
 #ifdef HAVE_CUDA
@@ -552,55 +619,73 @@ int_fast8_t init_cudacomp()
     strcpy(data.cmd[data.NBcmd].example,"cudacomptest 1000 20 1000 1");
     strcpy(data.cmd[data.NBcmd].Ccall,"int GPUcomp_test(long NBact, long NBmodes, long WFSsize, long GPUcnt)");
     data.NBcmd++;
-        
-
-
-        
-/* =============================================================================================== */
-/* =============================================================================================== */
-/*                                                                                                 */
-/* 2. LOW-LEVEL MATRIX VECTOR MULTIPLICATION FUNCTIONS                                             */
-/*                                                                                                 */
-/* =============================================================================================== */
-/* =============================================================================================== */
 
 
 
 
+    /* =============================================================================================== */
+    /* =============================================================================================== */
+    /*                                                                                                 */
+    /* 2. LOW-LEVEL MATRIX VECTOR MULTIPLICATION FUNCTIONS                                             */
+    /*                                                                                                 */
+    /* =============================================================================================== */
+    /* =============================================================================================== */
 
-/* =============================================================================================== */
-/* =============================================================================================== */
-/*                                                                                                 */
-/* 3. SINGULAR VALUE DECOMPOSITION, PSEUDO-INVERSE                                                 */
-/*                                                                                                 */
-/* =============================================================================================== */
-/* =============================================================================================== */
 
 
-    RegisterCLIcommand("cudatestpsinv", __FILE__, CUDACOMP_MatMatMult_testPseudoInverse_cli, "test pseudo inverse", "<matA> <matAinv> <matOut>", "cudatestpsinv matA matAinv matOut", "long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *IDmatAinv_name, const char *IDmatOut_name)");
 
-    RegisterCLIcommand("cudacomppsinvSVD", __FILE__, CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli, "compute pseudo inverse with direct SVD", "<input matrix [string]> <output pseudoinv [string]> <eps [float]> <NBmodes [long]> <VTmat [string]>", "cudacomppsinvSVD matA matAinv 0.01 100 VTmat", "int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name);");
-        
-    RegisterCLIcommand("cudacomppsinv", __FILE__, CUDACOMP_magma_compute_SVDpseudoInverse_cli, "compute pseudo inverse", \
-    "<input matrix [string]> <output pseudoinv [string]> <eps [float]> <NBmodes [long]> <VTmat [string]>", \
-    "cudacomppsinv matA matAinv 0.01 100 VTmat 0 1e-4 1e-7", \
-    "int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, double qdwh_s, float qdwh_tol)");
-    
-        
-        
-    
-    
 
-/* =============================================================================================== */
-/* =============================================================================================== */
-/*                                                                                                 */
-/* 4. HIGH LEVEL FUNCTIONS                                                                         */
-/*                                                                                                 */
-/* =============================================================================================== */
-/* =============================================================================================== */
+    /* =============================================================================================== */
+    /* =============================================================================================== */
+    /*                                                                                                 */
+    /* 3. SINGULAR VALUE DECOMPOSITION, PSEUDO-INVERSE                                                 */
+    /*                                                                                                 */
+    /* =============================================================================================== */
+    /* =============================================================================================== */
 
-        
-        
+
+    RegisterCLIcommand(
+        "cudatestpsinv",
+        __FILE__,
+        CUDACOMP_MatMatMult_testPseudoInverse_cli,
+        "test pseudo inverse",
+        "<matA> <matAinv> <matOut>",
+        "cudatestpsinv matA matAinv matOut",
+        "long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *IDmatAinv_name, const char *IDmatOut_name)");
+
+    RegisterCLIcommand(
+        "cudacomppsinvSVD",
+        __FILE__,
+        CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli,
+        "compute pseudo inverse with direct SVD",
+        "<input matrix [string]> <output pseudoinv [string]> <eps [float]> <NBmodes [long]> <VTmat [string]>",
+        "cudacomppsinvSVD matA matAinv 0.01 100 VTmat",
+        "int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name);");
+
+    RegisterCLIcommand(
+        "cudacomppsinv",
+        __FILE__,
+        CUDACOMP_magma_compute_SVDpseudoInverse_cli,
+        "compute pseudo inverse",
+        "<input matrix [string]> <output pseudoinv [string]> <eps [float]> <NBmodes [long]> <VTmat [string]>",
+        "cudacomppsinv matA matAinv 0.01 100 VTmat 0 1e-4 1e-7",
+        "int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, double qdwh_s, float qdwh_tol)");
+
+
+
+
+
+
+    /* =============================================================================================== */
+    /* =============================================================================================== */
+    /*                                                                                                 */
+    /* 4. HIGH LEVEL FUNCTIONS                                                                         */
+    /*                                                                                                 */
+    /* =============================================================================================== */
+    /* =============================================================================================== */
+
+
+
     strcpy(data.cmd[data.NBcmd].key,"cudacoeff2map");
     strcpy(data.cmd[data.NBcmd].module,__FILE__);
     data.cmd[data.NBcmd].fp = CUDACOMP_Coeff2Map_Loop_cli;
@@ -609,7 +694,7 @@ int_fast8_t init_cudacomp()
     strcpy(data.cmd[data.NBcmd].example,"cudacoeff2map modes coeff 4 outmap");
     strcpy(data.cmd[data.NBcmd].Ccall,"int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, int GPUindex, const char *IDoutmap_name, int offsetmode, const char *IDoffset_name)");
     data.NBcmd++;
-    
+
     strcpy(data.cmd[data.NBcmd].key,"cudacoeffo2map");
     strcpy(data.cmd[data.NBcmd].module,__FILE__);
     data.cmd[data.NBcmd].fp = CUDACOMP_Coeff2Map_offset_Loop_cli;
@@ -618,7 +703,7 @@ int_fast8_t init_cudacomp()
     strcpy(data.cmd[data.NBcmd].example,"cudacoeffo2map modes coeff 4 outmap offsetim");
     strcpy(data.cmd[data.NBcmd].Ccall,"int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, int GPUindex, const char *IDoutmap_name, int offsetmode, const char *IDoffset_name)");
     data.NBcmd++;
-    
+
     strcpy(data.cmd[data.NBcmd].key,"cudaextrmodes");
     strcpy(data.cmd[data.NBcmd].module,__FILE__);
     data.cmd[data.NBcmd].fp = CUDACOMP_MVMextractModesLoop_cli;
@@ -627,7 +712,7 @@ int_fast8_t init_cudacomp()
     strcpy(data.cmd[data.NBcmd].example,"cudaextrmodes inmap inmaptot modes imref imoutref modeval 3 1 1 1 3 0 0");
     strcpy(data.cmd[data.NBcmd].Ccall,"int CUDACOMP_MVMextractModesLoop(const char *in_stream, const char *intot_stream, const char *IDmodes_name, const char *IDrefin_name, const char *IDrefout_name, const char *IDmodes_val_name, int GPUindex, int PROCESS, int TRACEMODE, int MODENORM, int insem, int axmode, long twait, int semwarn)");
     data.NBcmd++;
-    
+
 
 #endif
     // add atexit functions here
