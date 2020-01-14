@@ -111,20 +111,10 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
     char *fpsname,
     uint32_t CMDmode
 ) {
-    //uint16_t loopstatus;
 
-    // ===========================
-    // SETUP FPS
-    // ===========================
- /*   int SMfd = -1;
-    FUNCTION_PARAMETER_STRUCT fps = function_parameter_FPCONFsetup(fpsname, CMDmode, &loopstatus, &SMfd);
-	strncpy(fps.md->sourcefname, __FILE__, FPS_SRCDIR_STRLENMAX);
-	fps.md->sourceline = __LINE__;
-	*/
-	
-	FPS_SETUP_INIT(fpsname, CMDmode);  // sets up fps
-	
-	
+    FPS_SETUP_INIT(fpsname, CMDmode);  // sets up fps
+
+
 
     // ===========================
     // ALLOCATE FPS ENTRIES
@@ -140,7 +130,7 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
 
 
 
-	long GPUindex_default[4] = { 0, 0, 9, 0 };
+    long GPUindex_default[4] = { 0, 0, 9, 0 };
     long fp_GPUindex        = function_parameter_add_entry(&fps, ".GPUindex", "GPU index",
                               FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, &GPUindex_default);
 
@@ -151,8 +141,8 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
     long fp_streamname_modes       = function_parameter_add_entry(&fps, ".sname_modes",  "input modes matrix",
                                      FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT_STREAM, pNull);
 
-	FPFLAG = FPFLAG_DEFAULT_INPUT_STREAM;
-	FPFLAG &= ~FPFLAG_STREAM_RUN_REQUIRED;
+    FPFLAG = FPFLAG_DEFAULT_INPUT_STREAM;
+    FPFLAG &= ~FPFLAG_STREAM_RUN_REQUIRED;
     long fp_streamname_intot       = function_parameter_add_entry(&fps, ".option.sname_intot",  "optional input normalization stream",
                                      FPTYPE_STREAMNAME, FPFLAG, pNull);
 
@@ -192,25 +182,22 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
                               FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
 
 
-    if(fps.loopstatus == 0) { // stop fps
-        return RETURN_SUCCESS;
-    }
+
+    // ==============================================
+    // ======== START FPS CONF LOOP =================
+    // ==============================================
+    FPS_CONFLOOP_START  // macro in function_parameter.h
 
 
-    // =====================================
-    // PARAMETER LOGIC AND UPDATE LOOP
-    // =====================================
-    while(fps.loopstatus == 1) {
-        if(function_parameter_FPCONFloopstep(&fps) == 1) { // Apply logic if update is needed
-            // here goes the logic
-            
-            
-            
 
-            functionparameter_CheckParametersAll(&fps);  // check all parameter values
-        }
-    }
-    function_parameter_FPCONFexit(&fps);
+
+
+    // ==============================================
+    // ======== STOP FPS CONF LOOP ==================
+    // ==============================================
+    FPS_CONFLOOP_END  // macro in function_parameter.h
+
+
 
 
     return RETURN_SUCCESS;
@@ -220,12 +207,54 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 /**
+ * @brief MVM, GPU-based
+ * 
+ * 
+ * Used for AO application, single GPU
+ * This is meant to be used as stand-alone MVM process managed by cacao
  * 
  * 
  * 
  * 
- */ 
+ * [axmode 0] Converting WFS image to modes
+ * Input is 2D (WFS)
+ * Output is 1D (modes) 
+ * 
+ * Matrix is 3D
+ * (size[0], size[1]) = (sizeWFS[0], sizeWFS[1]) 
+ * (size[2]) = NBmodes
+ * 
+ * 
+ * 
+ * 
+ * 
+ * [axmode 1] Expanding DM vector to WFS vector
+ * Input is 2D vector (DM)
+ * Output is 2D vector (WFS)
+ *
+ * Matrix is 3D. 
+ * (size[0], size[1]) = (sizeWFS[0], sizeWFS[1]) 
+ * (size[2]) = sizeDM[0] x sizeDM[1] 
+ * 
+ * Matrix internally remapped to :
+ * (size[0], size[1]) = (sizeDM[0], sizeDM[1])
+ * (size[2]) = sizeWFS[0] x sizeWFS[1] 
+ * 
+ *
+ */
 
 errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     char *fpsname
@@ -313,56 +342,46 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     int RT_priority = 91; //any number from 0-99
 
 
-/*
-    // ===========================
-    // CONNECT TO FPS
-    // ===========================
-    int SMfd = -1;
-    FUNCTION_PARAMETER_STRUCT fps;
-    if(function_parameter_struct_connect(fpsname, &fps, FPSCONNECT_RUN, &SMfd) == -1) {
-        printf("ERROR: fps \"%s\" does not exist -> running without FPS interface\n", fpsname);
-        return RETURN_FAILURE;
-    }
-*/
 
-	FPS_CONNECT(fpsname, FPSCONNECT_RUN);
+
+    FPS_CONNECT(fpsname, FPSCONNECT_RUN);
 
 
     // ===============================
     // GET FUNCTION PARAMETER VALUES
     // ===============================
 
-	char in_stream[200];
+    char in_stream[200];
     strncpy(in_stream,  functionparameter_GetParamPtr_STRING(&fps, ".sname_in"),  FUNCTION_PARAMETER_STRMAXLEN);
 
-	char IDmodes_name[200];
+    char IDmodes_name[200];
     strncpy(IDmodes_name,  functionparameter_GetParamPtr_STRING(&fps, ".sname_modes"),  FUNCTION_PARAMETER_STRMAXLEN);
 
 
-	char intot_stream[200];
+    char intot_stream[200];
     strncpy(intot_stream,  functionparameter_GetParamPtr_STRING(&fps, ".option.sname_intot"),  FUNCTION_PARAMETER_STRMAXLEN);
 
-	char IDrefin_name[200];
+    char IDrefin_name[200];
     strncpy(IDrefin_name,  functionparameter_GetParamPtr_STRING(&fps, ".option.sname_refin"),  FUNCTION_PARAMETER_STRMAXLEN);
 
-	char IDrefout_name[200];
+    char IDrefout_name[200];
     strncpy(IDrefout_name,  functionparameter_GetParamPtr_STRING(&fps, ".option.sname_refout"),  FUNCTION_PARAMETER_STRMAXLEN);
 
-	char IDmodes_val_name[200];
+    char IDmodes_val_name[200];
     strncpy(IDmodes_val_name,  functionparameter_GetParamPtr_STRING(&fps, ".sname_outmodesval"),  FUNCTION_PARAMETER_STRMAXLEN);
 
-	int outinit = functionparameter_GetParamValue_ONOFF(&fps, ".outinit");
+    int outinit = functionparameter_GetParamValue_ONOFF(&fps, ".outinit");
 
 
-	int GPUindex    = functionparameter_GetParamValue_INT64(&fps, ".GPUindex");
-	int PROCESS     = functionparameter_GetParamValue_ONOFF(&fps, ".option.PROCESS");
-	int TRACEMODE   = functionparameter_GetParamValue_ONOFF(&fps, ".option.TRACEMODE");
-	int MODENORM    = functionparameter_GetParamValue_ONOFF(&fps, ".option.MODENORM");
-	int insem       = functionparameter_GetParamValue_INT64(&fps, ".option.insem");
-	int axmode      = functionparameter_GetParamValue_INT64(&fps, ".option.axmode");
-	long *twait     = functionparameter_GetParamPtr_INT64(&fps, ".option.twait");
-	int semwarn     = functionparameter_GetParamValue_ONOFF(&fps, ".option.semwarn");
-	
+    int GPUindex    = functionparameter_GetParamValue_INT64(&fps, ".GPUindex");
+    int PROCESS     = functionparameter_GetParamValue_ONOFF(&fps, ".option.PROCESS");
+    int TRACEMODE   = functionparameter_GetParamValue_ONOFF(&fps, ".option.TRACEMODE");
+    int MODENORM    = functionparameter_GetParamValue_ONOFF(&fps, ".option.MODENORM");
+    int insem       = functionparameter_GetParamValue_INT64(&fps, ".option.insem");
+    int axmode      = functionparameter_GetParamValue_INT64(&fps, ".option.axmode");
+    long *twait     = functionparameter_GetParamPtr_INT64(&fps, ".option.twait");
+    int semwarn     = functionparameter_GetParamValue_ONOFF(&fps, ".option.semwarn");
+
 
 
     // ===============================
@@ -376,7 +395,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     printf("IDrefin_name     : %16s  [optional] input reference  - to be subtracted\n", IDrefin_name);
     printf("IDrefout_name    : %16s  [optional] output reference - to be added\n", IDrefout_name);
     printf("IDmodes_val_name : %16s  ouput stream\n", IDmodes_val_name);
-    
+
     printf("GPUindex         : %16d  GPU index\n", GPUindex);
     printf("PROCESS          : %16d  1 if postprocessing\n", PROCESS);
     printf("TRACEMODE        : %16d  1 if writing trace\n", TRACEMODE);
@@ -390,7 +409,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 
     // ===========================
-    // processinfo support 
+    // processinfo support
     // ===========================
 
     char pinfoname[200];
@@ -425,7 +444,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 
     // ===========================
-    // INITIALIZATIONS 
+    // INITIALIZATIONS
     // ===========================
 
 
@@ -460,7 +479,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 
 
-	// NORMALIZATION
+    // NORMALIZATION
     // CONNECT TO TOTAL FLUX STREAM
     long IDintot;
     IDintot = image_ID(intot_stream);
@@ -489,11 +508,19 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 
 
-    if(axmode == 0) {
+    if(axmode == 0) { 
+		//
+		// Extract modes. 
+		// This is the default geometry, no need to remap
+		//
         IDmodes = image_ID(IDmodes_name);
         n = data.image[IDmodes].md[0].size[2];
         NBmodes = n;
-    } else {
+    } else { 
+		//
+		// Expand from DM to WFS
+		// Remap to new matrix tmpmodes
+        //
         ID = image_ID(IDmodes_name);
         printf("Modes: ID = %ld   %s\n", ID, IDmodes_name);
         fflush(stdout);
@@ -512,10 +539,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
         for(ii = 0; ii < data.image[IDin].md[0].size[0]; ii++)
             for(jj = 0; jj < data.image[IDin].md[0].size[1]; jj++) {
                 for(kk = 0; kk < NBmodes; kk++) {
-                    data.image[IDmodes].array.F[kk * data.image[IDin].md[0].size[0]*data.image[IDin].md[0].size[1] + jj * data.image[IDin].md[0].size[0] + ii] = data.image[ID].array.F[NBmodes * (jj * data.image[IDin].md[0].size[0] + ii) + kk];
+                    data.image[IDmodes].array.F[kk * data.image[IDin].md[0].size[0]*data.image[IDin].md[0].size[1] + jj * data.image[IDin].md[0].size[0] + ii] =
+                        data.image[ID].array.F[NBmodes * (jj * data.image[IDin].md[0].size[0] + ii) + kk];
                 }
             }
-                
+
         //save_fits("_tmpmodes", "!_test_tmpmodes.fits");
     }
 
@@ -556,7 +584,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 
 
-	// CONNNECT TO OUTPUT STREAM
+    // CONNNECT TO OUTPUT STREAM
 
     ID_modeval = image_ID(IDmodes_val_name);
     if(ID_modeval == -1) { // CREATE IT
@@ -566,12 +594,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     } else { // USE STREAM, DO NOT COMPUTE IT
         printf("======== Using pre-existing stream %s, insem = %d\n", IDmodes_val_name, insem);
         fflush(stdout);
-        
+
         if( outinit == 0 )
-			MODEVALCOMPUTE = 0;
-		else
-			MODEVALCOMPUTE = 1;
-        
+            MODEVALCOMPUTE = 0;
+        else
+            MODEVALCOMPUTE = 1;
+
         // drive semaphore to zero
         while(sem_trywait(data.image[ID_modeval].semptr[insem]) == 0) {
             printf("WARNING %s %d  : sem_trywait on ID_modeval\n", __FILE__, __LINE__);
@@ -582,8 +610,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     free(arraytmp);
 
 
-	printf("OUTPUT STREAM : %s  ID: %ld\n", IDmodes_val_name, ID_modeval);
-	list_image_ID();
+    printf("OUTPUT STREAM : %s  ID: %ld\n", IDmodes_val_name, ID_modeval);
+    list_image_ID();
 
 
     if(MODEVALCOMPUTE == 1) {
@@ -597,9 +625,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
             cudaGetDeviceProperties(&deviceProp, k);
             printf("Device %d / %d [ %20s ]  has compute capability %d.%d.\n",
                    k, deviceCount, deviceProp.name, deviceProp.major, deviceProp.minor);
-            printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n", (float)deviceProp.totalGlobalMem / 1048576.0f, (unsigned long long) deviceProp.totalGlobalMem);
+            printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n",
+                   (float)deviceProp.totalGlobalMem / 1048576.0f, (unsigned long long) deviceProp.totalGlobalMem);
             printf("  (%2d) Multiprocessors\n", deviceProp.multiProcessorCount);
-            printf("  GPU Clock rate:                                %.0f MHz (%0.2f GHz)\n", deviceProp.clockRate * 1e-3f, deviceProp.clockRate * 1e-6f);
+            printf("  GPU Clock rate:                                %.0f MHz (%0.2f GHz)\n",
+                   deviceProp.clockRate * 1e-3f,
+                   deviceProp.clockRate * 1e-6f);
             printf("\n");
         }
 
@@ -607,7 +638,9 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
         if(GPUindex < deviceCount) {
             cudaSetDevice(GPUindex);
         } else {
-            printf("Invalid Device : %d / %d\n", GPUindex, deviceCount);
+            printf("Invalid Device : %d / %d\n",
+                   GPUindex,
+                   deviceCount);
             exit(0);
         }
 
@@ -914,7 +947,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 clock_gettime(CLOCK_REALTIME, &t03);
 
                 if(initref == 0) { // construct reference to be subtracted
-					printf("... reference compute\n");
+                    printf("... reference compute\n");
                     cudaStat = cudaMemcpy(modevalarrayref, d_modeval, sizeof(float) * NBmodes, cudaMemcpyDeviceToHost);
 
                     IDrefout = image_ID(IDrefout_name);
@@ -947,13 +980,13 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                     data.image[ID_modeval].md[0].cnt0++;
                     data.image[ID_modeval].md[0].write = 0;
                 }
-            }                        
+            }
         } else { // WAIT FOR NEW MODEVAL
             int rval;
             rval = sem_wait(data.image[ID_modeval].semptr[insem]);
             if(rval == -1) // interrupt
-				loopOK = 0;
-            
+                loopOK = 0;
+
             processinfo_exec_start(processinfo);
         }
 
@@ -999,7 +1032,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
             data.image[IDprocave].md[0].write = 1;
             for(step = 0; step < NBaveSTEP; step++) {
                 for(k = 0; k < NBmodes; k++) {
-                    data.image[IDprocave].array.F[NBmodes * step + k] = (1.0 - stepcoeff) * data.image[IDprocave].array.F[NBmodes * step + k] + stepcoeff * data.image[ID_modeval].array.F[k];
+                    data.image[IDprocave].array.F[NBmodes * step + k] =
+                        (1.0 - stepcoeff) * data.image[IDprocave].array.F[NBmodes * step + k] + stepcoeff * data.image[ID_modeval].array.F[k];
                 }
                 stepcoeff *= stepcoeff0;
             }
@@ -1018,7 +1052,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 for(k = 0; k < NBmodes; k++) {
                     tmpv = data.image[ID_modeval].array.F[k] - data.image[IDprocave].array.F[NBmodes * step + k];
                     tmpv = tmpv * tmpv;
-                    data.image[IDprocrms].array.F[NBmodes * step + k] = (1.0 - stepcoeff) * data.image[IDprocrms].array.F[NBmodes * step + k] + stepcoeff * tmpv;
+                    data.image[IDprocrms].array.F[NBmodes * step + k] =
+                        (1.0 - stepcoeff) * data.image[IDprocrms].array.F[NBmodes * step + k] + stepcoeff * tmpv;
                 }
                 stepcoeff *= stepcoeff0;
             }
@@ -1117,7 +1152,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     }
 
     processinfo_cleanExit(processinfo);
-	function_parameter_RUNexit( &fps );
+    function_parameter_RUNexit( &fps );
 
 
     if(MODEVALCOMPUTE == 1) {

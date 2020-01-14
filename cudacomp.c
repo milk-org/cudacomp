@@ -1008,7 +1008,12 @@ int_fast8_t GPUcomp_test(
 
 
 
-void matrixMulCPU(float *cMat, float *wfsVec, float *dmVec, int M, int N)
+void matrixMulCPU(
+    float *cMat,
+    float *wfsVec,
+    float *dmVec,
+    int M,
+    int N)
 {
     long n, m;
     float sum;
@@ -1094,10 +1099,10 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
 
     float alpharef, betaref;
 
-	struct timespec t00;
+    struct timespec t00;
 
 
-	int ComputeGPU_FLAG = 1; //TEST
+    int ComputeGPU_FLAG = 1; //TEST
 
     thdata = (THDATA*) ptr;
     device = thdata->thread_no;
@@ -1108,15 +1113,15 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
     *ptrstat = 1;
 
 
-	// LOG function start
-	int logfunc_level = 0;
-	int logfunc_level_max = 1;
-	char commentstring[200];
-	sprintf(commentstring, "MVM compute on GPU");
-	CORE_logFunctionCall( logfunc_level, logfunc_level_max, 0, __FILE__, __func__, __LINE__, commentstring);
-	
-	
-	
+    // LOG function start
+    int logfunc_level = 0;
+    int logfunc_level_max = 1;
+    char commentstring[200];
+    sprintf(commentstring, "MVM compute on GPU");
+    CORE_logFunctionCall( logfunc_level, logfunc_level_max, 0, __FILE__, __func__, __LINE__, commentstring);
+
+
+
     ptr0 = (char*) gpumatmultconf[index].wfsVec;
     ptr0 += sizeof(float)*gpumatmultconf[index].Noffset[device];
     ptr0f = (float*) ptr0;
@@ -1134,32 +1139,37 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
         itermax = 1;
 
 
-	
+
 
 
     iter = 0;
     while(iter != itermax)
     {
-		//printf("====================================== gpumatmultconf[index].M = %d\n", gpumatmultconf[index].M);
-		//fflush(stdout);
-		
-		
-		clock_gettime(CLOCK_REALTIME, &t00);
-		
+        //printf("====================================== gpumatmultconf[index].M = %d\n", gpumatmultconf[index].M);
+        //fflush(stdout);
+
+
+        clock_gettime(CLOCK_REALTIME, &t00);
+
         // copy DM reference to output to prepare computation:   d_dmVec <- d_dmRef
         if(ComputeGPU_FLAG == 1)
         {
-        error = cudaMemcpy(gpumatmultconf[index].d_dmVec[device], gpumatmultconf[index].d_dmRef[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToDevice);
-        if (error != cudaSuccess)
-        {
-            printf("cudaMemcpy d_wfsVec wfsVec returned error code %d, line(%d)\n", error, __LINE__);
-            fflush(stdout);
-            exit(EXIT_FAILURE);
+            error = cudaMemcpy(
+                        gpumatmultconf[index].d_dmVec[device],
+                        gpumatmultconf[index].d_dmRef[device],
+                        sizeof(float)*gpumatmultconf[index].M,
+                        cudaMemcpyDeviceToDevice);
+
+            if (error != cudaSuccess)
+            {
+                printf("cudaMemcpy d_wfsVec wfsVec returned error code %d, line(%d)\n", error, __LINE__);
+                fflush(stdout);
+                exit(EXIT_FAILURE);
+            }
         }
-		}
 
         *ptrstat = 2; // wait for image
-        
+
         //
         // Wait for semaphore #1 to be posted to transfer from CPU to GPU
         //
@@ -1173,51 +1183,51 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
                 sem_getvalue(gpumatmultconf[index].semptr1[device], &semval);
                 for(cnt=0; cnt<semval; cnt++)
                 {
-					printf("WARNING %s %d  : sem_trywait on semptr1 index %d device %d\n", __FILE__, __LINE__, index, device);
-					fflush(stdout);  
-					sem_trywait(gpumatmultconf[index].semptr1[device]);					
-				}
+                    printf("WARNING %s %d  : sem_trywait on semptr1 index %d device %d\n", __FILE__, __LINE__, index, device);
+                    fflush(stdout);
+                    sem_trywait(gpumatmultconf[index].semptr1[device]);
+                }
             }
         }
 
 
-		thdata->t0->tv_sec = t00.tv_sec;
-		thdata->t0->tv_nsec = t00.tv_nsec;
-		clock_gettime(CLOCK_REALTIME, thdata->t1);
+        thdata->t0->tv_sec = t00.tv_sec;
+        thdata->t0->tv_nsec = t00.tv_nsec;
+        clock_gettime(CLOCK_REALTIME, thdata->t1);
 
         *ptrstat = 3; // transfer: prt0 -> d_wfsVec
         if(ComputeGPU_FLAG == 1)
         {
-        stat = cublasSetVector(gpumatmultconf[index].Nsize[device], sizeof(float), (float*) ptr0, 1, gpumatmultconf[index].d_wfsVec[device], 1);
-        if (stat != CUBLAS_STATUS_SUCCESS)
-        {
-            fprintf(stderr, "!!!! device access error (read C)\n");
-            if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
-                printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
-            if(stat == CUBLAS_STATUS_INVALID_VALUE)
-                printf("   CUBLAS_STATUS_INVALID_VALUE\n");
-            if(stat == CUBLAS_STATUS_MAPPING_ERROR)
-                printf("   CUBLAS_STATUS_MAPPING_ERROR\n");
-            exit(EXIT_FAILURE);
+            stat = cublasSetVector(gpumatmultconf[index].Nsize[device], sizeof(float), (float*) ptr0, 1, gpumatmultconf[index].d_wfsVec[device], 1);
+            if (stat != CUBLAS_STATUS_SUCCESS)
+            {
+                fprintf(stderr, "!!!! device access error (read C)\n");
+                if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
+                    printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
+                if(stat == CUBLAS_STATUS_INVALID_VALUE)
+                    printf("   CUBLAS_STATUS_INVALID_VALUE\n");
+                if(stat == CUBLAS_STATUS_MAPPING_ERROR)
+                    printf("   CUBLAS_STATUS_MAPPING_ERROR\n");
+                exit(EXIT_FAILURE);
+            }
         }
-		}
 
-		clock_gettime(CLOCK_REALTIME, thdata->t2);
-		
+        clock_gettime(CLOCK_REALTIME, thdata->t2);
+
         if(gpumatmultconf[index].refWFSinit[device] == 0) // compute DM reference (used when reference changes)
         {
-			printf("DM reference changed -> recompute\n");
-			fflush(stdout);
-			
+            printf("DM reference changed -> recompute\n");
+            fflush(stdout);
+
             *ptrstat = 4; // compute
 
-			// enable this post if outside process needs to be notified of computation start
-/*            if(gpumatmultconf[index].sem==1)
-                sem_post(gpumatmultconf[index].semptr2[device]);*/ 
+            // enable this post if outside process needs to be notified of computation start
+            /*            if(gpumatmultconf[index].sem==1)
+                            sem_post(gpumatmultconf[index].semptr2[device]);*/
 
 
-          //  printf("%d  device %d (GPU %d): compute reference product\n", index, device, gpumatmultconf[index].GPUdevice[device]);
-          //  fflush(stdout);
+            //  printf("%d  device %d (GPU %d): compute reference product\n", index, device, gpumatmultconf[index].GPUdevice[device]);
+            //  fflush(stdout);
 
             //            alphatmp = cublasSgemv_alpha;
             //            betatmp = cublasSgemv_beta;
@@ -1227,11 +1237,24 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
             //        cublasSgemv_beta = 0.0;
             alpharef = 1.0;
             betaref = 0.0;
-            
-			stat = cublasSgemv(gpumatmultconf[index].handle[device], CUBLAS_OP_N, gpumatmultconf[index].M, gpumatmultconf[index].Nsize[device], &alpharef, gpumatmultconf[index].d_cMat[device], gpumatmultconf[index].M, gpumatmultconf[index].d_wfsVec[device], 1, &betaref, gpumatmultconf[index].d_dmRef[device], 1);
-            
-			if (stat != CUBLAS_STATUS_SUCCESS)
-				{
+
+            stat = cublasSgemv(
+                       gpumatmultconf[index].handle[device],
+                       CUBLAS_OP_N,
+                       gpumatmultconf[index].M,
+                       gpumatmultconf[index].Nsize[device],
+                       &alpharef,
+                       gpumatmultconf[index].d_cMat[device],
+                       gpumatmultconf[index].M,
+                       gpumatmultconf[index].d_wfsVec[device],
+                       1,
+                       &betaref,
+                       gpumatmultconf[index].d_dmRef[device],
+                       1);
+
+
+            if (stat != CUBLAS_STATUS_SUCCESS)
+            {
                 printf("cublasSgemv returned error code %d, line(%d)\n", stat, __LINE__);
                 fflush(stdout);
                 if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
@@ -1253,18 +1276,18 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
                 printf("gpumatmultconf[index].Nsize[device] = %d\n", (int) gpumatmultconf[index].Nsize[device]);
                 fflush(stdout);
                 exit(EXIT_FAILURE);
-				}
-			
+            }
+
             //          cublasSgemv_alpha = alphatmp;
             //          cublasSgemv_beta = betatmp;
 
             gpumatmultconf[index].refWFSinit[device] = 1;
 
-			// enable this post if outside process needs to be notified of computation start
-			/*
+            // enable this post if outside process needs to be notified of computation start
+            /*
             if(gpumatmultconf[index].sem==1)
                 sem_post(gpumatmultconf[index].semptr3[device]);
-*/
+            */
 
             *ptrstat = 5; // transfer result
 
@@ -1276,16 +1299,23 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
                     sem_getvalue(gpumatmultconf[index].semptr4[device], &semval);
                     for(cnt=0; cnt<semval; cnt++)
                     {
-						printf("WARNING %s %d  : sem_trywait on semptr4 index %d device %d\n", __FILE__, __LINE__, index, device);
-						fflush(stdout);  
+                        printf("WARNING %s %d  : sem_trywait on semptr4 index %d device %d\n", __FILE__, __LINE__, index, device);
+                        fflush(stdout);
                         sem_trywait(gpumatmultconf[index].semptr4[device]);
-					}
+                    }
                 }
             }
 
 
             // copy d_dmRef -> dmRef_part
-            stat = cublasGetVector(gpumatmultconf[index].M, sizeof(float), gpumatmultconf[index].d_dmRef[device], 1, gpumatmultconf[index].dmRef_part[device], 1);
+            stat = cublasGetVector(
+                       gpumatmultconf[index].M,
+                       sizeof(float),
+                       gpumatmultconf[index].d_dmRef[device],
+                       1,
+                       gpumatmultconf[index].dmRef_part[device],
+                       1);
+
             if (stat != CUBLAS_STATUS_SUCCESS)
             {
                 fprintf(stderr, "!!!! device access error (read C)\n");
@@ -1300,18 +1330,18 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
 
             // TEST
 
-        /*    sprintf(fname, "gputest%d.txt", device);
-            if((fptest = fopen(fname, "w"))==NULL)
-            {
-                printf("ERROR: cannot create file \"%s\"\n", fname);
-                exit(0);
-            }
-            printf("Writing test file \"%s\"\n", fname);
-            fflush(stdout);
-            for(ii=0; ii<gpumatmultconf[index].M; ii++)
-                fprintf(fptest, "%ld %f\n", ii, gpumatmultconf[index].dmRef_part[device][ii]);
-            fclose(fptest);
-*/
+            /*    sprintf(fname, "gputest%d.txt", device);
+                if((fptest = fopen(fname, "w"))==NULL)
+                {
+                    printf("ERROR: cannot create file \"%s\"\n", fname);
+                    exit(0);
+                }
+                printf("Writing test file \"%s\"\n", fname);
+                fflush(stdout);
+                for(ii=0; ii<gpumatmultconf[index].M; ii++)
+                    fprintf(fptest, "%ld %f\n", ii, gpumatmultconf[index].dmRef_part[device][ii]);
+                fclose(fptest);
+            */
             if(gpumatmultconf[index].sem==1)
                 sem_post(gpumatmultconf[index].semptr5[device]);
 
@@ -1321,58 +1351,71 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
         {
             *ptrstat = 4; // compute
 
-			//
-			// Post semaphore #2 when starting computation
-			// Enable if listening to semptr2
-			/*
+            //
+            // Post semaphore #2 when starting computation
+            // Enable if listening to semptr2
+            /*
             if(gpumatmultconf[index].sem==1)
                 sem_post(gpumatmultconf[index].semptr2[device]);
                 */
 
-			if(ComputeGPU_FLAG == 1)
-			{
-            stat = cublasSgemv(gpumatmultconf[index].handle[device], CUBLAS_OP_N, gpumatmultconf[index].M, gpumatmultconf[index].Nsize[device], &cublasSgemv_alpha, gpumatmultconf[index].d_cMat[device], gpumatmultconf[index].M, gpumatmultconf[index].d_wfsVec[device], 1, &cublasSgemv_beta, gpumatmultconf[index].d_dmVec[device], 1);
-
-            if (stat != CUBLAS_STATUS_SUCCESS)
+            if(ComputeGPU_FLAG == 1)
             {
-                printf("cublasSgemv returned error code %d, line(%d), index=%d\n", stat, __LINE__, index);
-                fflush(stdout);
-                if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
-                    printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
-                if(stat == CUBLAS_STATUS_INVALID_VALUE)
-                    printf("   CUBLAS_STATUS_INVALID_VALUE\n");
-                if(stat == CUBLAS_STATUS_ARCH_MISMATCH)
-                    printf("   CUBLAS_STATUS_ARCH_MISMATCH\n");
-                if(stat == CUBLAS_STATUS_EXECUTION_FAILED)
-                    printf("   CUBLAS_STATUS_EXECUTION_FAILED\n");
+                stat = cublasSgemv(
+                           gpumatmultconf[index].handle[device],
+                           CUBLAS_OP_N,
+                           gpumatmultconf[index].M,
+                           gpumatmultconf[index].Nsize[device],
+                           &cublasSgemv_alpha,
+                           gpumatmultconf[index].d_cMat[device],
+                           gpumatmultconf[index].M,
+                           gpumatmultconf[index].d_wfsVec[device],
+                           1,
+                           &cublasSgemv_beta,
+                           gpumatmultconf[index].d_dmVec[device],
+                           1);
 
-                printf("device %d of index %d\n", device, index);
-                printf("GPU device                          = %d\n", gpumatmultconf[index].GPUdevice[device]);
-                printf("CUBLAS_OP_N                         = %d\n", CUBLAS_OP_N);
-                printf("alpha                               = %f\n", cublasSgemv_alpha);
-                printf("alpha                               = %f\n", cublasSgemv_beta);
-                printf("gpumatmultconf[index].M             = %d\n", (int) gpumatmultconf[index].M);
-                printf("gpumatmultconf[index].Nsize[device] = %d\n", (int) gpumatmultconf[index].Nsize[device]);
-                fflush(stdout);
-                exit(EXIT_FAILURE);				
+
+                if (stat != CUBLAS_STATUS_SUCCESS)
+                {
+                    printf("cublasSgemv returned error code %d, line(%d), index=%d\n", stat, __LINE__, index);
+                    fflush(stdout);
+                    if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
+                        printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
+                    if(stat == CUBLAS_STATUS_INVALID_VALUE)
+                        printf("   CUBLAS_STATUS_INVALID_VALUE\n");
+                    if(stat == CUBLAS_STATUS_ARCH_MISMATCH)
+                        printf("   CUBLAS_STATUS_ARCH_MISMATCH\n");
+                    if(stat == CUBLAS_STATUS_EXECUTION_FAILED)
+                        printf("   CUBLAS_STATUS_EXECUTION_FAILED\n");
+
+                    printf("device %d of index %d\n", device, index);
+                    printf("GPU device                          = %d\n", gpumatmultconf[index].GPUdevice[device]);
+                    printf("CUBLAS_OP_N                         = %d\n", CUBLAS_OP_N);
+                    printf("alpha                               = %f\n", cublasSgemv_alpha);
+                    printf("alpha                               = %f\n", cublasSgemv_beta);
+                    printf("gpumatmultconf[index].M             = %d\n", (int) gpumatmultconf[index].M);
+                    printf("gpumatmultconf[index].Nsize[device] = %d\n", (int) gpumatmultconf[index].Nsize[device]);
+                    fflush(stdout);
+                    exit(EXIT_FAILURE);
+                }
             }
-			}
             clock_gettime(CLOCK_REALTIME, thdata->t3);
 
 
-			//
-			// When computation is done on GPU, post semaphore #3
-			//
-			/*
+            //
+            // When computation is done on GPU, post semaphore #3
+            //
+            /*
             if(gpumatmultconf[index].sem==1)
                 sem_post(gpumatmultconf[index].semptr3[device]);
-*/
+            */
             *ptrstat = 5; // transfer result
 
 
-			//
-			// Wait for semaphore #4 to be posted to transfer from GPU to CPU
-			//
+            //
+            // Wait for semaphore #4 to be posted to transfer from GPU to CPU
+            //
             if(gpumatmultconf[index].sem==1)
             {
                 sem_wait(gpumatmultconf[index].semptr4[device]);
@@ -1381,35 +1424,43 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
                     sem_getvalue(gpumatmultconf[index].semptr4[device], &semval);
                     for(cnt=0; cnt<semval; cnt++)
                     {
-						printf("WARNING %s %d  : sem_trywait on semptr4 index %d device %d\n", __FILE__, __LINE__, index, device);
-						fflush(stdout); 
+                        printf("WARNING %s %d  : sem_trywait on semptr4 index %d device %d\n",
+                               __FILE__, __LINE__, index, device);
+                        fflush(stdout);
                         sem_trywait(gpumatmultconf[index].semptr4[device]);
-					}
+                    }
                 }
             }
-            
+
             clock_gettime(CLOCK_REALTIME, thdata->t4);
-			
-			//cudaMemcpy ( gpumatmultconf[index].dmVec_part[device], gpumatmultconf[index].d_dmVec[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToHost);
+
+            //cudaMemcpy ( gpumatmultconf[index].dmVec_part[device], gpumatmultconf[index].d_dmVec[device], sizeof(float)*gpumatmultconf[index].M, cudaMemcpyDeviceToHost);
             // result is on gpumatmultconf[index].d_dmVec[device]
-            
+
             if(ComputeGPU_FLAG == 1)
             {
-            stat = cublasGetVector(gpumatmultconf[index].M, sizeof(float), gpumatmultconf[index].d_dmVec[device], 1, gpumatmultconf[index].dmVec_part[device], 1);
-            if (stat != CUBLAS_STATUS_SUCCESS)
-            {
-                fprintf(stderr, "!!!! device access error (read C)\n");
-                if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
-                    printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
-                if(stat == CUBLAS_STATUS_INVALID_VALUE)
-                    printf("   CUBLAS_STATUS_INVALID_VALUE\n");
-                if(stat == CUBLAS_STATUS_MAPPING_ERROR)
-                    printf("   CUBLAS_STATUS_MAPPING_ERROR\n");
-                exit(EXIT_FAILURE);
+                stat = cublasGetVector(
+                           gpumatmultconf[index].M,
+                           sizeof(float),
+                           gpumatmultconf[index].d_dmVec[device],
+                           1,
+                           gpumatmultconf[index].dmVec_part[device],
+                           1);
+
+                if (stat != CUBLAS_STATUS_SUCCESS)
+                {
+                    fprintf(stderr, "!!!! device access error (read C)\n");
+                    if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
+                        printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
+                    if(stat == CUBLAS_STATUS_INVALID_VALUE)
+                        printf("   CUBLAS_STATUS_INVALID_VALUE\n");
+                    if(stat == CUBLAS_STATUS_MAPPING_ERROR)
+                        printf("   CUBLAS_STATUS_MAPPING_ERROR\n");
+                    exit(EXIT_FAILURE);
+                }
             }
-			}
         }
-        
+
         clock_gettime(CLOCK_REALTIME, thdata->t5);
         //
         // When data is ready on CPU, post semaphore #5
@@ -1427,8 +1478,8 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
     }
 
 
-	// LOG function / process end
-	CORE_logFunctionCall( logfunc_level, logfunc_level_max, 1, __FILE__, __func__, __LINE__, commentstring);
+    // LOG function / process end
+    CORE_logFunctionCall( logfunc_level, logfunc_level_max, 1, __FILE__, __func__, __LINE__, commentstring);
 
     pthread_exit(0);
 }
@@ -1445,9 +1496,9 @@ int GPUloadCmat(int index)
 {
     int device;
     int n, m;
-   // long ID;
-    
-    
+    // long ID;
+
+
     printf("LOADING MATRIX TO GPU ... ");
     fflush(stdout);
 
@@ -1457,13 +1508,15 @@ int GPUloadCmat(int index)
             if(gpumatmultconf[index].orientation==0)
             {
                 for (m=0; m<gpumatmultconf[index].M; m++) {
-                    gpumatmultconf[index].cMat_part[device][(n-gpumatmultconf[index].Noffset[device])*gpumatmultconf[index].M+m] = gpumatmultconf[index].cMat[m*gpumatmultconf[index].N+n];
+                    gpumatmultconf[index].cMat_part[device][(n-gpumatmultconf[index].Noffset[device])*gpumatmultconf[index].M+m] =
+                        gpumatmultconf[index].cMat[m*gpumatmultconf[index].N+n];
                 }
             }
             else
             {
                 for (m=0; m<gpumatmultconf[index].M; m++) {
-                    gpumatmultconf[index].cMat_part[device][(n-gpumatmultconf[index].Noffset[device])*gpumatmultconf[index].M+m] = gpumatmultconf[index].cMat[n*gpumatmultconf[index].M+m];
+                    gpumatmultconf[index].cMat_part[device][(n-gpumatmultconf[index].Noffset[device])*gpumatmultconf[index].M+m] =
+                        gpumatmultconf[index].cMat[n*gpumatmultconf[index].M+m];
                 }
             }
         }
@@ -1472,7 +1525,16 @@ int GPUloadCmat(int index)
     for(device=0; device<gpumatmultconf[index].NBstreams; device++)
     {
         cudaSetDevice(gpumatmultconf[index].GPUdevice[device]);
-        error = cublasSetMatrix (gpumatmultconf[index].M, gpumatmultconf[index].Nsize[device], sizeof(float), gpumatmultconf[index].cMat_part[device], gpumatmultconf[index].M, gpumatmultconf[index].d_cMat[device], gpumatmultconf[index].M);
+        
+        error = cublasSetMatrix (
+                    gpumatmultconf[index].M,
+                    gpumatmultconf[index].Nsize[device],
+                    sizeof(float),
+                    gpumatmultconf[index].cMat_part[device],
+                    gpumatmultconf[index].M,
+                    gpumatmultconf[index].d_cMat[device],
+                    gpumatmultconf[index].M);
+
         if (error != cudaSuccess)
         {
             printf("cudblasSetMatrix returned error code %d, line(%d)\n", error, __LINE__);
@@ -1495,8 +1557,8 @@ void *GPU_scanDevices( void *deviceCount_void_ptr)
 {
     int *devcnt_ptr = (int *) deviceCount_void_ptr;
     int deviceCount;
-	int device;
-	struct cudaDeviceProp deviceProp;
+    int device;
+    struct cudaDeviceProp deviceProp;
 
     printf("Scanning for GPU devices ...\n");
     fflush(stdout);
@@ -1510,9 +1572,18 @@ void *GPU_scanDevices( void *deviceCount_void_ptr)
         cudaGetDeviceProperties(&deviceProp, device);
         printf("Device %d [ %20s ]  has compute capability %d.%d.\n",
                device, deviceProp.name, deviceProp.major, deviceProp.minor);
-        printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n", (float)deviceProp.totalGlobalMem/1048576.0f, (unsigned long long) deviceProp.totalGlobalMem);
-        printf("  (%2d) Multiprocessors\n", deviceProp.multiProcessorCount);
-        printf("  GPU Clock rate:                                %.0f MHz (%0.2f GHz)\n", deviceProp.clockRate * 1e-3f, deviceProp.clockRate * 1e-6f);
+
+        printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n",
+               (float)deviceProp.totalGlobalMem/1048576.0f,
+               (unsigned long long) deviceProp.totalGlobalMem);
+
+        printf("  (%2d) Multiprocessors\n",
+               deviceProp.multiProcessorCount);
+
+        printf("  GPU Clock rate:                                %.0f MHz (%0.2f GHz)\n",
+               deviceProp.clockRate * 1e-3f,
+               deviceProp.clockRate * 1e-6f);
+
         printf("\n");
     }
 
