@@ -147,6 +147,7 @@ static long IDtiming = -1; // index to image where timing should be written
 
 
 
+
 #ifdef HAVE_CUDA
 static int deviceCount;
 
@@ -187,10 +188,10 @@ static double *magma_d_M2;
 static double *magma_d_Ainv;
 static double *magma_h_Ainv;
 static double *magma_h_M2;
-static double *magma_h_S; //singular values
-static double *magma_d_U; //left singular vectors
-static double *magma_d_VT; //right singular vectors
-static double *magma_d_B;
+//static double *magma_h_S; //singular values
+//static double *magma_d_U; //left singular vectors
+//static double *magma_d_VT; //right singular vectors
+//static double *magma_d_B;
 
 
 static float *magmaf_h_A;
@@ -206,10 +207,10 @@ static float *magmaf_d_M2;
 static float *magmaf_d_Ainv;
 static float *magmaf_h_Ainv;
 static float *magmaf_h_M2;
-static float *magmaf_h_S; //singular values
-static float *magmaf_d_U; //left singular vectors
-static float *magmaf_d_VT; //right singular vectors
-static float *magmaf_d_B;
+//static float *magmaf_h_S; //singular values
+//static float *magmaf_d_U; //left singular vectors
+//static float *magmaf_d_VT; //right singular vectors
+//static float *magmaf_d_B;
 
 
 static magma_int_t magma_aux_iwork[1];
@@ -272,17 +273,28 @@ int QDWHpartial (int M, int N,
 /* =============================================================================================== */
 
 
-int_fast8_t CUDACOMP_test_cli()
+errno_t CUDACOMP_test_cli()
 {
-	#ifdef HAVE_CUDA
-    if(CLI_checkarg(1,2)+CLI_checkarg(2,2)+CLI_checkarg(3,2)+CLI_checkarg(4,2)==0)
+#ifdef HAVE_CUDA
+    if(
+        CLI_checkarg(1,2) +
+        CLI_checkarg(2,2) +
+        CLI_checkarg(3,2) +
+        CLI_checkarg(4,2)
+        == 0 )
+    {
         GPUcomp_test(data.cmdargtoken[1].val.numl, data.cmdargtoken[2].val.numl, data.cmdargtoken[3].val.numl, data.cmdargtoken[4].val.numl);
-    else
-        return 1;
-    #else
+        return CLICMD_SUCCESS;
+    }
+    else {
+        return CLICMD_ERROR;
+    }
+#else
     printf("Error: function requires CUDA. Please install CUDA\n");
-    #endif
+
+#endif
 }
+
 
 
 
@@ -311,55 +323,85 @@ int_fast8_t CUDACOMP_test_cli()
 /* =============================================================================================== */
 
 
-int_fast8_t CUDACOMP_MatMatMult_testPseudoInverse_cli()
+errno_t CUDACOMP_MatMatMult_testPseudoInverse_cli()
 {
-	if(CLI_checkarg(1,4)+CLI_checkarg(2,4)+CLI_checkarg(3,3)==0)
-        CUDACOMP_MatMatMult_testPseudoInverse(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.string);
-    else
-        return 1;
+    if(
+        CLI_checkarg(1,4) +
+        CLI_checkarg(2,4) +
+        CLI_checkarg(3,3)
+        == 0 )
+    {
+        CUDACOMP_MatMatMult_testPseudoInverse(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.string,
+            data.cmdargtoken[3].val.string
+        );
+
+        return CLICMD_SUCCESS;
+    }
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
 
 
-
-int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli()
+errno_t CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli()
 {
-    if(CLI_checkarg(1,4)
-            + CLI_checkarg(2,3)
-            + CLI_checkarg(3,1)
-            + CLI_checkarg(4,2)
-            + CLI_checkarg(5,3)==0)
+    if(
+        CLI_checkarg(1,4) +
+        CLI_checkarg(2,3) +
+        CLI_checkarg(3,1) +
+        CLI_checkarg(4,2) +
+        CLI_checkarg(5,3)
+        == 0 )
+    {
         CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
             data.cmdargtoken[1].val.string,
             data.cmdargtoken[2].val.string,
             data.cmdargtoken[3].val.numf,
             data.cmdargtoken[4].val.numl,
-            data.cmdargtoken[5].val.string);
-    else
-        return 1;
+            data.cmdargtoken[5].val.string
+        );
+
+        return CLICMD_SUCCESS;
+    }
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
 
 
-int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_cli()
+
+errno_t CUDACOMP_magma_compute_SVDpseudoInverse_cli()
 {
-    if(CLI_checkarg(1,4)
-            + CLI_checkarg(2,3)
-            + CLI_checkarg(3,1)
-            + CLI_checkarg(4,2)
-            + CLI_checkarg(5,3)
-            + CLI_checkarg(6,2)
-            + CLI_checkarg(7,1)
-            + CLI_checkarg(8,1)==0)
+    if(
+        CLI_checkarg(1,4) +
+        CLI_checkarg(2,3) +
+        CLI_checkarg(3,1) +
+        CLI_checkarg(4,2) +
+        CLI_checkarg(5,3) +
+        CLI_checkarg(6,2) +
+        CLI_checkarg(7,1) +
+        CLI_checkarg(8,1)
+        == 0 )
+    {
         CUDACOMP_magma_compute_SVDpseudoInverse(
             data.cmdargtoken[1].val.string,
             data.cmdargtoken[2].val.string,
             data.cmdargtoken[3].val.numf,
             data.cmdargtoken[4].val.numl,
-            data.cmdargtoken[5].val.string, 0,
+            data.cmdargtoken[5].val.string,
+            0,
             data.cmdargtoken[6].val.numl,
             data.cmdargtoken[7].val.numf,
-            data.cmdargtoken[8].val.numf, 0);
-    else
-        return 1;
+            data.cmdargtoken[8].val.numf,
+            0 );
+
+        return CLICMD_SUCCESS;
+    }
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
 
 
@@ -376,37 +418,56 @@ int_fast8_t CUDACOMP_magma_compute_SVDpseudoInverse_cli()
 /* =============================================================================================== */
 
 
-int_fast8_t CUDACOMP_Coeff2Map_Loop_cli()
+errno_t CUDACOMP_Coeff2Map_Loop_cli()
 {
-    if(CLI_checkarg(1,4)
-            + CLI_checkarg(2,4)
-            + CLI_checkarg(3,2)
-            + CLI_checkarg(4,4)==0)
+    if(
+        CLI_checkarg(1,4) +
+        CLI_checkarg(2,4) +
+        CLI_checkarg(3,2) +
+        CLI_checkarg(4,4)
+        == 0 )
+    {
         CUDACOMP_Coeff2Map_Loop(
             data.cmdargtoken[1].val.string,
             data.cmdargtoken[2].val.string,
             data.cmdargtoken[3].val.numl,
-            data.cmdargtoken[4].val.string, 0, " ");
-    else
-        return 1;
+            data.cmdargtoken[4].val.string,
+            0,
+            " "
+        );
+
+        return CLICMD_SUCCESS;
+    }
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
 
 
-int_fast8_t CUDACOMP_Coeff2Map_offset_Loop_cli()
+errno_t CUDACOMP_Coeff2Map_offset_Loop_cli()
 {
-    if(CLI_checkarg(1,4)
-            + CLI_checkarg(2,4)
-            + CLI_checkarg(3,2)
-            + CLI_checkarg(4,4)
-            + CLI_checkarg(5,4)==0)
+    if(
+        CLI_checkarg(1,4) +
+        CLI_checkarg(2,4) +
+        CLI_checkarg(3,2) +
+        CLI_checkarg(4,4) +
+        CLI_checkarg(5,4)
+        == 0 )
+    {
         CUDACOMP_Coeff2Map_Loop(
             data.cmdargtoken[1].val.string,
             data.cmdargtoken[2].val.string,
             data.cmdargtoken[3].val.numl,
-            data.cmdargtoken[4].val.string, 1,
-            data.cmdargtoken[5].val.string);
-    else
-        return 1;
+            data.cmdargtoken[4].val.string,
+            1,
+            data.cmdargtoken[5].val.string
+        );
+
+        return CLICMD_SUCCESS;
+    }
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
 
 /*
@@ -425,7 +486,7 @@ int_fast8_t CUDACOMP_MVMextractModesLoop_cli()
 
 
 
-int_fast8_t CUDACOMP_MVMextractModesLoop_cli() {
+errno_t CUDACOMP_MVMextractModesLoop_cli() {
     int stringmaxlen = 200;
     char fpsname[stringmaxlen];
 
@@ -470,20 +531,23 @@ int_fast8_t CUDACOMP_MVMextractModesLoop_cli() {
         }
     }
     // non FPS implementation - all parameters specified at function launch
-    if(CLI_checkarg(1,4)
-            + CLI_checkarg(2,5)
-            + CLI_checkarg(3,4)
-            + CLI_checkarg(4,5)
-            + CLI_checkarg(5,5)
-            + CLI_checkarg(6,5)
-            + CLI_checkarg(7,2)
-            + CLI_checkarg(8,2)
-            + CLI_checkarg(9,2)
-            + CLI_checkarg(10,2)
-            + CLI_checkarg(11,2)
-            + CLI_checkarg(12,2)
-            + CLI_checkarg(13,2)
-            + CLI_checkarg(14,2)==0) {
+    if(
+        CLI_checkarg(1,4) +
+        CLI_checkarg(2,5) +
+        CLI_checkarg(3,4) +
+        CLI_checkarg(4,5) +
+        CLI_checkarg(5,5) +
+        CLI_checkarg(6,5) +
+        CLI_checkarg(7,2) +
+        CLI_checkarg(8,2) +
+        CLI_checkarg(9,2) +
+        CLI_checkarg(10,2) +
+        CLI_checkarg(11,2) +
+        CLI_checkarg(12,2) +
+        CLI_checkarg(13,2) +
+        CLI_checkarg(14,2)
+        == 0 )
+    {
         CUDACOMP_MVMextractModesLoop(
             data.cmdargtoken[1].val.string,
             data.cmdargtoken[2].val.string,
@@ -498,15 +562,14 @@ int_fast8_t CUDACOMP_MVMextractModesLoop_cli() {
             data.cmdargtoken[11].val.numl,
             data.cmdargtoken[12].val.numl,
             data.cmdargtoken[13].val.numl,
-            data.cmdargtoken[14].val.numl);
+            data.cmdargtoken[14].val.numl
+        );
+
         return RETURN_SUCCESS;
     } else {
         return RETURN_FAILURE;
     }
 }
-
-
-
 
 
 
@@ -575,7 +638,7 @@ void __attribute__ ((constructor)) libinit_cudacomp()
 
 
 
-int_fast8_t init_cudacomp()
+errno_t init_cudacomp()
 {
     long i;
 
@@ -685,39 +748,41 @@ int_fast8_t init_cudacomp()
     /* =============================================================================================== */
 
 
+    RegisterCLIcommand(
+        "cudacoeff2map",
+        __FILE__,
+        CUDACOMP_Coeff2Map_Loop_cli,
+        "CUDA multiply vector by modes",
+        "<modes> <coeffs vector> <GPU index [long]> <output map>",
+        "cudacoeff2map modes coeff 4 outmap",
+        "int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, int GPUindex, const char *IDoutmap_name, int offsetmode, const char *IDoffset_name)");
 
-    strcpy(data.cmd[data.NBcmd].key,"cudacoeff2map");
-    strcpy(data.cmd[data.NBcmd].module,__FILE__);
-    data.cmd[data.NBcmd].fp = CUDACOMP_Coeff2Map_Loop_cli;
-    strcpy(data.cmd[data.NBcmd].info,"CUDA multiply vector by modes");
-    strcpy(data.cmd[data.NBcmd].syntax,"<modes> <coeffs vector> <GPU index [long]> <output map>");
-    strcpy(data.cmd[data.NBcmd].example,"cudacoeff2map modes coeff 4 outmap");
-    strcpy(data.cmd[data.NBcmd].Ccall,"int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, int GPUindex, const char *IDoutmap_name, int offsetmode, const char *IDoffset_name)");
-    data.NBcmd++;
 
-    strcpy(data.cmd[data.NBcmd].key,"cudacoeffo2map");
-    strcpy(data.cmd[data.NBcmd].module,__FILE__);
-    data.cmd[data.NBcmd].fp = CUDACOMP_Coeff2Map_offset_Loop_cli;
-    strcpy(data.cmd[data.NBcmd].info,"CUDA multiply vector by modes and add offset");
-    strcpy(data.cmd[data.NBcmd].syntax,"<modes> <coeffs vector> <GPU index [long]> <output map> <offset image>");
-    strcpy(data.cmd[data.NBcmd].example,"cudacoeffo2map modes coeff 4 outmap offsetim");
-    strcpy(data.cmd[data.NBcmd].Ccall,"int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, int GPUindex, const char *IDoutmap_name, int offsetmode, const char *IDoffset_name)");
-    data.NBcmd++;
+    RegisterCLIcommand(
+        "cudacoeffo2map",
+        __FILE__,
+        CUDACOMP_Coeff2Map_offset_Loop_cli,
+        "CUDA multiply vector by modes and add offset",
+        "<modes> <coeffs vector> <GPU index [long]> <output map> <offset image>",
+        "cudacoeffo2map modes coeff 4 outmap offsetim",
+        "int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, int GPUindex, const char *IDoutmap_name, int offsetmode, const char *IDoffset_name)");
 
-    strcpy(data.cmd[data.NBcmd].key,"cudaextrmodes");
-    strcpy(data.cmd[data.NBcmd].module,__FILE__);
-    data.cmd[data.NBcmd].fp = CUDACOMP_MVMextractModesLoop_cli;
-    strcpy(data.cmd[data.NBcmd].info,"CUDA extract mode values loop. Note that intot and refout parameters can be NULL");
-    strcpy(data.cmd[data.NBcmd].syntax,"<inval stream> <intot stream> <modes> <refin val> <refout_val> <outmode vals> <GPU index [long]> <PROCESS flag> <TRACEMODE flag> <MODE norm flag> <input semaphore> <axis orientation> <twait [us]> <semwarn>");
-    strcpy(data.cmd[data.NBcmd].example,"cudaextrmodes inmap inmaptot modes imref imoutref modeval 3 1 1 1 3 0 0");
-    strcpy(data.cmd[data.NBcmd].Ccall,"int CUDACOMP_MVMextractModesLoop(const char *in_stream, const char *intot_stream, const char *IDmodes_name, const char *IDrefin_name, const char *IDrefout_name, const char *IDmodes_val_name, int GPUindex, int PROCESS, int TRACEMODE, int MODENORM, int insem, int axmode, long twait, int semwarn)");
-    data.NBcmd++;
+
+    RegisterCLIcommand(
+        "cudaextrmodes",
+        __FILE__,
+        CUDACOMP_MVMextractModesLoop_cli,
+        "CUDA extract mode values loop. Note that intot and refout parameters can be NULL",
+        "<inval stream> <intot stream> <modes> <refin val> <refout_val> <outmode vals> <GPU index [long]> <PROCESS flag> <TRACEMODE flag> <MODE norm flag> <input semaphore> <axis orientation> <twait [us]> <semwarn>",
+        "cudaextrmodes inmap inmaptot modes imref imoutref modeval 3 1 1 1 3 0 0",
+        "int CUDACOMP_MVMextractModesLoop(const char *in_stream, const char *intot_stream, const char *IDmodes_name, const char *IDrefin_name, const char *IDrefout_name, const char *IDmodes_val_name, int GPUindex, int PROCESS, int TRACEMODE, int MODENORM, int insem, int axmode, long twait, int semwarn)");
+
 
 
 #endif
     // add atexit functions here
 
-    return 0;
+    return RETURN_SUCCESS;
 }
 
 
@@ -731,7 +796,7 @@ int_fast8_t init_cudacomp()
 
 #ifdef HAVE_CUDA
 
-int_fast8_t CUDACOMP_init()
+int CUDACOMP_init()
 {
     int device;
     struct cudaDeviceProp deviceProp;
@@ -755,7 +820,7 @@ int_fast8_t CUDACOMP_init()
         printf("\n");
     }
 
-    return((int_fast8_t) deviceCount);
+    return((int) deviceCount);
 }
 
 
@@ -764,7 +829,7 @@ int_fast8_t CUDACOMP_init()
 
 
 
-int CUDACOMP_printGPUMATMULTCONF(int index)
+errno_t CUDACOMP_printGPUMATMULTCONF(int index)
 {
 	printf("\n");
 	printf("============= GPUMATMULTCONF %d ======================\n", index);
@@ -827,12 +892,11 @@ int CUDACOMP_printGPUMATMULTCONF(int index)
     printf(" GPUdevice         = %20p\n", (void*) gpumatmultconf[index].GPUdevice);    
 
     printf(" orientation       = %20d\n", (int) gpumatmultconf[index].orientation);    
-    int_fast8_t orientation;
-
-
-
+   
 	printf("======================================================\n");
 	printf("\n");
+
+	return RETURN_SUCCESS;
 }
 
 
@@ -844,34 +908,27 @@ int CUDACOMP_printGPUMATMULTCONF(int index)
 
 
 
-int_fast8_t GPUcomp_test(
-		long NBact, 
+errno_t GPUcomp_test(
+		__attribute__((unused)) long NBact, 
 		long NBmodes, 
 		long WFSsize, 
 		long GPUcnt
-		)
+)
 {
-    long ID_contrM;
-    long ID_WFS;
-    long ID_cmd_modes;
-    uint32_t *cmsize;
-    uint32_t *wfssize;
-    uint32_t *cmdmodessize;
+    imageID     ID_contrM;
+    imageID     ID_WFS;
+    imageID     ID_cmd_modes;
+    uint32_t   *cmsize;
+    uint32_t   *wfssize;
+    uint32_t   *cmdmodessize;
     int_fast8_t status;
     int_fast8_t GPUstatus[100];
-    long iter;
-    long NBiter = 50000;
-    double time1sec, time2sec;
+    long        iter;
+    long        NBiter = 50000;
+    double      time1sec, time2sec;
     struct timespec tnow;
-    int *GPUdevices;
-    int k;
-    double SVDeps = 0.1;
-
-    long n, m;
-    //    uint32_t *arraysizetmp;
-    long ID, ID_R, ID_C;
-    long ii, jj;
-    float val;
+    int        *GPUdevices;
+    double      SVDeps = 0.1;
 
 
 
@@ -931,7 +988,7 @@ int_fast8_t GPUcomp_test(
     printf("Testing GPU matrix multiplication speed, %ld GPUs\n", GPUcnt);
 
     GPUdevices = (int*) malloc(sizeof(int)*GPUcnt);
-    for(k=0; k<GPUcnt; k++)
+    for(int k=0; k<GPUcnt; k++)
         GPUdevices[k] = k+8;
 
 
@@ -979,7 +1036,7 @@ int_fast8_t GPUcomp_test(
     free(GPUdevices);
 
 
-    return(0);
+    return RETURN_SUCCESS;
 }
 
 
@@ -1012,39 +1069,35 @@ void matrixMulCPU(
     float *cMat,
     float *wfsVec,
     float *dmVec,
-    int M,
-    int N)
+    int    M,
+    int    N
+)
 {
-    long n, m;
-    float sum;
-    long index;
-    long i;
-
     printf("Conventional mat mult %d %d\n", M, N);
-    for(m=0; m<M; m++)
+    for(int m=0; m<M; m++)
     {
         dmVec[m] = 0.0;
-        for(n=0; n<N; n++)
+        for(int n=0; n<N; n++)
         {
-            index = m*N+n;
+            int index = m*N+n;
             dmVec[m] += cMat[index]*wfsVec[n];
         }
         //cMat[n*M+m]*wfsVec[n];
     }
 
     printf("cMat  : ");
-    for(i=0; i<5; i++)
+    for(int i=0; i<5; i++)
         printf("%f ", cMat[i]);
     printf(" ... ");
-    for(i=N*M-5; i<N*M; i++)
+    for(int i=N*M-5; i<N*M; i++)
         printf("%f ", cMat[i]);
     printf("\n");
 
     printf("wfsVec: ");
-    for(n=0; n<5; n++)
+    for(int n=0; n<5; n++)
         printf("%f ", wfsVec[n]);
     printf(" ... ");
-    for(n=N-5; n<N; n++)
+    for(int n=N-5; n<N; n++)
         printf("%f ", wfsVec[n]);
     printf("\n");
 
@@ -1074,28 +1127,27 @@ void matrixMulCPU(
  */
 
 
-void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
+void __attribute__((hot)) *GPUcomputeMVM_function(
+    void *ptr
+)
 {
-    THDATA *thdata;
-    int device;
-    int n, m;
-    int index;
+    THDATA     *thdata;
+    int         device;
+    int         index;
     const char *ptr0; // source
-    const char *ptr1; // dest
-    float *ptr0f; // test
-    int *ptrstat;
-    long IDtest;
-    int k;
-    char fname[200];
-    long long iter;
-    long long itermax = 1;
-    float imtot;
-    float alphatmp;
-    float betatmp;
-    int semval;
-    long cnt;
-    FILE *fptest;
-    long ii;
+    //const char *ptr1; // dest
+    //float      *ptr0f; // test
+    int        *ptrstat;
+    //imageID     IDtest;
+    //char        fname[200];
+    long long   iter;
+    long long   itermax = 1;
+    //float       imtot;
+    //float       alphatmp;
+    //float       betatmp;
+    int         semval;
+    long        cnt;
+    //FILE        *fptest;
 
     float alpharef, betaref;
 
@@ -1124,7 +1176,7 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
 
     ptr0 = (char*) gpumatmultconf[index].wfsVec;
     ptr0 += sizeof(float)*gpumatmultconf[index].Noffset[device];
-    ptr0f = (float*) ptr0;
+    //ptr0f = (float*) ptr0;
 
 
     cudaSetDevice(gpumatmultconf[index].GPUdevice[device]);
@@ -1492,29 +1544,27 @@ void __attribute__((hot)) *GPUcomputeMVM_function( void *ptr )
 
 
 
-int GPUloadCmat(int index)
+errno_t GPUloadCmat(
+int index
+)
 {
-    int device;
-    int n, m;
-    // long ID;
-
 
     printf("LOADING MATRIX TO GPU ... ");
     fflush(stdout);
 
-    for(device = 0; device < gpumatmultconf[index].NBstreams; device++)
+    for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
     {
-        for (n=gpumatmultconf[index].Noffset[device]; n<gpumatmultconf[index].Noffset[device]+gpumatmultconf[index].Nsize[device]; n++) {
+        for (unsigned int n=gpumatmultconf[index].Noffset[device]; n < gpumatmultconf[index].Noffset[device]+gpumatmultconf[index].Nsize[device]; n++) {
             if(gpumatmultconf[index].orientation==0)
             {
-                for (m=0; m<gpumatmultconf[index].M; m++) {
+                for (unsigned int m=0; m<gpumatmultconf[index].M; m++) {
                     gpumatmultconf[index].cMat_part[device][(n-gpumatmultconf[index].Noffset[device])*gpumatmultconf[index].M+m] =
                         gpumatmultconf[index].cMat[m*gpumatmultconf[index].N+n];
                 }
             }
             else
             {
-                for (m=0; m<gpumatmultconf[index].M; m++) {
+                for (unsigned int m=0; m<gpumatmultconf[index].M; m++) {
                     gpumatmultconf[index].cMat_part[device][(n-gpumatmultconf[index].Noffset[device])*gpumatmultconf[index].M+m] =
                         gpumatmultconf[index].cMat[n*gpumatmultconf[index].M+m];
                 }
@@ -1522,10 +1572,10 @@ int GPUloadCmat(int index)
         }
     }
 
-    for(device=0; device<gpumatmultconf[index].NBstreams; device++)
+    for(int device=0; device<gpumatmultconf[index].NBstreams; device++)
     {
         cudaSetDevice(gpumatmultconf[index].GPUdevice[device]);
-        
+
         error = cublasSetMatrix (
                     gpumatmultconf[index].M,
                     gpumatmultconf[index].Nsize[device],
@@ -1544,7 +1594,7 @@ int GPUloadCmat(int index)
     printf("done\n");
     fflush(stdout);
 
-    return(0);
+    return RETURN_SUCCESS;
 }
 
 
@@ -1627,7 +1677,7 @@ void *GPU_scanDevices( void *deviceCount_void_ptr)
  *
 */
 
-int GPU_loop_MultMat_setup(
+errno_t GPU_loop_MultMat_setup(
 	int         index, 
 	const char *IDcontrM_name, 
 	const char *IDwfsim_name, 
@@ -1638,10 +1688,8 @@ int GPU_loop_MultMat_setup(
 	int         USEsem, 
 	int         initWFSref, 
 	long        loopnb
-	)
+)
 {
-    int device;
-
 	//CUDACOMP_printGPUMATMULTCONF(index);
 
 	/// This function will not do anything if the initialization has already been performed
@@ -1649,12 +1697,12 @@ int GPU_loop_MultMat_setup(
     if(gpumatmultconf[index].init == 0)
     {
 		int pid;		
-        struct cudaDeviceProp deviceProp;
-        int n, m;
+        //struct cudaDeviceProp deviceProp;
         char sname[200];
-        int ptn;
  
-        long IDcontrM, IDwfsim, IDwfsref;
+        imageID IDcontrM;
+        imageID IDwfsim;
+        imageID IDwfsref;
 		
 
 
@@ -1763,7 +1811,7 @@ int GPU_loop_MultMat_setup(
         {
             printf("[0] Input vector size: %ld %ld\n", (long) data.image[IDwfsim].md[0].size[0], (long) data.image[IDwfsim].md[0].size[1]);
 
-            if(data.image[IDwfsim].md[0].size[0]*data.image[IDwfsim].md[0].size[1] != (int) gpumatmultconf[index].N)
+            if( (uint32_t) (data.image[IDwfsim].md[0].size[0]*data.image[IDwfsim].md[0].size[1]) !=  gpumatmultconf[index].N)
             {
                 printf("ERROR: CONTRmat and WFSvec size not compatible: %ld %d\n", (long) (data.image[IDwfsim].md[0].size[0]*data.image[IDwfsim].md[0].size[1]), (int) gpumatmultconf[index].N);
                 fflush(stdout);
@@ -1774,7 +1822,7 @@ int GPU_loop_MultMat_setup(
         else
         {
             printf("[1] Input vector size: %ld \n", (long) data.image[IDwfsim].md[0].size[0]);
-            if(data.image[IDwfsim].md[0].size[0] != (int) gpumatmultconf[index].N)
+            if(data.image[IDwfsim].md[0].size[0] != gpumatmultconf[index].N)
             {
                 printf("ERROR: CONTRmat and WFSvec size not compatible: %ld %d\n", (long) data.image[IDwfsim].md[0].size[0], (int) gpumatmultconf[index].N);
                 fflush(stdout);
@@ -1799,7 +1847,7 @@ int GPU_loop_MultMat_setup(
         }
         else
         {
-            if(data.image[gpumatmultconf[index].IDout].md[0].size[0] * data.image[gpumatmultconf[index].IDout].md[0].size[1] != (int) gpumatmultconf[index].M)
+            if((uint32_t) (data.image[gpumatmultconf[index].IDout].md[0].size[0] * data.image[gpumatmultconf[index].IDout].md[0].size[1]) != gpumatmultconf[index].M)
             {
                 printf("ERROR: CONTRmat and WFSvec size not compatible: %ld %d\n", (long) (data.image[gpumatmultconf[index].IDout].md[0].size[0] * data.image[gpumatmultconf[index].IDout].md[0].size[1]), (int) gpumatmultconf[index].M);
                 printf("gpumatmultconf[index].IDout = %ld\n", gpumatmultconf[index].IDout);
@@ -1836,7 +1884,7 @@ int GPU_loop_MultMat_setup(
         gpumatmultconf[index].Nsize = (uint_fast32_t*) malloc(sizeof(long)*gpumatmultconf[index].NBstreams);
         gpumatmultconf[index].Noffset = (uint_fast32_t*) malloc(sizeof(long)*gpumatmultconf[index].NBstreams);
         gpumatmultconf[index].Noffset[0] = 0;
-        for(device=1; device<gpumatmultconf[index].NBstreams; device++)
+        for(int device=1; device<gpumatmultconf[index].NBstreams; device++)
         {
             gpumatmultconf[index].Noffset[device] = gpumatmultconf[index].Noffset[device-1] + (long) (gpumatmultconf[index].N/gpumatmultconf[index].NBstreams);
             gpumatmultconf[index].Nsize[device-1] = gpumatmultconf[index].Noffset[device] - gpumatmultconf[index].Noffset[device-1];
@@ -1853,7 +1901,7 @@ int GPU_loop_MultMat_setup(
         printf("- - - - - - - - -\n");
         fflush(stdout);
 
-        for (device = 0; device < gpumatmultconf[index].NBstreams; device++)
+        for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             printf("stream %2d  ->  GPU device %2d\n", device, GPUdevice[device]);
             fflush(stdout);
@@ -1862,7 +1910,7 @@ int GPU_loop_MultMat_setup(
 
         printf("-----------------------------------------------------\n");
         fflush(stdout);
-        for(device=0; device<gpumatmultconf[index].NBstreams; device++)
+        for(int device=0; device<gpumatmultconf[index].NBstreams; device++)
         {
             printf("DEVICE %2d  [%2d]:  %5d -> %5d  (%d)\n", device, gpumatmultconf[index].GPUdevice[device], (int) gpumatmultconf[index].Noffset[device], (int) (gpumatmultconf[index].Noffset[device]+gpumatmultconf[index].Nsize[device]), (int) gpumatmultconf[index].Nsize[device]);
             fflush(stdout);
@@ -2004,7 +2052,7 @@ int GPU_loop_MultMat_setup(
 			}
 			
 
-        for(device = 0; device < gpumatmultconf[index].NBstreams; device++)
+        for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             gpumatmultconf[index].cMat_part[device] = (float*) malloc(sizeof(float)*gpumatmultconf[index].M*gpumatmultconf[index].Nsize[device]);
             if( gpumatmultconf[index].cMat_part[device] == NULL)
@@ -2082,7 +2130,7 @@ int GPU_loop_MultMat_setup(
 
 
 		// this create two threads per device
-        for (device = 0; device < gpumatmultconf[index].NBstreams; device++)
+        for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             cudaSetDevice(GPUdevice[device]);
             cudaStreamCreate( &gpumatmultconf[index].stream[device]);
@@ -2090,7 +2138,7 @@ int GPU_loop_MultMat_setup(
 
 
 
-        for(device=0; device<gpumatmultconf[index].NBstreams; device++)
+        for(int device=0; device<gpumatmultconf[index].NBstreams; device++)
         {
             cudaSetDevice(GPUdevice[device]);
 
@@ -2162,8 +2210,8 @@ int GPU_loop_MultMat_setup(
 
         }
 
-        for(device = 0; device < gpumatmultconf[index].NBstreams; device++)
-            for (n=gpumatmultconf[index].Noffset[device]; n<gpumatmultconf[index].Noffset[device]+gpumatmultconf[index].Nsize[device]; n++)
+        for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
+            for (unsigned long n=gpumatmultconf[index].Noffset[device]; n<gpumatmultconf[index].Noffset[device]+gpumatmultconf[index].Nsize[device]; n++)
             {
                 gpumatmultconf[index].wfsVec_part[device][n-gpumatmultconf[index].Noffset[device]] = gpumatmultconf[index].wfsVec[n];
                 gpumatmultconf[index].wfsRef_part[device][n-gpumatmultconf[index].Noffset[device]] = gpumatmultconf[index].wfsRef[n];
@@ -2173,7 +2221,7 @@ int GPU_loop_MultMat_setup(
 
 
         // copy memory to devices
-        for(device=0; device<gpumatmultconf[index].NBstreams; device++)
+        for(int device=0; device<gpumatmultconf[index].NBstreams; device++)
         {
             error = cudaMemcpy(gpumatmultconf[index].d_wfsVec[device], gpumatmultconf[index].wfsVec_part[device], sizeof(float)*gpumatmultconf[index].Nsize[device], cudaMemcpyHostToDevice);
             if (error != cudaSuccess)
@@ -2228,7 +2276,7 @@ int GPU_loop_MultMat_setup(
 			}
 
 
-        for(m=0; m<gpumatmultconf[index].M; m++)
+        for(uint32_t m=0; m<gpumatmultconf[index].M; m++)
             gpumatmultconf[index].dmVecTMP[m] = 0.0;
 
        // cnt = 0;
@@ -2239,7 +2287,7 @@ int GPU_loop_MultMat_setup(
         fflush(stdout);    
     }
 
-    for(device=0; device<gpumatmultconf[index].NBstreams; device++)
+    for(int device=0; device<gpumatmultconf[index].NBstreams; device++)
         gpumatmultconf[index].refWFSinit[device] = initWFSref;
 
 
@@ -2250,7 +2298,7 @@ int GPU_loop_MultMat_setup(
 
 //	CUDACOMP_printGPUMATMULTCONF(index);
 
-    return(0);
+    return RETURN_SUCCESS;
 }
 
 
@@ -2272,9 +2320,8 @@ int GPU_loop_MultMat_execute(
 	int          TimerOffsetIndex
 	)
 {
-    int m;
     int ptn;
-    int statustot;
+    //int statustot;
     int semval;
     long cnt;
 	int TimerIndex;
@@ -2477,6 +2524,7 @@ int GPU_loop_MultMat_execute(
 #endif
 
 
+
 	if(timing == 1)
 	{
 		tdiff = info_time_diff(tdt0[0], tdt1[0]);
@@ -2527,14 +2575,14 @@ int GPU_loop_MultMat_execute(
 
     data.image[gpumatmultconf[index].IDout].md[0].write = 1;
 
-    for(m=0; m<gpumatmultconf[index].M; m++)
+    for(uint32_t m=0; m<gpumatmultconf[index].M; m++)
         gpumatmultconf[index].dmVecTMP[m] = 0.0;
 
 
 
     for(ptn=0; ptn<gpumatmultconf[index].NBstreams; ptn++)
     {
-        for(m=0; m<gpumatmultconf[index].M; m++)
+        for(uint32_t m=0; m<gpumatmultconf[index].M; m++)
             gpumatmultconf[index].dmVecTMP[m] += gpumatmultconf[index].dmVec_part[ptn][m];
     }
 
@@ -2880,21 +2928,22 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
     uint8_t datatype;
 
     magma_int_t lda, ldu, ldv;
-    float dummy[1];
+    //float dummy[1];
     float *a, *h_R;         // a, h_R - mxn  matrices
     float *U, *VT;			// u - mxm matrix , vt - nxn  matrix  on the  host
     float *S1;              //  vectors  of  singular  values
     magma_int_t  info;
-    float  work[1];				// used in  difference  computations
+    //float  work[1];				// used in  difference  computations
     float  *h_work;           //  h_work  - workspace
     magma_int_t  lwork;                     //  workspace  size
-    real_Double_t gpu_time , cpu_time;
+    real_Double_t gpu_time;
+    //real_Double_t cpu_time;
 
     FILE *fp;
     char fname[200];
     long ID_VTmatrix;
     float egvlim;
-    long maxMode, MaxNBmodes1, mode;
+    long MaxNBmodes1, mode;
 
 
     arraysizetmp = (uint32_t*) malloc(sizeof(uint32_t)*3);
@@ -3227,40 +3276,36 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     const char *ID_VTmatrix_name,
     int         LOOPmode,
     int         PSINV_MODE,
-    double      qdwh_s,
-    float       qdwh_tol,
+    __attribute__((unused)) double      qdwh_s,
+    __attribute__((unused)) float       qdwh_tol,
     int 		testmode
 )
 {
-    long ID_Rmatrix;
-    uint8_t datatype;
-    uint32_t *arraysizetmp;
-    int size; // variable for memory allocations
-    magma_int_t N, M;
+    long         ID_Rmatrix;
+    uint8_t      datatype;
+    uint32_t    *arraysizetmp;
+    magma_int_t  N, M;
     long ii, jj, k;
-    magma_int_t info;
+    magma_int_t  info;
 
-	
-	long ID_PFfmdat = -1;  // optional final M-M product 
-	
-	
-    long ID_AtA, ID_VT, ID_Ainv;
+
+    imageID ID_PFfmdat = -1;  // optional final M-M product
+    imageID ID_AtA, ID_VT, ID_Ainv;
 
     /// Timing tests
     // int timing = 1;                                                        /**< 1 if timing test ON, 0 otherwise */
     struct timespec t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13;                /**< Timers                           */
-    double t01d, t12d, t23d, t34d, t45d, t56d, t67d, t78d, t89d, t09d, t910d, t1011d, t1112d, t1213d, t013d;     /**< Times in sec                     */
+    double t01d, t12d, t23d, t34d, t45d, t56d, t67d, t78d, t89d, t910d, t1011d, t1112d, t1213d, t013d;     /**< Times in sec                     */
     struct timespec tdiff;
 
 
     FILE *fp;
     char fname[200];
 
-    long maxMode, MaxNBmodes1, mode;
-    double egvlim, svlim;
-    long nbmodesremoved;
+    long MaxNBmodes1, mode;
+    
 
-    long ID_Cmatrix;
+    imageID ID_Cmatrix;
 
     // TESTING FLAGS
     int VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse = 1;
@@ -3268,23 +3313,17 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
     int MAGMAfloat = 1;		                                               /**< 1 if single precision, 0 if double precision */
 
-    // QDWHpartial set by   mode_QDWHPartial: 1 do QDWHPartial, MAGMA otherwise
-    int fact = 1; // 1 use PO-based QDWH iter, QR-based otherwise
-    int psinv = 1; // 1 calculate psinv, no otherwise
-    double s = 1.e-16; // Threshold for to capture a subset of the singular values
-    float tol = 1.e-0; // Threshold used during rank revealing QR
-    int sizeS = 0, wanted = 0, it = 0;
-    float flops = 0.0;
+
 
     int magmaXmode = 0; // expert mode, uses magma_ssyevdx_gpu
     // this does not speed up computation
     magma_int_t mout;
 
-    s = qdwh_s;
-    tol = qdwh_tol;
 
 
-	int dAinvMODE = 0;
+
+    int dAinvMODE = 0;
+
 
 
     //  if(timing==1)
@@ -3295,7 +3334,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
      *
      *
      * MATRIX REPRESENTATION CONVENTION
-     * 
+     *
 
      *
      */
@@ -3314,7 +3353,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
 
 
-	
+
 
     arraysizetmp = (uint32_t*) malloc(sizeof(uint32_t)*3);
 
@@ -3347,15 +3386,13 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
             fflush(stdout);
         }
     }
-    
-    
+
+	int m32 = r32up(M);
+
     //TEST
     //for(ii=0;ii<N;ii++)
-		//data.image[ID_Rmatrix].array.F[ii*M+ii] += 1.0;
+    //data.image[ID_Rmatrix].array.F[ii*M+ii] += 1.0;
 
-
-    int min_mn = min(M,N);
-    int max_mn = max(M,N);
 
 
 
@@ -3382,66 +3419,84 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     }
 
 
-    int n2 = 2*min_mn;
-    int n232 = r32up(n2);
-    int lddb  = n232;
-
-    int ldd_min_mn = r32up(min_mn);
-    int ldd_max_mn = r32up(max_mn);
-    int ldda = ldd_max_mn;
-
-    int m32 = r32up(M);
-    int n32 = r32up(N);
-    int lddu  = m32;
-    int lddvt = n32;
 
 
-	// Check if using psinv library
 
-	printf("-- PSINV_MODE = %d\n", PSINV_MODE);
+    // Check if using psinv library
+
+    printf("-- PSINV_MODE = %d\n", PSINV_MODE);
 
     int mode_QDWHPartial;  // 1 do QDWHPartial, MAGMA otherwise
     if (PSINV_MODE == 1) {
         mode_QDWHPartial = 1;
 #ifndef HAVE_QDWHpartial
-		printf("-- QDWHpartial NOT defined  -> FORCING mode_QDWHPartial=0\n");
+        printf("-- QDWHpartial NOT defined  -> FORCING mode_QDWHPartial=0\n");
         mode_QDWHPartial = 0;
 #endif
     }
-    else
+    else {
         mode_QDWHPartial = 0;
+    }
 
-	printf("-- PSINV_MODE = %d  mode_QDWHPartial = %d\n", PSINV_MODE, mode_QDWHPartial);
+    printf("-- PSINV_MODE = %d  mode_QDWHPartial = %d\n", PSINV_MODE, mode_QDWHPartial);
 
 
 
 
-	// =================================================================
-	//             MEMORY ALLOCATION 
-	// 
-	// (for single precision, magma_ -> magmaf_)
-	// 
-	// ----- QSWHpartial -------- 
-	// magma_h_A
-	// magma_d_A
-	// magma_h_S
-	// magma_d_U
-	// magma_d_VT
-	// magma_d_B
-	//
-	// ----- std magma ----------
-	// magma_h_A
-	// magma_d_A
-	// magma_h_AtA
-	// magma_d_AtA
-	// magma_h_VT1
-	// magma_d_VT1
-	// magma_d_M2
-	//
-	// =================================================================
+    // =================================================================
+    //             MEMORY ALLOCATION
+    //
+    // (for single precision, magma_ -> magmaf_)
+    //
+    // ----- QSWHpartial --------
+    // magma_h_A
+    // magma_d_A
+    // magma_h_S
+    // magma_d_U
+    // magma_d_VT
+    // magma_d_B
+    //
+    // ----- std magma ----------
+    // magma_h_A
+    // magma_d_A
+    // magma_h_AtA
+    // magma_d_AtA
+    // magma_h_VT1
+    // magma_d_VT1
+    // magma_d_M2
+    //
+    // =================================================================
 
     if (mode_QDWHPartial) { // START mode_QDWHPartial ------------------
 #ifdef HAVE_QDWHpartial
+
+        // QDWHpartial set by   mode_QDWHPartial: 1 do QDWHPartial, MAGMA otherwise
+        int fact = 1; // 1 use PO-based QDWH iter, QR-based otherwise
+        int psinv = 1; // 1 calculate psinv, no otherwise
+        double s = 1.e-16; // Threshold for to capture a subset of the singular values
+        float tol = 1.e-0; // Threshold used during rank revealing QR
+        int sizeS = 0, wanted = 0, it = 0;
+
+        int n2 = 2*min_mn;
+        int n232 = r32up(n2);
+        int lddb  = n232;
+
+        int ldd_min_mn = r32up(min_mn);
+        int ldd_max_mn = r32up(max_mn);
+        int ldda = ldd_max_mn;
+
+
+        int n32 = r32up(N);        
+        int lddu  = m32;
+        int lddvt = n32;
+
+        int min_mn = min(M,N);
+        int max_mn = max(M,N);
+
+        s = qdwh_s;
+        tol = qdwh_tol;
+
+
         if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse==1)
         {
             printf("ALLOCATION FOR PSINV QDWHPartial M: %d N: %d min: %d\n", (int) M, (int) N, (int) min_mn);
@@ -3462,12 +3517,12 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 TESTING_MALLOC_DEV( magma_d_U, double, lddu*min_mn);
                 TESTING_MALLOC_DEV( magma_d_VT, double, lddvt*N);
                 TESTING_MALLOC_DEV( magma_d_B, double, lddb*min_mn);
-                
+
                 if(testmode==1)
                 {
-                TESTING_MALLOC_DEV( magma_d_AtA, double, N*N); // used for testing
-                TESTING_MALLOC_CPU( magma_h_AtA, double, N*N);
-				}
+                    TESTING_MALLOC_DEV( magma_d_AtA, double, N*N); // used for testing
+                    TESTING_MALLOC_CPU( magma_h_AtA, double, N*N);
+                }
             }
             else
             {
@@ -3479,12 +3534,12 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 TESTING_MALLOC_DEV( magmaf_d_U, float, lddu*min_mn);
                 TESTING_MALLOC_DEV( magmaf_d_VT, float, lddvt*N);
                 TESTING_MALLOC_DEV( magmaf_d_B, float, lddb*min_mn);
-                
+
                 if(testmode==1)
                 {
-					TESTING_MALLOC_DEV( magmaf_d_AtA, float, N*N); // used for testing
-					TESTING_MALLOC_CPU( magmaf_h_AtA, float, N*N);
-				}
+                    TESTING_MALLOC_DEV( magmaf_d_AtA, float, N*N); // used for testing
+                    TESTING_MALLOC_CPU( magmaf_h_AtA, float, N*N);
+                }
             }
         }
 #endif
@@ -3555,42 +3610,42 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     // ****************************************************
     // STEP 1 :   Fill input data into magmaf_h_A on host
     // ****************************************************
-	// magma array is column-major.
-	// 
+    // magma array is column-major.
+    //
 
 
     if(datatype==_DATATYPE_FLOAT)
     {
         if(MAGMAfloat==1)
         {
-			if((testmode == 1)||(mode_QDWHPartial == 1)) // need magmaf_h_A, otherwise, straight to magmaf_d_A
-			{
-				if(mode_QDWHPartial == 1)
-				{
-					/*for(ii=0; ii<M; ii++)
-						for(jj=0; jj<N; jj++)
-							magmaf_h_A[jj*m32+ii] =  data.image[ID_Rmatrix].array.F[jj*M+ii];*/
-					memcpy(magmaf_h_A, data.image[ID_Rmatrix].array.F, sizeof(float)*M*N);
-					// copy to device
-					magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, m32, magmaqueue);
-					
-					}
-				else
-				{
-					memcpy(magmaf_h_A, data.image[ID_Rmatrix].array.F, sizeof(float)*M*N);
-					// copy from host to device
-					magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, M, magmaqueue);
-				}
-			}
-			else
-				magma_ssetmatrix( M, N, data.image[ID_Rmatrix].array.F, M, magmaf_d_A, M, magmaqueue);
+            if((testmode == 1)||(mode_QDWHPartial == 1)) // need magmaf_h_A, otherwise, straight to magmaf_d_A
+            {
+                if(mode_QDWHPartial == 1)
+                {
+                    /*for(ii=0; ii<M; ii++)
+                    	for(jj=0; jj<N; jj++)
+                    		magmaf_h_A[jj*m32+ii] =  data.image[ID_Rmatrix].array.F[jj*M+ii];*/
+                    memcpy(magmaf_h_A, data.image[ID_Rmatrix].array.F, sizeof(float)*M*N);
+                    // copy to device
+                    magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, m32, magmaqueue);
+
+                }
+                else
+                {
+                    memcpy(magmaf_h_A, data.image[ID_Rmatrix].array.F, sizeof(float)*M*N);
+                    // copy from host to device
+                    magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, M, magmaqueue);
+                }
+            }
+            else
+                magma_ssetmatrix( M, N, data.image[ID_Rmatrix].array.F, M, magmaf_d_A, M, magmaqueue);
         }
         else
         {
             for(ii=0; ii<M*N; ii++)
                 magma_h_A[ii] =  data.image[ID_Rmatrix].array.F[ii];
-            
-            // copy from host to device   
+
+            // copy from host to device
             magma_dsetmatrix( M, N, magma_h_A, M, magma_d_A, M, magmaqueue);
         }
     }
@@ -3600,22 +3655,22 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         {
             for(ii=0; ii<M*N; ii++)
                 magmaf_h_A[ii] = data.image[ID_Rmatrix].array.D[ii];
-            
+
             // copy from host to device
             magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, M, magmaqueue);
         }
         else
         {
-			if(testmode == 1) // need magma_h_A for testing
-			{
-				//for(ii=0; ii<M*N; ii++)
-				//    magma_h_A[ii] = data.image[ID_Rmatrix].array.D[ii];
-				memcpy(magma_h_A, data.image[ID_Rmatrix].array.D, sizeof(double)*M*N);
-				// copy from host to device
-				magma_dsetmatrix( M, N, magma_h_A, M, magma_d_A, M, magmaqueue);
-			}
-			else
-				magma_dsetmatrix( M, N, data.image[ID_Rmatrix].array.D, M, magma_d_A, M, magmaqueue);
+            if(testmode == 1) // need magma_h_A for testing
+            {
+                //for(ii=0; ii<M*N; ii++)
+                //    magma_h_A[ii] = data.image[ID_Rmatrix].array.D[ii];
+                memcpy(magma_h_A, data.image[ID_Rmatrix].array.D, sizeof(double)*M*N);
+                // copy from host to device
+                magma_dsetmatrix( M, N, magma_h_A, M, magma_d_A, M, magmaqueue);
+            }
+            else
+                magma_dsetmatrix( M, N, data.image[ID_Rmatrix].array.D, M, magma_d_A, M, magmaqueue);
         }
     }
 
@@ -3637,9 +3692,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         }
 
         if( mode_QDWHPartial == 0 )
-			save_fits("mA", "!test_mA.fits");
-		else
-			save_fits("mA", "!test_mA.QDWH.fits");
+            save_fits("mA", "!test_mA.fits");
+        else
+            save_fits("mA", "!test_mA.QDWH.fits");
         delete_image_ID("mA");
     }
 
@@ -3661,30 +3716,30 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         fflush(stdout);
     }
 
-	// copy from host to device
-	//
-	
- 
+    // copy from host to device
+    //
 
 
-	// testing input to QDWH
+
+
+    // testing input to QDWH
     if(testmode == 1)
-    if (mode_QDWHPartial) {
-           sprintf(fname, "test_Aorig.QDWH.txt");
-           if((fp=fopen(fname, "w"))==NULL)
-           {
-               printf("ERROR: cannot create file \"%s\"\n", fname);
-               exit(0);
-           }
-           for(ii=0;ii<M;ii++){
-                for(jj=0;jj<N;jj++){
+        if (mode_QDWHPartial) {
+            sprintf(fname, "test_Aorig.QDWH.txt");
+            if((fp=fopen(fname, "w"))==NULL)
+            {
+                printf("ERROR: cannot create file \"%s\"\n", fname);
+                exit(0);
+            }
+            for(ii=0; ii<M; ii++) {
+                for(jj=0; jj<N; jj++) {
                     fprintf(fp,"%e\t", *(magmaf_h_A+ii+jj*M));
                 }
                 fprintf(fp,"\n");
-           }
-           fclose(fp);
-    }
-    
+            }
+            fclose(fp);
+        }
+
 
 
 
@@ -3702,10 +3757,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     }
 
 
-    if (mode_QDWHPartial) 
-    {  // START mode_QDWHPartial =======================================
+    if (mode_QDWHPartial)
+    {   // START mode_QDWHPartial =======================================
 #ifdef HAVE_QDWHpartial
-		magma_queue_sync( magmaqueue );
+        magma_queue_sync( magmaqueue );
         clock_gettime(CLOCK_REALTIME, &t2);
         if (MAGMAfloat) {
             cublasHandle_t handle;
@@ -3731,26 +3786,26 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
             fclose(file);
              */
 
-			printf("\n");
-			printf("CALLING QDWHpartial\n");
-			printf("     fact  = %d\n", fact);
-			printf("     psinv = %d\n", psinv);
-			printf("     s     = %e\n", s);
-			printf("     tol   = %e\n", tol);
-			
-			printf("     m32   = %d\n", m32);
-			printf("     lddu  = %d\n", lddu);
-			printf("     lddvt = %d\n", lddvt);
-			printf("     lddb  = %d\n", lddb);
-			
-			printf("\n");
-			
-			//
-			// threshold = singular value threshold relative to 1
-			// tol = 1.0 to 0.1 affects QR truncation
-			//
-			// 
-			
+            printf("\n");
+            printf("CALLING QDWHpartial\n");
+            printf("     fact  = %d\n", fact);
+            printf("     psinv = %d\n", psinv);
+            printf("     s     = %e\n", s);
+            printf("     tol   = %e\n", tol);
+
+            printf("     m32   = %d\n", m32);
+            printf("     lddu  = %d\n", lddu);
+            printf("     lddvt = %d\n", lddvt);
+            printf("     lddb  = %d\n", lddb);
+
+            printf("\n");
+
+            //
+            // threshold = singular value threshold relative to 1
+            // tol = 1.0 to 0.1 affects QR truncation
+            //
+            //
+
             QDWHpartial (M, N,
                          fact,
                          psinv,
@@ -3767,10 +3822,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                          &it,
                          &flops,
                          magmaqueue, handle );
-			
-			for(int elem=0; elem<10; elem++)
-				printf("TEST magmaf_h_Ainv[%2d] = %.16f\n", elem, magmaf_h_Ainv[elem]);
-				
+
+            for(int elem=0; elem<10; elem++)
+                printf("TEST magmaf_h_Ainv[%2d] = %.16f\n", elem, magmaf_h_Ainv[elem]);
+
             printf("==========================> Projected size %d Wanted %d\n", sizeS, wanted);
             magma_queue_sync( magmaqueue );
             clock_gettime(CLOCK_REALTIME, &t3);
@@ -3782,28 +3837,28 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 fflush(stdout);
             }
 
-			if(testmode == 1)
-			{
-				sprintf(fname, "test_sv.QDWH.dat");
-				if((fp=fopen(fname, "w"))==NULL)
-				{
-					printf("ERROR: cannot create file \"%s\"\n", fname);
-					exit(0);
-				}
-				fprintf(fp,"# Id\t\t SV\t\t\t ratio\t\t\t limit\t s\t sizeS\t wanted\n");
-				for(k=0; k<wanted; k++)
-					fprintf(fp,"%5ld %20.8g  %20.8f  %20.8f %e  %5ld %5ld\n", k, magmaf_h_S[k], magmaf_h_S[k]/magmaf_h_S[0], SVDeps, s, (long) sizeS, (long) wanted);
-				//fprintf(fp,"%5ld %20.8g  %e  %5ld %5ld\n", k, magmaf_h_S[k], s, sizeS, wanted);
-				fclose(fp);
-			}
-            
+            if(testmode == 1)
+            {
+                sprintf(fname, "test_sv.QDWH.dat");
+                if((fp=fopen(fname, "w"))==NULL)
+                {
+                    printf("ERROR: cannot create file \"%s\"\n", fname);
+                    exit(0);
+                }
+                fprintf(fp,"# Id\t\t SV\t\t\t ratio\t\t\t limit\t s\t sizeS\t wanted\n");
+                for(k=0; k<wanted; k++)
+                    fprintf(fp,"%5ld %20.8g  %20.8f  %20.8f %e  %5ld %5ld\n", k, magmaf_h_S[k], magmaf_h_S[k]/magmaf_h_S[0], SVDeps, s, (long) sizeS, (long) wanted);
+                //fprintf(fp,"%5ld %20.8g  %e  %5ld %5ld\n", k, magmaf_h_S[k], s, sizeS, wanted);
+                fclose(fp);
+            }
+
             magma_queue_sync( magmaqueue );
             clock_gettime(CLOCK_REALTIME, &t4);
 
             // ****************************************************
             // Set singular value limit
             // ****************************************************
-
+			double svlim;
             if(MAGMAfloat==1)
                 svlim = SVDeps * magmaf_h_S[0];
             else
@@ -3832,15 +3887,15 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 printf("Keeping %ld modes  (SVDeps = %g -> %g, MaxNBmodes = %ld -> %ld)\n", mode, SVDeps, svlim, MaxNBmodes, MaxNBmodes1);
                 fflush(stdout);
             }
-            
-            
+
+
             if(testmode == 1) {
-            fp = fopen("test_SVDmodes.QDWH.log", "w");
-            fprintf(fp, "%6ld %6ld\n", mode, MaxNBmodes1);
-            fclose(fp);
-			}
+                fp = fopen("test_SVDmodes.QDWH.log", "w");
+                fprintf(fp, "%6ld %6ld\n", mode, MaxNBmodes1);
+                fclose(fp);
+            }
             MaxNBmodes1 = mode;
-            
+
             //printf("Keeping %ld modes  (SVDeps = %g)\n", MaxNBmodes1, SVDeps);
             magma_queue_sync( magmaqueue );
             clock_gettime(CLOCK_REALTIME, &t5);
@@ -3864,34 +3919,34 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                     TESTING_FREE_DEV( magma_d_B );
                 }
             }
-            
+
             //if(testmode==1)
             //{
-				dAinvMODE = 1;
-		        if(MAGMAloop_iter==0)
-				{
-					if(MAGMAfloat==1)
-					{
-						
-						TESTING_MALLOC_DEV( magmaf_d_Ainv, float, N*M );
-					}
-					else
-					{
-						TESTING_MALLOC_DEV( magma_d_Ainv, double, N*M );
-					}
-				}
-			//}
-            
-            
+            dAinvMODE = 1;
+            if(MAGMAloop_iter==0)
+            {
+                if(MAGMAfloat==1)
+                {
+
+                    TESTING_MALLOC_DEV( magmaf_d_Ainv, float, N*M );
+                }
+                else
+                {
+                    TESTING_MALLOC_DEV( magma_d_Ainv, double, N*M );
+                }
+            }
+            //}
+
+
             magma_queue_sync( magmaqueue );
             clock_gettime(CLOCK_REALTIME, &t6);
         }
 #endif
     }  // END mode_QDWHPartial =========================================
-    else 
-    { // START STD MAGMA ===============================================
+    else
+    {   // START STD MAGMA ===============================================
 
-		magma_queue_sync( magmaqueue );
+        magma_queue_sync( magmaqueue );
         clock_gettime(CLOCK_REALTIME, &t2);
 
 
@@ -3910,22 +3965,22 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
         if(MAGMAfloat==1)
         {
-			magma_ssyrk(MagmaLower, MagmaTrans, N, M, 1.0, magmaf_d_A, M, 0.0, magmaf_d_AtA, N, magmaqueue ); 		
-			magmablas_ssymmetrize ( MagmaLower, N, magmaf_d_AtA, N, magmaqueue );
-	
-			// Slower alternative
+            magma_ssyrk(MagmaLower, MagmaTrans, N, M, 1.0, magmaf_d_A, M, 0.0, magmaf_d_AtA, N, magmaqueue );
+            magmablas_ssymmetrize ( MagmaLower, N, magmaf_d_AtA, N, magmaqueue );
+
+            // Slower alternative
             //magma_sgemm(  MagmaTrans, MagmaNoTrans, N, N, M, 1.0, magmaf_d_A, M, magmaf_d_A, M, 0.0,  magmaf_d_AtA, N, magmaqueue);
         }
         else
         {
             magma_dgemm(  MagmaTrans, MagmaNoTrans, N, N, M, 1.0, magma_d_A, M, magma_d_A, M, 0.0,  magma_d_AtA, N, magmaqueue);
-		}
+        }
 
 
 
         if(testmode == 1)
         {
-			// copy from GPU to CPU
+            // copy from GPU to CPU
             if(MAGMAfloat==1)
                 magma_sgetmatrix( N, N, magmaf_d_AtA, N, magmaf_h_AtA, N, magmaqueue);
             else
@@ -4109,26 +4164,26 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         }
 
 
-		if(testmode == 1)
-		{
-        sprintf(fname, "test_eigenv.dat");
-        if((fp=fopen(fname, "w"))==NULL)
+        if(testmode == 1)
         {
-            printf("ERROR: cannot create file \"%s\"\n", fname);
-            exit(0);
+            sprintf(fname, "test_eigenv.dat");
+            if((fp=fopen(fname, "w"))==NULL)
+            {
+                printf("ERROR: cannot create file \"%s\"\n", fname);
+                exit(0);
+            }
+            if(MAGMAfloat==1)
+            {
+                for(k=0; k<N; k++)
+                    fprintf(fp,"%5ld %20.8g  %20.8f  %20.8f\n", k, magmaf_w1[N-k-1], magmaf_w1[N-k-1]/magmaf_w1[N-1], SVDeps*SVDeps);
+            }
+            else
+            {
+                for(k=0; k<N; k++)
+                    fprintf(fp,"%5ld %20.8g  %20.8f  %20.8f\n", k, magma_w1[N-k-1], magma_w1[N-k-1]/magma_w1[N-1], SVDeps*SVDeps);
+            }
+            fclose(fp);
         }
-        if(MAGMAfloat==1)
-        {
-            for(k=0; k<N; k++)
-                fprintf(fp,"%5ld %20.8g  %20.8f  %20.8f\n", k, magmaf_w1[N-k-1], magmaf_w1[N-k-1]/magmaf_w1[N-1], SVDeps*SVDeps);
-        }
-        else
-        {
-            for(k=0; k<N; k++)
-                fprintf(fp,"%5ld %20.8g  %20.8f  %20.8f\n", k, magma_w1[N-k-1], magma_w1[N-k-1]/magma_w1[N-1], SVDeps*SVDeps);
-        }
-        fclose(fp);
-		}
 
 
         /// w1 values are the EIGENVALUES of AT A
@@ -4139,7 +4194,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         // ****************************************************
         // STEP 5 :   Set eigenvalue limit
         // ****************************************************
-
+		double egvlim;
         if(MAGMAfloat==1)
             egvlim = SVDeps*SVDeps* magmaf_w1[N-1];
         else
@@ -4169,12 +4224,12 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
             fflush(stdout);
         }
 
-		if(testmode == 1)
-		{
-        fp = fopen("test_SVDmodes.log", "w");
-        fprintf(fp, "%6ld %6ld\n", mode, MaxNBmodes1);
-        fclose(fp);
-		}
+        if(testmode == 1)
+        {
+            fp = fopen("test_SVDmodes.log", "w");
+            fprintf(fp, "%6ld %6ld\n", mode, MaxNBmodes1);
+            fclose(fp);
+        }
         MaxNBmodes1 = mode;
         //printf("Keeping %ld modes  (SVDeps = %g)\n", MaxNBmodes1, SVDeps);
 
@@ -4208,8 +4263,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                     data.image[ID_VT].array.F[jj*N+ii] = magma_h_AtA[(N-ii-1)*N+jj];
         }
 
-		if(testmode == 1)
-			save_fits("mVT", "!test_mVT.fits");
+        if(testmode == 1)
+            save_fits("mVT", "!test_mVT.fits");
 
         // ****************************************************
         // STEP 7 :   Write eigenvectors/eigenvalue to magma_h_VT1 if eigenvalue > limit
@@ -4352,8 +4407,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
             }
         }
 
-		//if(timing==1)
-		magma_queue_sync( magmaqueue );
+        //if(timing==1)
+        magma_queue_sync( magmaqueue );
         clock_gettime(CLOCK_REALTIME, &t7);
 
         // ****************************************************
@@ -4364,15 +4419,15 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         // compute Ainv = M2 A
         if(MAGMAloop_iter==0)
         {
-			dAinvMODE = 1;
+            dAinvMODE = 1;
             if(MAGMAfloat==1)
             {
                 TESTING_MALLOC_DEV( magmaf_d_Ainv, float, N*M);
-			}
+            }
             else
             {
                 TESTING_MALLOC_DEV( magma_d_Ainv, double, N*M);
-			}
+            }
         }
 
         if(MAGMAfloat==1)
@@ -4435,18 +4490,18 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
             magma_dgetmatrix( M, N, magma_d_Ainv, M, magma_h_Ainv, M, magmaqueue);
 
 
-			for(int elem=0; elem<10; elem++)
-				printf("TEST magmaf_h_Ainv[%2d] = %.16f\n", elem, magmaf_h_Ainv[elem]);
+        for(int elem=0; elem<10; elem++)
+            printf("TEST magmaf_h_Ainv[%2d] = %.16f\n", elem, magmaf_h_Ainv[elem]);
 
 
     } // END STD MAGMA =================================================
     // End of QDWHPartial / MAGMA conditional
 
-	//
-	// At this point, pseudo-inverse is in magma_h_Ainv or magmaf_h_Ainv
-	//
-	
-	
+    //
+    // At this point, pseudo-inverse is in magma_h_Ainv or magmaf_h_Ainv
+    //
+
+
 
     if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse==1)
     {
@@ -4459,18 +4514,18 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         ID_Ainv = create_2Dimage_ID("mAinv", M, N);
         if(MAGMAfloat == 1)
         {
-			if(mode_QDWHPartial == 1 )
-			{
-				for(ii=0; ii<M; ii++)
-					for(jj=0; jj<N; jj++)
-						data.image[ID_Ainv].array.F[jj*M+ii] = magmaf_h_Ainv[ii*N+jj]; 
-			}
-			else
-			{
-				for(ii=0; ii<M; ii++)
-					for(jj=0; jj<N; jj++)
-						data.image[ID_Ainv].array.F[jj*M+ii] = magmaf_h_Ainv[jj*M+ii];
-			}
+            if(mode_QDWHPartial == 1 )
+            {
+                for(ii=0; ii<M; ii++)
+                    for(jj=0; jj<N; jj++)
+                        data.image[ID_Ainv].array.F[jj*M+ii] = magmaf_h_Ainv[ii*N+jj];
+            }
+            else
+            {
+                for(ii=0; ii<M; ii++)
+                    for(jj=0; jj<N; jj++)
+                        data.image[ID_Ainv].array.F[jj*M+ii] = magmaf_h_Ainv[jj*M+ii];
+            }
         }
         else
         {
@@ -4478,11 +4533,11 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                 for(jj=0; jj<N; jj++)
                     data.image[ID_Ainv].array.F[jj*M+ii] = magma_h_Ainv[jj*M+ii];
         }
-        
+
         if( mode_QDWHPartial == 0 )
-			save_fits("mAinv", "!test_mAinv.fits");
-		else
-			save_fits("mAinv", "!test_mAinv.QDWH.fits");
+            save_fits("mAinv", "!test_mAinv.fits");
+        else
+            save_fits("mAinv", "!test_mAinv.QDWH.fits");
     }
 
     //if(timing==1)
@@ -4512,8 +4567,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     else
         ID_Cmatrix = image_ID(ID_Cmatrix_name);
 
-	magma_queue_sync( magmaqueue );
-	clock_gettime(CLOCK_REALTIME, &t10);
+    magma_queue_sync( magmaqueue );
+    clock_gettime(CLOCK_REALTIME, &t10);
 
 
     if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse==1)
@@ -4527,15 +4582,15 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     {
         if(MAGMAfloat==1)
         {
-			if( mode_QDWHPartial == 1 )
-			{
-				for(ii=0; ii<M; ii++)
-					for(jj=0; jj<N; jj++)
-						data.image[ID_Cmatrix].array.F[jj*M+ii] = magmaf_h_Ainv[ii*N+jj];
+            if( mode_QDWHPartial == 1 )
+            {
+                for(ii=0; ii<M; ii++)
+                    for(jj=0; jj<N; jj++)
+                        data.image[ID_Cmatrix].array.F[jj*M+ii] = magmaf_h_Ainv[ii*N+jj];
 
-			}
-			else
-				memcpy(data.image[ID_Cmatrix].array.F, magmaf_h_Ainv, sizeof(float)*M*N);
+            }
+            else
+                memcpy(data.image[ID_Cmatrix].array.F, magmaf_h_Ainv, sizeof(float)*M*N);
         }
         else
         {
@@ -4567,136 +4622,136 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     clock_gettime(CLOCK_REALTIME, &t11);
 
 
-	if( mode_QDWHPartial == 1 )
-		{
-			// copy from CPU to GPU
-			if(MAGMAfloat==1)
-				magma_ssetmatrix( N, M, magmaf_h_Ainv, N, magmaf_d_Ainv, N, magmaqueue);
-			else
-				magma_dsetmatrix( N, M, magma_h_Ainv, N, magma_d_Ainv, N, magmaqueue);
-		}
+    if( mode_QDWHPartial == 1 )
+    {
+        // copy from CPU to GPU
+        if(MAGMAfloat==1)
+            magma_ssetmatrix( N, M, magmaf_h_Ainv, N, magmaf_d_Ainv, N, magmaqueue);
+        else
+            magma_dsetmatrix( N, M, magma_h_Ainv, N, magma_d_Ainv, N, magmaqueue);
+    }
 
 
-	if(testmode == 1) // compute product of Ainv with A
-	{
-		if( mode_QDWHPartial == 1 )
-		{
-			magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, m32, magmaqueue);
-			magma_sgemm(  MagmaNoTrans, MagmaNoTrans, N, N, M, 1.0, magmaf_d_Ainv, N, magmaf_d_A, m32, 0.0,  magmaf_d_AtA, N, magmaqueue);
-		}
-		else
-			magma_sgemm(  MagmaTrans, MagmaNoTrans, N, N, M, 1.0, magmaf_d_A, M, magmaf_d_Ainv, M, 0.0,  magmaf_d_AtA, N, magmaqueue);
-				
-		long ID_AinvA;
-		
-		ID_AinvA = create_2Dimage_ID("AinvA", N, N);
+    if(testmode == 1) // compute product of Ainv with A
+    {
+        if( mode_QDWHPartial == 1 )
+        {
+            magma_ssetmatrix( M, N, magmaf_h_A, M, magmaf_d_A, m32, magmaqueue);
+            magma_sgemm(  MagmaNoTrans, MagmaNoTrans, N, N, M, 1.0, magmaf_d_Ainv, N, magmaf_d_A, m32, 0.0,  magmaf_d_AtA, N, magmaqueue);
+        }
+        else
+            magma_sgemm(  MagmaTrans, MagmaNoTrans, N, N, M, 1.0, magmaf_d_A, M, magmaf_d_Ainv, M, 0.0,  magmaf_d_AtA, N, magmaqueue);
 
-		// copy from GPU to CPU
-		if(MAGMAfloat==1)
-			magma_sgetmatrix( N, N, magmaf_d_AtA, N, magmaf_h_AtA, N, magmaqueue);
+        long ID_AinvA;
+
+        ID_AinvA = create_2Dimage_ID("AinvA", N, N);
+
+        // copy from GPU to CPU
+        if(MAGMAfloat==1)
+            magma_sgetmatrix( N, N, magmaf_d_AtA, N, magmaf_h_AtA, N, magmaqueue);
         else
             magma_dgetmatrix( N, N, magma_d_AtA, N, magma_h_AtA, N, magmaqueue);
-        
-        
+
+
         if(MAGMAfloat==1)
-		{
-			memcpy(data.image[ID_AinvA].array.F, magmaf_h_AtA, sizeof(float)*N*N);
-		}
+        {
+            memcpy(data.image[ID_AinvA].array.F, magmaf_h_AtA, sizeof(float)*N*N);
+        }
 
 
         if( mode_QDWHPartial == 0 )
-			save_fits("AinvA", "!test_AinvA.fits");
-		else
-			save_fits("AinvA", "!test_AinvA.QDWH.fits");
-	}
-	
-	
-	
+            save_fits("AinvA", "!test_AinvA.fits");
+        else
+            save_fits("AinvA", "!test_AinvA.QDWH.fits");
+    }
 
-	magma_queue_sync( magmaqueue );
-	clock_gettime(CLOCK_REALTIME, &t12);
-	
-	
-	
-	ID_PFfmdat = image_ID("PFfmdat");
-	if(ID_PFfmdat != -1)
-	{
-		printf("=============================================\n");
-		printf("=========// OUTPUT M-M MULTIPLY //===========\n");
-		printf("=============================================\n");
-		
-		printf("Transp(Ainv)     N x M   = %d x %d\n", N, M);
-		printf("PFfmdat  M x K           = %d x %d\n", data.image[ID_PFfmdat].md[0].size[0], data.image[ID_PFfmdat].md[0].size[1]);
-		long K = data.image[ID_PFfmdat].md[0].size[1];
-		printf("K = %ld\n", K);
-		
-		
-		float *magmaf_d_PFfmdat;
-		float *magmaf_d_PF;
-		float *magmaf_h_PF;
+
+
+
+    magma_queue_sync( magmaqueue );
+    clock_gettime(CLOCK_REALTIME, &t12);
+
+
+
+    ID_PFfmdat = image_ID("PFfmdat");
+    if(ID_PFfmdat != -1)
+    {
+        printf("=============================================\n");
+        printf("=========// OUTPUT M-M MULTIPLY //===========\n");
+        printf("=============================================\n");
+
+        printf("Transp(Ainv)     N x M   = %d x %d\n", N, M);
+        printf("PFfmdat  M x K           = %d x %d\n", data.image[ID_PFfmdat].md[0].size[0], data.image[ID_PFfmdat].md[0].size[1]);
+        long K = data.image[ID_PFfmdat].md[0].size[1];
+        printf("K = %ld\n", K);
+
+
+        float *magmaf_d_PFfmdat;
+        float *magmaf_d_PF;
+        float *magmaf_h_PF;
 
 
         TESTING_MALLOC_DEV( magmaf_d_PFfmdat, float, M*K);
         TESTING_MALLOC_DEV( magmaf_d_PF, float, N*K);
         TESTING_MALLOC_CPU( magmaf_h_PF, float, N*K);
-        
+
         magma_ssetmatrix( M, K, data.image[ID_PFfmdat].array.F, M, magmaf_d_PFfmdat, M, magmaqueue);
         if( mode_QDWHPartial == 1 )
-			magma_sgemm(  MagmaNoTrans, MagmaNoTrans, N, K, M, 1.0, magmaf_d_Ainv, N, magmaf_d_PFfmdat, M, 0.0,  magmaf_d_PF, N, magmaqueue);
-		else
-			magma_sgemm(  MagmaTrans, MagmaNoTrans, N, K, M, 1.0, magmaf_d_Ainv, M, magmaf_d_PFfmdat, M, 0.0,  magmaf_d_PF, N, magmaqueue);
-		
-		magma_sgetmatrix( N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
-		
-		long ID_PF = create_2Dimage_ID("psinvPFmat", N, K);
-		list_image_ID();
-		memcpy(data.image[ID_PF].array.F, magmaf_h_PF, sizeof(float)*N*K);
-		save_fits("psinvPFmat", "!psinvPFmat.fits");
-		
-		TESTING_FREE_DEV( magmaf_d_PFfmdat );
-		TESTING_FREE_DEV( magmaf_d_PF );
-		TESTING_FREE_CPU( magmaf_h_PF );
-	}
-	
-	magma_queue_sync( magmaqueue );
+            magma_sgemm(  MagmaNoTrans, MagmaNoTrans, N, K, M, 1.0, magmaf_d_Ainv, N, magmaf_d_PFfmdat, M, 0.0,  magmaf_d_PF, N, magmaqueue);
+        else
+            magma_sgemm(  MagmaTrans, MagmaNoTrans, N, K, M, 1.0, magmaf_d_Ainv, M, magmaf_d_PFfmdat, M, 0.0,  magmaf_d_PF, N, magmaqueue);
+
+        magma_sgetmatrix( N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
+
+        long ID_PF = create_2Dimage_ID("psinvPFmat", N, K);
+        list_image_ID();
+        memcpy(data.image[ID_PF].array.F, magmaf_h_PF, sizeof(float)*N*K);
+        save_fits("psinvPFmat", "!psinvPFmat.fits");
+
+        TESTING_FREE_DEV( magmaf_d_PFfmdat );
+        TESTING_FREE_DEV( magmaf_d_PF );
+        TESTING_FREE_CPU( magmaf_h_PF );
+    }
+
+    magma_queue_sync( magmaqueue );
     clock_gettime(CLOCK_REALTIME, &t13);
-	
-	
-	    if(LOOPmode==0) /// if pseudo-inverse is only computed once, these arrays can be freed
+
+
+    if(LOOPmode==0) /// if pseudo-inverse is only computed once, these arrays can be freed
     {
         if(MAGMAfloat==1)
             TESTING_FREE_CPU( magmaf_h_A );
         else
             TESTING_FREE_CPU( magma_h_A );
     }
-	
-	 if(LOOPmode==0)
+
+    if(LOOPmode==0)
     {
         if(MAGMAfloat==1)
         {
-			TESTING_FREE_DEV( magmaf_d_A);
-            
+            TESTING_FREE_DEV( magmaf_d_A);
+
             if(dAinvMODE==1)
-				TESTING_FREE_DEV( magmaf_d_Ainv );
-            
+                TESTING_FREE_DEV( magmaf_d_Ainv );
+
             TESTING_FREE_CPU( magmaf_h_Ainv );
             TESTING_FREE_DEV( magmaf_d_AtA );
             TESTING_FREE_CPU( magmaf_h_AtA );
         }
         else
         {
-			TESTING_FREE_DEV( magma_d_A);
-			
-			if(dAinvMODE==1)
-				TESTING_FREE_DEV( magma_d_Ainv );
-            
+            TESTING_FREE_DEV( magma_d_A);
+
+            if(dAinvMODE==1)
+                TESTING_FREE_DEV( magma_d_Ainv );
+
             TESTING_FREE_CPU( magma_h_Ainv );
             TESTING_FREE_DEV( magma_d_AtA );
             TESTING_FREE_CPU( magma_h_AtA );
         }
     }
 
-	
+
 
 
     if(LOOPmode==0)
@@ -4758,21 +4813,21 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         printf("%6ld  Timing info: \n", MAGMAloop_iter);
         printf("  0-1	[setup]                           %12.3f ms\n", t01d*1000.0);
         printf("  1-2	[copy input to GPU]               %12.3f ms\n", t12d*1000.0);
-        if (mode_QDWHPartial == 1) 
+        if (mode_QDWHPartial == 1)
         {
-			printf("  2-3	[compute QDWH SVD]                %12.3f ms\n", t23d*1000.0);
-			printf("  4-5	[Select eigenvalues]              %12.3f ms\n", t45d*1000.0);
+            printf("  2-3	[compute QDWH SVD]                %12.3f ms\n", t23d*1000.0);
+            printf("  4-5	[Select eigenvalues]              %12.3f ms\n", t45d*1000.0);
         }
         else
         {
-			printf("  2-3	[compute trans(A) x A]            %12.3f ms\n", t23d*1000.0);
-			printf("  3-4	[setup]                           %12.3f ms\n", t34d*1000.0);
-			printf("  4-5	[Compute eigenvalues]             %12.3f ms\n", t45d*1000.0);
-			printf("  5-6	[Select eigenvalues]              %12.3f ms\n", t56d*1000.0);
-			printf("  6-7	[Compute M2]                      %12.3f ms\n", t67d*1000.0);
+            printf("  2-3	[compute trans(A) x A]            %12.3f ms\n", t23d*1000.0);
+            printf("  3-4	[setup]                           %12.3f ms\n", t34d*1000.0);
+            printf("  4-5	[Compute eigenvalues]             %12.3f ms\n", t45d*1000.0);
+            printf("  5-6	[Select eigenvalues]              %12.3f ms\n", t56d*1000.0);
+            printf("  6-7	[Compute M2]                      %12.3f ms\n", t67d*1000.0);
             printf("  7-8	[Compute Ainv]                    %12.3f ms\n", t78d*1000.0);
-            printf("  8-9	[Get Ainv from GPU]               %12.3f ms\n", t89d*1000.0);			
-		}
+            printf("  8-9	[Get Ainv from GPU]               %12.3f ms\n", t89d*1000.0);
+        }
         printf("  9-10	[output setup]                    %12.3f ms\n", t910d*1000.0);
         printf("  10-11	[Write output array]              %12.3f ms\n", t1011d*1000.0);
         printf("  11-12	[Test output]                     %12.3f ms\n", t1112d*1000.0);
@@ -4794,7 +4849,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     if(LOOPmode == 1)
         MAGMAloop_iter++;
 
-	
+
     return(ID_Cmatrix);
 }
 
@@ -4820,30 +4875,33 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 //   m: number of sensors  (= # of pixels)
 // assumes m = n
 
-int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, const char *ID_VTmatrix_name)
+errno_t GPU_SVD_computeControlMatrix(
+    int device,
+    const char *ID_Rmatrix_name,
+    const char *ID_Cmatrix_name,
+    double      SVDeps,
+    const char *ID_VTmatrix_name
+)
 {
     cusolverDnHandle_t  cudenseH = NULL;
-    cublasHandle_t cublasH = NULL;
-    cublasStatus_t cublas_status; // = CUBLAS_STATUS_SUCCESS;
-    cusolverStatus_t cusolver_status; // = CUSOLVER_STATUS_SUCCESS;
+    cublasHandle_t      cublasH = NULL;
+    cublasStatus_t      cublas_status; // = CUBLAS_STATUS_SUCCESS;
+    cusolverStatus_t    cusolver_status; // = CUSOLVER_STATUS_SUCCESS;
     struct cudaDeviceProp deviceProp;
-    int k;
 
-    long ID_Rmatrix, ID_Cmatrix, ID_VTmatrix;
+    imageID ID_Rmatrix, ID_Cmatrix, ID_VTmatrix;
     uint8_t datatype;
-    int m;
-    int n;
     uint32_t *arraysizetmp;
     int lda, ldu, ldvt;
     
 
-    float *d_A = NULL; // linear memory of GPU
-    float *h_A = NULL;
-    float *d_S = NULL; // linear memory of GPU
-    float *d_U = NULL; // linear memory of GPU
+    float *d_A  = NULL; // linear memory of GPU
+    float *h_A  = NULL;
+    float *d_S  = NULL; // linear memory of GPU
+    float *d_U  = NULL; // linear memory of GPU
     float *h_U1 = NULL;    
     float *d_VT = NULL; // linear memory of GPU
-    float *d_M = NULL; // linear memory of GPU
+    float *d_M  = NULL; // linear memory of GPU
     float *d_U1 = NULL; // linear memory of GPU
     float *d_Work = NULL; // linear memory of GPU
     cudaError_t cudaStat = cudaSuccess;
@@ -4852,7 +4910,7 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
     float *rwork;
 
     float *Sarray;
-    float *Aarray;
+    //float *Aarray;
     long i;
     FILE *fp;
     char fname[200];
@@ -4863,12 +4921,10 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
     struct timespec tnow;
 
 
-    long ID_leftSV; // left singular vectors
     float val;
-    long ii, jj;
     float alpha = 1.0;
     float beta = 0.0;
-    long ID;
+    imageID ID;
     
     float *h_M;
     long cnt0;
@@ -4878,7 +4934,7 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
     printf("%d devices found\n", deviceCount);
     fflush(stdout);
     printf("\n");
-    for (k = 0; k < deviceCount; ++k) {
+    for (int k = 0; k < deviceCount; ++k) {
         cudaGetDeviceProperties(&deviceProp, k);
         printf("Device %d [ %20s ]  has compute capability %d.%d.\n",
                k, deviceProp.name, deviceProp.major, deviceProp.minor);
@@ -4942,6 +4998,10 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
         printf("wrong type\n");
         exit(EXIT_FAILURE);
     }
+
+
+	uint32_t m;
+	uint32_t n;
 
     if(data.image[ID_Rmatrix].md[0].naxis==3)
     {
@@ -5095,8 +5155,8 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
         printf("cudaMalloc d_U1 returned error code %d, line(%d)\n", cudaStat, __LINE__);
         exit(EXIT_FAILURE);
     }
-    for(ii=0;ii<m;ii++)
-        for(jj=0;jj<n;jj++)
+    for(uint32_t ii=0;ii<m;ii++)
+        for(uint32_t jj=0;jj<n;jj++)
             h_U1[jj*m+ii] = data.image[ID].array.F[jj*m+ii];
     cudaMemcpy(d_U1, h_U1, sizeof(float)*m*n, cudaMemcpyHostToDevice);
     free(h_U1);
@@ -5111,7 +5171,7 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
     printf("SVDeps = %f\n", SVDeps);
     cnt0 = 0;
     // multiply lines of VT by 1/eigenval
-    for(ii=0;ii<n;ii++)
+    for(uint32_t ii=0;ii<n; ii++)
     {
         if( Sarray[ii] > Sarray[0]*SVDeps )
             {
@@ -5121,7 +5181,7 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
         else
             val = 0.0;
         
-        for(jj=0;jj<n;jj++)
+        for(uint32_t jj=0;jj<n;jj++)
              data.image[ID_VTmatrix].array.F[jj*n+ii] *= val;
     }
     printf("%ld eigenvalues kept\n", cnt0);
@@ -5176,8 +5236,8 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
     
     h_M = (float*) malloc(sizeof(float)*m*n);
     cudaStat = cudaMemcpy(h_M, d_M, sizeof(float)*m*n, cudaMemcpyDeviceToHost);
-    for(ii=0;ii<m;ii++)
-        for(jj=0;jj<n;jj++)
+    for(uint32_t ii=0;ii<m;ii++)
+        for(uint32_t jj=0;jj<n;jj++)
             data.image[ID_Cmatrix].array.F[jj*m+ii] = h_M[ii*n+jj];
     
     //cudaStat = cudaMemcpy(data.image[ID_Cmatrix].array.F, d_VT, sizeof(float)*n*n, cudaMemcpyDeviceToHost);
@@ -5219,7 +5279,7 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
     free(h_M);
     
     
-    return(0);
+    return RETURN_SUCCESS;
 }
 
 
@@ -5252,21 +5312,27 @@ int GPU_SVD_computeControlMatrix(int device, const char *ID_Rmatrix_name, const 
 // single GPU
 // semaphore input = 3
 //
-int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, int GPUindex, const char *IDoutmap_name, int offsetmode, const char *IDoffset_name)
+errno_t CUDACOMP_Coeff2Map_Loop(
+    const char *IDmodes_name,
+    const char *IDcoeff_name,
+    int         GPUindex,
+    const char *IDoutmap_name,
+    int         offsetmode,
+    const char *IDoffset_name
+)
 {
-    long NBmodes;
-    long IDmodes;
-    long IDcoeff;
-    long IDoutmap;
-    long m;
-    int k;
-    cublasHandle_t cublasH = NULL;
-    cublasStatus_t cublas_status = CUBLAS_STATUS_SUCCESS;
-    cudaError_t cudaStat = cudaSuccess;
+    long     NBmodes;
+    imageID  IDmodes;
+    imageID  IDcoeff;
+    imageID  IDoutmap;
+
+    cublasHandle_t   cublasH       = NULL;
+    cublasStatus_t   cublas_status = CUBLAS_STATUS_SUCCESS;
+    cudaError_t      cudaStat      = cudaSuccess;
     struct cudaDeviceProp deviceProp;
 
-    float *d_modes = NULL; // linear memory of GPU
-    float *d_coeff = NULL;
+    float *d_modes  = NULL; // linear memory of GPU
+    float *d_coeff  = NULL;
     float *d_outmap = NULL;
 
     float alpha = 1.0;
@@ -5274,13 +5340,12 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
     int loopOK;
     struct timespec ts;
     long iter;
-    long long cnt = -1;
+    uint64_t cnt;
     long scnt;
     int semval;
     int semr;
-    long ii, kk;
 
-    long IDoffset;
+    imageID IDoffset;
 
 
     printf("entering CUDACOMP_Coeff2Map_Loop\n");
@@ -5300,17 +5365,6 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
     }
 
 
-    IDcoeff = image_ID(IDcoeff_name);
-    NBmodes = 1;
-    for(k=0; k<data.image[IDcoeff].md[0].naxis; k++)
-        NBmodes *= data.image[IDcoeff].md[0].size[k];
-
-    IDmodes = image_ID(IDmodes_name);
-    if(data.image[IDmodes].md[0].naxis==3)
-        m = data.image[IDmodes].md[0].size[0]*data.image[IDmodes].md[0].size[1];
-    else
-        m = data.image[IDmodes].md[0].size[0];
-
 
 
     IDoutmap = image_ID(IDoutmap_name);
@@ -5326,7 +5380,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
     printf("%d devices found\n", deviceCount);
     fflush(stdout);
     printf("\n");
-    for (k = 0; k < deviceCount; ++k) {
+    for (int k = 0; k < deviceCount; ++k) {
         cudaGetDeviceProperties(&deviceProp, k);
         printf("Device %d [ %20s ]  has compute capability %d.%d.\n",
                k, deviceProp.name, deviceProp.major, deviceProp.minor);
@@ -5362,9 +5416,22 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
 
     // load modes to GPU
     
-    printf("Allocating d_modes. Size = %ld x %ld, total = %ld\n", m, NBmodes, sizeof(float)*m*NBmodes);
+    IDcoeff = image_ID(IDcoeff_name);
+    NBmodes = 1;
+    for(uint8_t k=0; k<data.image[IDcoeff].md[0].naxis; k++)
+        NBmodes *= data.image[IDcoeff].md[0].size[k];
+
+    IDmodes = image_ID(IDmodes_name);
+    uint64_t mdim;
+    if(data.image[IDmodes].md[0].naxis==3)
+        mdim = data.image[IDmodes].md[0].size[0]*data.image[IDmodes].md[0].size[1];
+    else
+        mdim = data.image[IDmodes].md[0].size[0];
+    
+    
+    printf("Allocating d_modes. Size = %lu x %ld, total = %ld\n", mdim, NBmodes, sizeof(float)*mdim*NBmodes);
 	fflush(stdout);
-    cudaStat = cudaMalloc((void**)&d_modes, sizeof(float)*m*NBmodes);
+    cudaStat = cudaMalloc((void**)&d_modes, sizeof(float)*mdim*NBmodes);
     if (cudaStat != cudaSuccess)
     {
         printf("cudaMalloc d_DMmodes returned error code %d, line(%d)\n", cudaStat, __LINE__);
@@ -5374,7 +5441,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
     printf("cudaMemcpy ID %ld  -> d_modes\n", IDmodes);
 	fflush(stdout);
 	list_image_ID();
-    cudaStat = cudaMemcpy(d_modes, data.image[IDmodes].array.F, sizeof(float)*m*NBmodes, cudaMemcpyHostToDevice);
+    cudaStat = cudaMemcpy(d_modes, data.image[IDmodes].array.F, sizeof(float)*mdim*NBmodes, cudaMemcpyHostToDevice);
     if (cudaStat != cudaSuccess)
     {
         printf("cudaMemcpy returned error code %d, line(%d)\n", cudaStat, __LINE__);
@@ -5383,9 +5450,9 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
 
 
     // create d_outmap
-    printf("Allocating d_outmap. Size = %ld,  total = %ld\n", m, sizeof(float)*m);
+    printf("Allocating d_outmap. Size = %ld,  total = %ld\n", mdim, sizeof(float)*mdim);
 	fflush(stdout);   
-    cudaStat = cudaMalloc((void**)&d_outmap, sizeof(float)*m);
+    cudaStat = cudaMalloc((void**)&d_outmap, sizeof(float)*mdim);
     if (cudaStat != cudaSuccess)
     {
         printf("cudaMalloc d_outmap returned error code %d, line(%d)\n", cudaStat, __LINE__);
@@ -5450,7 +5517,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
 
         if(data.image[IDcoeff].md[0].sem==0)
         {
-            while(data.image[IDcoeff].md[0].cnt0==cnt) // test if new frame exists
+            while(data.image[IDcoeff].md[0].cnt0 == cnt) // test if new frame exists
                 usleep(5);
             cnt = data.image[IDcoeff].md[0].cnt0;
             semr = 0;
@@ -5501,7 +5568,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
 
             if(offsetmode==1)
             {
-                cudaStat = cudaMemcpy(d_outmap, data.image[IDoffset].array.F, sizeof(float)*m, cudaMemcpyHostToDevice);
+                cudaStat = cudaMemcpy(d_outmap, data.image[IDoffset].array.F, sizeof(float)*mdim, cudaMemcpyHostToDevice);
                 if (cudaStat != cudaSuccess)
                 {
                     printf("cudaMemcpy returned error code %d, line(%d)\n", cudaStat, __LINE__);
@@ -5510,7 +5577,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
             }
 
             // compute
-            cublas_status = cublasSgemv(cublasH, CUBLAS_OP_N, m, NBmodes, &alpha, d_modes, m, d_coeff, 1, &beta, d_outmap, 1);
+            cublas_status = cublasSgemv(cublasH, CUBLAS_OP_N, mdim, NBmodes, &alpha, d_modes, mdim, d_coeff, 1, &beta, d_outmap, 1);
             if (cublas_status != CUBLAS_STATUS_SUCCESS)
             {
 				printf("cublasSgemv returned error code %d, line(%d)\n", cublas_status, __LINE__);
@@ -5529,7 +5596,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
                 printf("CUBLAS_OP_N                         = %d\n", CUBLAS_OP_N);
                 printf("alpha                               = %f\n", alpha);
                 printf("alpha                               = %f\n", beta);
-                printf("m                                   = %d\n", (int) m);
+                printf("m                                   = %d\n", (int) mdim);
                 printf("NBmodes                             = %d\n", (int) NBmodes);
                 fflush(stdout);
                 exit(EXIT_FAILURE);								
@@ -5537,7 +5604,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
 
             // copy result
             data.image[IDoutmap].md[0].write = 1;
-            cudaStat = cudaMemcpy(data.image[IDoutmap].array.F, d_outmap, sizeof(float)*m, cudaMemcpyDeviceToHost);
+            cudaStat = cudaMemcpy(data.image[IDoutmap].array.F, d_outmap, sizeof(float)*mdim, cudaMemcpyDeviceToHost);
             sem_getvalue(data.image[IDoutmap].semptr[0], &semval);
             if(semval<SEMAPHORE_MAXVAL)
                 sem_post(data.image[IDoutmap].semptr[0]);
@@ -5568,7 +5635,7 @@ int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, const char *IDcoeff_name, 
 
 
 
-    return(0);
+    return RETURN_SUCCESS;
 }
 
 

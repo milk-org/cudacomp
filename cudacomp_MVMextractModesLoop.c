@@ -131,55 +131,70 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
 
 
     long GPUindex_default[4] = { 0, 0, 9, 0 };
-    long fp_GPUindex        = function_parameter_add_entry(&fps, ".GPUindex", "GPU index",
-                              FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, &GPUindex_default);
+    __attribute__((unused)) long fp_GPUindex        =
+        function_parameter_add_entry(&fps, ".GPUindex", "GPU index",
+                                     FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, &GPUindex_default);
 
 
-    long fp_streamname_in          = function_parameter_add_entry(&fps, ".sname_in",  "input stream vector",
+    __attribute__((unused)) long fp_streamname_in          =
+        function_parameter_add_entry(&fps, ".sname_in",  "input stream vector",
                                      FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT_STREAM, pNull);
 
-    long fp_streamname_modes       = function_parameter_add_entry(&fps, ".sname_modes",  "input modes matrix",
+    __attribute__((unused)) long fp_streamname_modes       =
+        function_parameter_add_entry(&fps, ".sname_modes",  "input modes matrix",
                                      FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT_STREAM, pNull);
 
     FPFLAG = FPFLAG_DEFAULT_INPUT_STREAM;
     FPFLAG &= ~FPFLAG_STREAM_RUN_REQUIRED;
-    long fp_streamname_intot       = function_parameter_add_entry(&fps, ".option.sname_intot",  "optional input normalization stream",
+    __attribute__((unused)) long fp_streamname_intot       =
+        function_parameter_add_entry(&fps, ".option.sname_intot",  "optional input normalization stream",
                                      FPTYPE_STREAMNAME, FPFLAG, pNull);
 
-    long fp_streamname_refin       = function_parameter_add_entry(&fps, ".option.sname_refin",  "optional input reference to be subtracted stream",
+    __attribute__((unused)) long fp_streamname_refin       =
+        function_parameter_add_entry(&fps, ".option.sname_refin",  "optional input reference to be subtracted stream",
                                      FPTYPE_STREAMNAME, FPFLAG, pNull);
 
-    long fp_streamname_refout      = function_parameter_add_entry(&fps, ".option.sname_refout",  "optional output reference to be subtracted stream",
+    __attribute__((unused)) long fp_streamname_refout      =
+        function_parameter_add_entry(&fps, ".option.sname_refout",  "optional output reference to be subtracted stream",
                                      FPTYPE_STREAMNAME, FPFLAG, pNull);
 
-    long fp_stream_outmodesval     = function_parameter_add_entry(&fps, ".sname_outmodesval", "output mode coefficients stream",
+    __attribute__((unused)) long fp_stream_outmodesval     =
+        function_parameter_add_entry(&fps, ".sname_outmodesval", "output mode coefficients stream",
                                      FPTYPE_STREAMNAME, FPFLAG, pNull);
 
-    long fp_outinit                = function_parameter_add_entry(&fps, ".outinit", "output stream init mode",
+    __attribute__((unused)) long fp_outinit                =
+        function_parameter_add_entry(&fps, ".outinit", "output stream init mode",
                                      FPTYPE_ONOFF, FPFLAG, pNull);
 
 
 
-    long fp_PROCESS         = function_parameter_add_entry(&fps, ".option.PROCESS", "1 if processing",
-                              FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+    __attribute__((unused)) long fp_PROCESS         =
+        function_parameter_add_entry(&fps, ".option.PROCESS", "1 if processing",
+                                     FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
 
-    long fp_TRACEMODE       = function_parameter_add_entry(&fps, ".option.TRACEMODE", "1 if writing trace",
-                              FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+    __attribute__((unused)) long fp_TRACEMODE       =
+        function_parameter_add_entry(&fps, ".option.TRACEMODE", "1 if writing trace",
+                                     FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
 
-    long fp_MODENORM        = function_parameter_add_entry(&fps, ".option.MODENORM", "1 if input modes should be normalized",
-                              FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+    __attribute__((unused)) long fp_MODENORM        =
+        function_parameter_add_entry(&fps, ".option.MODENORM", "1 if input modes should be normalized",
+                                     FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
 
-    long fp_insem           = function_parameter_add_entry(&fps, ".option.insem", "input semaphore index",
-                              FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
+    __attribute__((unused)) long fp_insem           =
+        function_parameter_add_entry(&fps, ".option.insem", "input semaphore index",
+                                     FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
 
-    long fp_axmode          = function_parameter_add_entry(&fps, ".option.axmode", "0 for normal mode extraction, 1 for expansion",
-                              FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
+    __attribute__((unused)) long fp_axmode          =
+        function_parameter_add_entry(&fps, ".option.axmode", "0 for normal mode extraction, 1 for expansion",
+                                     FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
 
-    long fp_twait           = function_parameter_add_entry(&fps, ".option.twait", "if >0, insert time wait [us] at each iteration",
-                              FPTYPE_INT64, FPFLAG_DEFAULT_INPUT|FPFLAG_WRITERUN, pNull);
+    __attribute__((unused)) long fp_twait           =
+        function_parameter_add_entry(&fps, ".option.twait", "if >0, insert time wait [us] at each iteration",
+                                     FPTYPE_INT64, FPFLAG_DEFAULT_INPUT|FPFLAG_WRITERUN, pNull);
 
-    long fp_semwarn         = function_parameter_add_entry(&fps, ".option.semwarn", "issue warning when input stream semaphore >1",
-                              FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+    __attribute__((unused)) long fp_semwarn         =
+        function_parameter_add_entry(&fps, ".option.semwarn", "issue warning when input stream semaphore >1",
+                                     FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
 
 
 
@@ -258,10 +273,11 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
 
 errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     char *fpsname
-) {
-    long IDmodes;
-    long ID;
-    long ID_modeval;
+) 
+{
+    imageID IDmodes;
+    imageID ID;
+    imageID ID_modeval;
     cublasHandle_t cublasH = NULL;
     cublasStatus_t cublas_status = CUBLAS_STATUS_SUCCESS;
     cudaError_t cudaStat = cudaSuccess;
@@ -277,9 +293,9 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     float alpha = 1.0;
     float beta = 0.0;
     struct timespec ts;
-    long loopcnt;
+    //long loopcnt;
     long long cnt = -1;
-    long scnt;
+    //long scnt;
     int semval;
     int semr;
     long ii, jj, kk;
@@ -287,10 +303,10 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     long NBmodes;
     float *normcoeff;
 
-    long IDoutact;
+    //imageID IDoutact;
     uint32_t *sizearraytmp;
 
-    long ID_modeval_mult;
+    //imageID ID_modeval_mult;
     int imOK;
 
 
@@ -300,7 +316,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     long IDtrace;
 
 
-    int NBaveSTEP = 10; // each step is 2x longer average than previous step
+    uint32_t NBaveSTEP = 10; // each step is 2x longer average than previous step
     double stepcoeff;
     double stepcoeff0 = 0.3;
     char process_ave_name[200];
@@ -321,7 +337,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     int BETAMODE = 0;
     long IDrefout;
 
-    long refindex;
+    uint32_t refindex;
     long twait1;
     struct timespec t0;
 
@@ -687,7 +703,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 
 
-    loopcnt = 0;
+    //loopcnt = 0;
 
 
 
@@ -810,18 +826,17 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     processinfo_WriteMessage(processinfo, pinfomsg);
 
 
-
     while(loopOK == 1) {
         struct timespec tdiff;
         double tdiffv;
 
-        int t00OK = 0;
-        int t01OK = 0;
-        int t02OK = 0;
-        int t03OK = 0;
-        int t04OK = 0;
-        int t05OK = 0;
-        int t06OK = 0;
+        //int t00OK = 0;
+        //int t01OK = 0;
+        //int t02OK = 0;
+        //int t03OK = 0;
+        //int t04OK = 0;
+        //int t05OK = 0;
+        //int t06OK = 0;
 
         loopOK = processinfo_loopstep(processinfo);
 
@@ -848,7 +863,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 //
                 if(data.image[IDin].md[0].sem == 0) {
                     // if not using semaphore, use counter #0
-                    while(data.image[IDin].md[0].cnt0 == cnt) { // test if new frame exists
+                    while((long long) (data.image[IDin].md[0].cnt0) == cnt) { // test if new frame exists
                         usleep(5);
                     }
                     cnt = data.image[IDin].md[0].cnt0;
@@ -880,7 +895,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 semr = 0;
             }
 
-            t00OK = 1;
+            //t00OK = 1;
             clock_gettime(CLOCK_REALTIME, &t00);
 
             processinfo_exec_start(processinfo);
@@ -900,7 +915,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                     exit(EXIT_FAILURE);
                 }
 
-                t01OK = 1;
+                //t01OK = 1;
                 clock_gettime(CLOCK_REALTIME, &t01);
 
                 if(BETAMODE == 1) {
@@ -908,7 +923,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                     cudaStat = cudaMemcpy(d_modeval, modevalarrayref, sizeof(float) * NBmodes, cudaMemcpyHostToDevice);
                 }
 
-                t02OK = 1;
+                //t02OK = 1;
                 clock_gettime(CLOCK_REALTIME, &t02);
 
                 // compute
@@ -943,7 +958,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 // copy result
                 data.image[ID_modeval].md[0].write = 1;
 
-                t03OK = 1;
+                //t03OK = 1;
                 clock_gettime(CLOCK_REALTIME, &t03);
 
                 if(initref == 0) { // construct reference to be subtracted
@@ -993,7 +1008,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 
 
-        t04OK = 1;
+        //t04OK = 1;
         clock_gettime(CLOCK_REALTIME, &t04);
 
 
@@ -1024,7 +1039,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
             }
         }
 
-        t05OK = 1;
+        //t05OK = 1;
         clock_gettime(CLOCK_REALTIME, &t05);
 
         if(PROCESS == 1) {
@@ -1067,7 +1082,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
             data.image[IDprocrms].md[0].write = 0;
         }
 
-        t06OK = 1;
+        //t06OK = 1;
         clock_gettime(CLOCK_REALTIME, &t06);
 
 
@@ -1228,7 +1243,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     // ==================================
     // SET PARAMETER VALUES
     // ==================================
-	int SMfd = -1;
+	//int SMfd = -1;
     function_parameter_struct_connect(fpsname, &fps, FPSCONNECT_SIMPLE);
 
     functionparameter_SetParamValue_STRING(&fps, ".sname_in",            in_stream);

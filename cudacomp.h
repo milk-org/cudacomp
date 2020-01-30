@@ -4,8 +4,6 @@
  * 
  * Also uses MAGMA library
  * 
- * @author  O. Guyon
- * @date    3 Jul 2017
  *
  * @bug Magma can hang on magma_dsyevd_gpu
  * 
@@ -57,15 +55,15 @@ typedef struct
 
 typedef struct
 {
-    int_fast8_t init;                   /**< 1 if initialized               */
-    int_fast8_t *refWFSinit;            /**< reference init                 */
-    int_fast8_t alloc;                  /**< 1 if memory has been allocated */
-    long CM_ID;                         
-    long CM_cnt;
-    long timerID;
+    int8_t    init;                   /**< 1 if initialized               */
+    int8_t   *refWFSinit;            /**< reference init                 */
+    int8_t    alloc;                  /**< 1 if memory has been allocated */
+    imageID   CM_ID;                         
+    uint64_t  CM_cnt;
+    long      timerID;
     
-    uint_fast32_t M;
-    uint_fast32_t N;
+    uint32_t M;
+    uint32_t N;
 
 
     /// synchronization
@@ -102,7 +100,7 @@ typedef struct
     THDATA *thdata;
     int *iret;
     pthread_t *threadarray;
-    int_fast8_t NBstreams;
+    int      NBstreams;
     cudaStream_t *stream;
     cublasHandle_t *handle;
 
@@ -140,7 +138,7 @@ void __attribute__ ((constructor)) libinit_cudacomp();
 /**
  * @brief Initialize cudacomp module and command line interface.
  */
-int_fast8_t init_cudacomp();
+errno_t init_cudacomp();
 
 
 /**
@@ -152,11 +150,11 @@ int_fast8_t init_cudacomp();
  * @return number of CUDA devices found
  * 
  */
-int_fast8_t CUDACOMP_init();
+int CUDACOMP_init();
 
 int CUDACOMP_printGPUMATMULTCONF(int index);
 
-int_fast8_t GPUcomp_test(long NBact, long NBmodes, long WFSsize, long GPUcnt);
+errno_t GPUcomp_test(long NBact, long NBmodes, long WFSsize, long GPUcnt);
 
 ///@}
 
@@ -202,7 +200,7 @@ int GPU_loop_MultMat_setup(
 	int         USEsem, 
 	int         initWFSref, 
 	long        loopnb
-	);
+);
 
 
 int GPU_loop_MultMat_execute(
@@ -213,7 +211,7 @@ int GPU_loop_MultMat_execute(
 	float        beta, 
 	int          timing, 
 	int          TimerOffsetIndex
-	);
+);
 
 
 int GPU_loop_MultMat_free(int index);
@@ -237,7 +235,7 @@ long CUDACOMP_MatMatMult_testPseudoInverse(
 	const char *IDmatA_name, 
 	const char *IDmatAinv_name, 
 	const char *IDmatOut_name
-	);
+);
 
 
 
@@ -250,7 +248,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
 	double       SVDeps, 
 	long         MaxNBmodes, 
 	const char  *ID_VTmatrix_name
-	);
+);
 
 
 
@@ -284,7 +282,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 	double qdwh_s, 
 	float qdwh_tol, 
 	int testmode
-	);
+);
 
 
 
@@ -294,7 +292,7 @@ int GPU_SVD_computeControlMatrix(
 	const char *ID_Cmatrix_name, 
 	double      SVDeps, 
 	const char *ID_VTmatrix_name
-	);
+);
 
 ///@}
 
@@ -358,7 +356,7 @@ int CUDACOMP_MVMextractModesLoop(
 	int         axmode, 
 	long        twait,
 	int         semwarn
-	);
+);
 
 
 
