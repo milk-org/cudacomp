@@ -1235,7 +1235,7 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 
     FUNCTION_PARAMETER_STRUCT fps;
     sprintf(fpsname, "cudaMVMextmodes-%06ld", pindex);
-    CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, CMDCODE_FPSINIT);
+    CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, FPSCMDCODE_FPSINIT);
 
 
 

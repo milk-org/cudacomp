@@ -506,17 +506,17 @@ errno_t CUDACOMP_MVMextractModesLoop_cli() {
         }
         if(strcmp(data.cmdargtoken[1].val.string, "_FPSINIT_") == 0) {  // Initialize FPS and conf process
             printf("Function parameters configure\n");
-            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, CMDCODE_FPSINIT);
+            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, FPSCMDCODE_FPSINIT);
             return RETURN_SUCCESS;
         }
         if(strcmp(data.cmdargtoken[1].val.string, "_CONFSTART_") == 0) {  // Start conf process
             printf("Function parameters configure\n");
-            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, CMDCODE_CONFSTART);
+            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, FPSCMDCODE_CONFSTART);
             return RETURN_SUCCESS;
         }
         if(strcmp(data.cmdargtoken[1].val.string, "_CONFSTOP_") == 0) { // Stop conf process
             printf("Function parameters configure\n");
-            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, CMDCODE_CONFSTOP);
+            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, FPSCMDCODE_CONFSTOP);
             return RETURN_SUCCESS;
         }
         if(strcmp(data.cmdargtoken[1].val.string, "_RUNSTART_") == 0) { // Run process
