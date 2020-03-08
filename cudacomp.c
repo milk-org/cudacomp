@@ -6,8 +6,6 @@
  *  
  *
  * 
- * @bug MAGMA execution can hang on dsyevd routine. This seems to be a MAGMA issue.
- * 
  */
 
 
@@ -21,6 +19,12 @@
 /*                                        HEADER FILES                                             */
 /* =============================================================================================== */
 /* =============================================================================================== */
+
+// include sem_timedwait
+#ifndef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE	200809L
+#endif
+
 
 #include <stdint.h>
 #include <stdio.h>
@@ -5489,8 +5493,12 @@ errno_t CUDACOMP_Coeff2Map_Loop(
 
         if(data.image[IDcoeff].md[0].sem==0)
         {
-            while(data.image[IDcoeff].md[0].cnt0 == cnt) // test if new frame exists
-                usleep(5);
+            while(data.image[IDcoeff].md[0].cnt0 == cnt) { // test if new frame exists
+                struct timespec treq, trem;
+                treq.tv_sec = 0;
+                treq.tv_nsec = 5000;
+                nanosleep(&treq, &trem);
+			}
             cnt = data.image[IDcoeff].md[0].cnt0;
             semr = 0;
         }
