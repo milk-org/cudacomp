@@ -7,8 +7,7 @@
  */
 
 
-// include sem_timedwait
-#define _POSIX_C_SOURCE	200809L
+
 
 
 // uncomment for test print statements to stdout
