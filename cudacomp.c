@@ -487,49 +487,21 @@ int_fast8_t CUDACOMP_MVMextractModesLoop_cli()
 
 
 errno_t CUDACOMP_MVMextractModesLoop_cli() {
-    int stringmaxlen = 200;
-    char fpsname[stringmaxlen];
 
-    // First, we try to execute function through FPS interface
-    if(CLI_checkarg(1, 5) == 0) { // check that first arg is string, second arg is int
-        //unsigned int OptionalArg00 = data.cmdargtoken[2].val.numl;
-        // Set FPS interface name
-        // By convention, if there are optional arguments, they should be appended to the fps name
-        //
-        if(data.processnameflag == 0) { // name fps to something different than the process name
-            if(strlen(data.cmdargtoken[2].val.string)>0)
-                snprintf(fpsname, stringmaxlen, "cudaMVM-%s", data.cmdargtoken[2].val.string);
-            else
-                sprintf(fpsname, "cudaMVM");
-        } else { // Automatically set fps name to be process name up to first instance of character '.'
-            strcpy(fpsname, data.processname0);
-        }
-        if(strcmp(data.cmdargtoken[1].val.string, "_FPSINIT_") == 0) {  // Initialize FPS and conf process
-            printf("Function parameters configure\n");
-            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, FPSCMDCODE_FPSINIT);
-            return RETURN_SUCCESS;
-        }
-        if(strcmp(data.cmdargtoken[1].val.string, "_CONFSTART_") == 0) {  // Start conf process
-            printf("Function parameters configure\n");
-            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, FPSCMDCODE_CONFSTART);
-            return RETURN_SUCCESS;
-        }
-        if(strcmp(data.cmdargtoken[1].val.string, "_CONFSTOP_") == 0) { // Stop conf process
-            printf("Function parameters configure\n");
-            CUDACOMP_MVMextractModesLoop_FPCONF(fpsname, FPSCMDCODE_CONFSTOP);
-            return RETURN_SUCCESS;
-        }
-        if(strcmp(data.cmdargtoken[1].val.string, "_RUNSTART_") == 0) { // Run process
-            printf("Run function\n");
-            CUDACOMP_MVMextractModesLoop_RUN(fpsname);
-            return RETURN_SUCCESS;
-        }
-        if(strcmp(data.cmdargtoken[1].val.string, "_RUNSTOP_") == 0) { // Stop process
-            // printf("Run function\n");
-            // CUDACOMP_MVMextractModesLoop_STOP(OptionalArg00);
-            return RETURN_SUCCESS;
-        }
+    // try FPS implementation
+    // set data.fpsname, providing default value as first arg, and set data.FPS_CMDCODE value
+    // default FPS name will be used if CLI process has NOT been named
+    // see code in function_parameter.c for detailed rules
+    function_parameter_getFPSname_from_CLIfunc("cudaMVM");
+
+    if(data.FPS_CMDCODE != 0) { // use FPS implementation   
+        // set pointers to CONF and RUN functions
+        data.FPS_CONFfunc = CUDACOMP_MVMextractModesLoop_FPCONF;
+        data.FPS_RUNfunc  = CUDACOMP_MVMextractModesLoop_RUN;
+        function_parameter_execFPScmd();
+        return RETURN_SUCCESS;
     }
+
     // non FPS implementation - all parameters specified at function launch
     if(
         CLI_checkarg(1,4) +
