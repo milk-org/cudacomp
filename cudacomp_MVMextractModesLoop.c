@@ -437,11 +437,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     {
         int slen = snprintf(pinfoname, STRINGMAXLEN_PROCESSINFO_NAME, "cudaMVMextract-%s", in_stream);
         if(slen<1) {
-            print_ERROR("snprintf wrote <1 char");
+            PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
         if(slen >= STRINGMAXLEN_PROCESSINFO_NAME) {
-            print_ERROR("snprintf string truncation");
+            PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
         }
     }
@@ -450,11 +450,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     {
         int slen = snprintf(pinfodescr, STRINGMAXLEN_PROCESSINFO_DESCRIPTION, "%s->%s", in_stream, IDmodes_val_name);
         if(slen<1) {
-            print_ERROR("snprintf wrote <1 char");
+            PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
         if(slen >= STRINGMAXLEN_PROCESSINFO_DESCRIPTION) {
-            print_ERROR("snprintf string truncation");
+            PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
         }
     }
@@ -463,11 +463,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     {
         int slen = snprintf(pinfomsg, STRINGMAXLEN_PROCESSINFO_STATUSMSG, "Setup");
         if(slen<1) {
-            print_ERROR("snprintf wrote <1 char");
+            PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
         if(slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG) {
-            print_ERROR("snprintf string truncation");
+            PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
         }
     }
@@ -753,11 +753,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
         {
             int slen = snprintf(traceim_name, STRINGMAXLEN_IMGNAME, "%s_trace", IDmodes_val_name);
             if(slen<1) {
-                print_ERROR("snprintf wrote <1 char");
+                PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
             if(slen >= STRINGMAXLEN_IMGNAME) {
-                print_ERROR("snprintf string truncation");
+                PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
             }
         }
@@ -792,11 +792,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
         {
             int slen = snprintf(process_ave_name, STRINGMAXLEN_IMGNAME, "%s_ave", IDmodes_val_name);
             if(slen<1) {
-                print_ERROR("snprintf wrote <1 char");
+                PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
             if(slen >= STRINGMAXLEN_IMGNAME) {
-                print_ERROR("snprintf string truncation");
+                PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
             }
         }
@@ -824,11 +824,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
         {
             int slen = snprintf(process_rms_name, STRINGMAXLEN_IMGNAME, "%s_rms", IDmodes_val_name);
             if(slen<1) {
-                print_ERROR("snprintf wrote <1 char");
+                PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
             if(slen >= STRINGMAXLEN_IMGNAME) {
-                print_ERROR("snprintf string truncation");
+                PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
             }
         }
@@ -879,11 +879,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
         {
             int slen = snprintf(msgstring, STRINGMAXLEN_PROCESSINFO_STATUSMSG, "Running on GPU %d", GPUindex);
             if(slen<1) {
-                print_ERROR("snprintf wrote <1 char");
+                PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
             if(slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG) {
-                print_ERROR("snprintf string truncation");
+                PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
             }
         }
@@ -909,11 +909,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                             IDmodes_name, in_stream, IDmodes_val_name,
                             TRACEMODE, PROCESS);
         if(slen<1) {
-            print_ERROR("snprintf wrote <1 char");
+            PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
         if(slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG) {
-            print_ERROR("snprintf string truncation");
+            PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
         }
     } else {
@@ -922,11 +922,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                             IDmodes_val_name,
                             TRACEMODE, PROCESS);
         if(slen<1) {
-            print_ERROR("snprintf wrote <1 char");
+            PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
         if(slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG) {
-            print_ERROR("snprintf string truncation");
+            PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
         }
     }
@@ -1351,11 +1351,11 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     {   // write FPS name
         int slen = snprintf(data.FPS_name, FPS_NAME_STRMAXLEN, "cudaMVMextmodes-%06ld", pindex);
         if(slen<1) {
-            print_ERROR("snprintf wrote <1 char");
+            PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
         if(slen >= FPS_NAME_STRMAXLEN) {
-            print_ERROR("snprintf string truncation");
+            PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
         }
     }
