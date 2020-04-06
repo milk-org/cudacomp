@@ -9,6 +9,35 @@
  */
 
 
+
+
+/* ================================================================== */
+/* ================================================================== */
+/*            MODULE INFO                                             */
+/* ================================================================== */
+/* ================================================================== */
+
+// module default short name
+// all CLI calls to this module functions will be <shortname>.<funcname>
+// if set to "", then calls use <funcname>
+#define MODULE_SHORTNAME_DEFAULT ""
+
+// Module short description 
+#define MODULE_DESCRIPTION       "CUDA wrapper"
+
+// Application to which module belongs
+#define MODULE_APPLICATION       "milk"
+
+
+
+
+
+
+
+
+
+
+
 // uncomment for test print statements to stdout
 //#define _PRINT_TEST
 
@@ -136,7 +165,6 @@ int FORCESEMINIT = 1;
 
 //extern struct DATA data;
 
-static int INITSTATUS_cudacomp = 0;
 
 extern pid_t CLIPID;
 
@@ -248,25 +276,44 @@ int QDWHpartial (int M, int N,
 
 
 
-/* =============================================================================================== */
-/* =============================================================================================== */
-/*                           FUNCTIONS TIED TO COMMAND LINE INTERFACE (CLI)                        */
-/* =============================================================================================== */
-/* =============================================================================================== */
+
+
+
+
+/* ================================================================== */
+/* ================================================================== */
+/*            INITIALIZE LIBRARY                                      */
+/* ================================================================== */
+/* ================================================================== */
+
+// Module initialization macro in CLIcore.h
+// macro argument defines module name for bindings
+//
+INIT_MODULE_LIB(cudacomp)
+
+
+static void __attribute__((constructor)) libinit_cudacomp_printinfo()
+{
+#ifdef HAVE_CUDA
+    printf("[CUDA]");
+#endif
+
+#ifdef HAVE_MAGMA
+    printf("[MAGMA]");
+#endif
+}
+
+
+
+
+/* ================================================================== */
+/* ================================================================== */
+/*            COMMAND LINE INTERFACE (CLI) FUNCTIONS                  */
+/* ================================================================== */
+/* ================================================================== */
+
+
 /** @name CLI bindings */
-
-// CLI commands
-//
-// function CLI_checkarg used to check arguments
-// 1: float
-// 2: long
-// 3: string, not existing image
-// 4: existing image
-// 5: string 
-//
-
-
-
 
 /* =============================================================================================== */
 /* =============================================================================================== */
@@ -593,28 +640,8 @@ errno_t CUDACOMP_MVMextractModesLoop_cli() {
 /* =============================================================================================== */
 
 
-void __attribute__ ((constructor)) libinit_cudacomp()
-{
-	// printf("INITSTATUS_cudacomp = %d\n", INITSTATUS_cudacomp);
-	if ( INITSTATUS_cudacomp == 0 )
-	{
-		init_cudacomp();
-		RegisterModule( __FILE__, "milk", "CUDA wrapper");
-		INITSTATUS_cudacomp = 1;
-		
-		#ifdef HAVE_CUDA
-		printf("[CUDA]");
-		#endif
-		
-		#ifdef HAVE_MAGMA
-		printf("[MAGMA]");
-		#endif
-	}
-}
 
-
-
-errno_t init_cudacomp()
+static errno_t init_module_CLI()
 {
     long i;
 

@@ -138,7 +138,7 @@ void __attribute__ ((constructor)) libinit_cudacomp();
 /**
  * @brief Initialize cudacomp module and command line interface.
  */
-errno_t init_cudacomp();
+//errno_t init_cudacomp();
 
 
 /**
