@@ -3913,7 +3913,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
         if(MAGMAfloat == 1)
         {
             if((testmode == 1)
-                    || (mode_QDWHPartial == 1)) // need magmaf_h_A, otherwise, straight to magmaf_d_A
+                    || (mode_QDWHPartial ==
+                        1)) // need magmaf_h_A, otherwise, straight to magmaf_d_A
             {
                 if(mode_QDWHPartial == 1)
                 {
