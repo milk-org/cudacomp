@@ -1,10 +1,34 @@
-project(lib_cudacomp_project)
+# library name
+set(LIBNAME "milkcudacomp")
+
+
+set(SOURCEFILES
+	cudacomp.c
+	cudacomp_MVMextractModesLoop.c)
+
+set(INCLUDEFILES
+	image_gen.h)
+
+
+
+
+
+# DEFAULT SETTINGS 
+# Do not change unless needed
+# =====================================================================
+
+project(lib_${LIBNAME}_project)
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 include_directories ("${PROJECT_SOURCE_DIR}/..")
-add_library(cudacomp SHARED cudacomp.c
-cudacomp_MVMextractModesLoop.c
-)
+
+
+# Library can be compiled from multiple source files
+# Convention: the main souce file is named <libname>.c
+# 
+add_library(${LIBNAME} SHARED ${SOURCEFILES})
+
+
 
 message("---- module cudacomp ------------------")
 
@@ -14,9 +38,9 @@ message(STATUS "Found CUDA ${CUDA_VERSION_STRING} at ${CUDA_TOOLKIT_ROOT_DIR}")
 message("---- CUDA_INCLUDE_DIRS   = ${CUDA_INCLUDE_DIRS}")
 message("---- CUDA_LIBRARIES      = ${CUDA_LIBRARIES} ${CUDA_cusolver_LIBRARY}" )   
 message("---- CUDA_CUBLAS_LIBRARIES    = ${CUDA_CUBLAS_LIBRARIES}" )   
-target_include_directories(cudacomp PUBLIC ${CUDA_INCLUDE_DIRS})
-target_link_libraries(cudacomp PRIVATE ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_cusolver_LIBRARY}) 
-target_compile_options(cudacomp PUBLIC -DHAVE_CUDA)
+target_include_directories(${LIBNAME} PUBLIC ${CUDA_INCLUDE_DIRS})
+target_link_libraries(${LIBNAME} PRIVATE ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_cusolver_LIBRARY}) 
+target_compile_options(${LIBNAME} PUBLIC -DHAVE_CUDA)
 endif(USE_CUDA)
 
 
@@ -27,11 +51,11 @@ pkg_check_modules(MAGMA REQUIRED magma)
 message("---- MAGMA_LIBRARY_DIRS =  ${MAGMA_LIBRARY_DIRS}") 
 message("---- MAGMA_LIBRARIES    =  ${MAGMA_LIBRARIES}" )   
 message("---- MAGMA_CFLAGS_OTHER =  ${MAGMA_CFLAGS_OTHER}" ) 
-target_include_directories(cudacomp PUBLIC ${MAGMA_INCLUDE_DIRS})
-target_link_libraries(cudacomp PRIVATE ${MAGMA_LIBRARIES})
-target_compile_options(cudacomp PRIVATE ${MAGMA_CFLAGS_OTHER})
-target_compile_options(cudacomp PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA)
-#target_compile_options(cudacomp PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA)
+target_include_directories(${LIBNAME} PUBLIC ${MAGMA_INCLUDE_DIRS})
+target_link_libraries(${LIBNAME} PRIVATE ${MAGMA_LIBRARIES})
+target_compile_options(${LIBNAME} PRIVATE ${MAGMA_CFLAGS_OTHER})
+target_compile_options(${LIBNAME} PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA)
+#target_compile_options(${LIBNAME} PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA)
 endif(USE_MAGMA)
 
 
@@ -39,16 +63,24 @@ endif(USE_MAGMA)
 if(USE_QDWHPARTIAL)
 message("---- QDWHPARTIAL_INCLUDE_PATH =  ${QDWHPARTIAL_INCLUDE_PATH}") 
 message("---- QDWHPARTIAL_LIBRARIES    =  ${QDWHPARTIAL_LIBRARIES}" )   
-target_include_directories(cudacomp PUBLIC ${QDWHPARTIAL_INCLUDE_PATH})
-target_link_libraries(cudacomp PRIVATE ${QDWHPARTIAL_LIBRARIES})
-set_target_properties(cudacomp PROPERTIES COMPILE_FLAGS "-DHAVE_QDWHpartial")
-target_compile_options(cudacomp PUBLIC -DUSE_QDWHPARTIAL)
+target_include_directories(${LIBNAME} PUBLIC ${QDWHPARTIAL_INCLUDE_PATH})
+target_link_libraries(${LIBNAME} PRIVATE ${QDWHPARTIAL_LIBRARIES})
+set_target_properties(${LIBNAME} PROPERTIES COMPILE_FLAGS "-DHAVE_QDWHpartial")
+target_compile_options(${LIBNAME} PUBLIC -DUSE_QDWHPARTIAL)
 endif(USE_QDWHPARTIAL)
 
 message("---------------------------------------")
 
-install(TARGETS cudacomp DESTINATION lib)
-install(FILES cudacomp.h DESTINATION include)
+
+install(TARGETS ${LIBNAME} DESTINATION lib)
+install(FILES ${INCLUDEFILES} DESTINATION include)
+
+
+
+
+
+
+
 
 
 
