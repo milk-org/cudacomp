@@ -7,7 +7,7 @@ set(SOURCEFILES
 	cudacomp_MVMextractModesLoop.c)
 
 set(INCLUDEFILES
-	image_gen.h)
+	cudacomp.h)
 
 
 
