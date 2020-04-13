@@ -20,7 +20,7 @@
 // module default short name
 // all CLI calls to this module functions will be <shortname>.<funcname>
 // if set to "", then calls use <funcname>
-#define MODULE_SHORTNAME_DEFAULT ""
+#define MODULE_SHORTNAME_DEFAULT "cuda"
 
 // Module short description
 #define MODULE_DESCRIPTION       "CUDA wrapper"
@@ -123,7 +123,6 @@ static int clock_gettime(int clk_id, struct mach_timespec *t)
 
 
 #include "CommandLineInterface/CLIcore.h"
-#include "00CORE/00CORE.h"
 #include "COREMOD_memory/COREMOD_memory.h"
 #include "COREMOD_iofits/COREMOD_iofits.h"
 #include "COREMOD_arith/COREMOD_arith.h"
