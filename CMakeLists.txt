@@ -1,13 +1,14 @@
 # library name
 set(LIBNAME "milkcudacomp")
+set(SRCNAME "cudacomp")
 
 
 set(SOURCEFILES
-	cudacomp.c
+	${SRCNAME}.c
 	cudacomp_MVMextractModesLoop.c)
 
 set(INCLUDEFILES
-	cudacomp.h)
+	${SRCNAME}.h)
 
 
 
@@ -73,7 +74,7 @@ message("---------------------------------------")
 
 
 install(TARGETS ${LIBNAME} DESTINATION lib)
-install(FILES ${INCLUDEFILES} DESTINATION include)
+install(FILES ${INCLUDEFILES} DESTINATION include/${SRCNAME})
 
 
 
