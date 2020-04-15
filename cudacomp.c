@@ -2625,7 +2625,7 @@ int GPU_loop_MultMat_execute(
     {
         *status = *status + 1;  // ->7
         clock_gettime(CLOCK_REALTIME, &tnow);
-        tdiff = info_time_diff(data.image[IDtiming].md[0].atime, tnow);
+        tdiff = timespec_diff(data.image[IDtiming].md[0].atime, tnow);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //25
         TimerIndex++;
@@ -2691,7 +2691,7 @@ int GPU_loop_MultMat_execute(
     {
         *status = *status + 1;  // -> 8
         clock_gettime(CLOCK_REALTIME, &tnow);
-        tdiff = info_time_diff(data.image[IDtiming].md[0].atime, tnow);
+        tdiff = timespec_diff(data.image[IDtiming].md[0].atime, tnow);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //26
         TimerIndex++;
@@ -2768,27 +2768,27 @@ int GPU_loop_MultMat_execute(
 
     if(timing == 1)
     {
-        tdiff = info_time_diff(tdt0[0], tdt1[0]);
+        tdiff = timespec_diff(tdt0[0], tdt1[0]);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //27
         TimerIndex++;
 
-        tdiff = info_time_diff(tdt1[0], tdt2[0]);
+        tdiff = timespec_diff(tdt1[0], tdt2[0]);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //28
         TimerIndex++;
 
-        tdiff = info_time_diff(tdt2[0], tdt3[0]);
+        tdiff = timespec_diff(tdt2[0], tdt3[0]);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //29
         TimerIndex++;
 
-        tdiff = info_time_diff(tdt3[0], tdt4[0]);
+        tdiff = timespec_diff(tdt3[0], tdt4[0]);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //30
         TimerIndex++;
 
-        tdiff = info_time_diff(tdt4[0], tdt5[0]);
+        tdiff = timespec_diff(tdt4[0], tdt5[0]);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //31
         TimerIndex++;
@@ -2808,7 +2808,7 @@ int GPU_loop_MultMat_execute(
     {
         *status = *status + 1;  // -> 9
         clock_gettime(CLOCK_REALTIME, &tnow);
-        tdiff = info_time_diff(data.image[IDtiming].md[0].atime, tnow);
+        tdiff = timespec_diff(data.image[IDtiming].md[0].atime, tnow);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //32
         TimerIndex++;
@@ -2859,7 +2859,7 @@ int GPU_loop_MultMat_execute(
 
         *status = *status + 1; // -> 10
         clock_gettime(CLOCK_REALTIME, &tnow);
-        tdiff = info_time_diff(data.image[IDtiming].md[0].atime, tnow);
+        tdiff = timespec_diff(data.image[IDtiming].md[0].atime, tnow);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
         data.image[IDtiming].array.F[TimerIndex] = tdiffv; //33
         TimerIndex++;
@@ -5255,48 +5255,48 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
     //if(timing==1)
     //{
-    tdiff = info_time_diff(t0, t1);
+    tdiff = timespec_diff(t0, t1);
     t01d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-    tdiff = info_time_diff(t1, t2);
+    tdiff = timespec_diff(t1, t2);
     t12d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-    tdiff = info_time_diff(t2, t3);
+    tdiff = timespec_diff(t2, t3);
     t23d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-    tdiff = info_time_diff(t3, t4);
+    tdiff = timespec_diff(t3, t4);
     t34d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-    tdiff = info_time_diff(t4, t5);
+    tdiff = timespec_diff(t4, t5);
     t45d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-    tdiff = info_time_diff(t5, t6);
+    tdiff = timespec_diff(t5, t6);
     t56d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
     if(mode_QDWHPartial == 0)
     {
-        tdiff = info_time_diff(t6, t7);
+        tdiff = timespec_diff(t6, t7);
         t67d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-        tdiff = info_time_diff(t7, t8);
+        tdiff = timespec_diff(t7, t8);
         t78d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
     }
-    tdiff = info_time_diff(t8, t9);
+    tdiff = timespec_diff(t8, t9);
     t89d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-    tdiff = info_time_diff(t9, t10);
+    tdiff = timespec_diff(t9, t10);
     t910d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-    tdiff = info_time_diff(t10, t11);
+    tdiff = timespec_diff(t10, t11);
     t1011d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-    tdiff = info_time_diff(t11, t12);
+    tdiff = timespec_diff(t11, t12);
     t1112d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-    tdiff = info_time_diff(t12, t13);
+    tdiff = timespec_diff(t12, t13);
     t1213d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-    tdiff = info_time_diff(t0, t13);
+    tdiff = timespec_diff(t0, t13);
     t013d = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
     if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
