@@ -1350,12 +1350,12 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     FUNCTION_PARAMETER_STRUCT fps;
 
     {   // write FPS name
-        int slen = snprintf(data.FPS_name, FPS_NAME_STRMAXLEN, "cudaMVMextmodes-%06ld", pindex);
+        int slen = snprintf(data.FPS_name, STRINGMAXLEN_FPS_NAME, "cudaMVMextmodes-%06ld", pindex);
         if(slen<1) {
             PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
-        if(slen >= FPS_NAME_STRMAXLEN) {
+        if(slen >= STRINGMAXLEN_FPS_NAME) {
             PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
         }
