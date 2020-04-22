@@ -25,9 +25,6 @@
 // Module short description
 #define MODULE_DESCRIPTION       "CUDA wrapper"
 
-// Application to which module belongs
-#define MODULE_APPLICATION       "milk"
-
 
 
 
