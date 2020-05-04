@@ -5,10 +5,36 @@ set(SRCNAME "cudacomp")
 
 set(SOURCEFILES
 	${SRCNAME}.c
-	cudacomp_MVMextractModesLoop.c)
+	Coeff2Map_Loop.c
+	cudacompinit.c
+	cudacomptest.c
+	cudacomp_MVMextractModesLoop.c
+	GPU_loop_MultMat_free.c
+	GPU_loop_MultMat_execute.c
+	GPU_loop_MultMat_setup.c
+	GPU_SVD_computeControlMatrix.c
+	GPUloadCmat.c
+	magma_compute_SVDpseudoInverse_SVD.c
+	magma_compute_SVDpseudoInverse.c
+	MatMatMult_testPseudoInverse.c
+)
 
 set(INCLUDEFILES
-	${SRCNAME}.h)
+	${SRCNAME}.h
+	Coeff2Map_Loop.h
+	cudacomp_types.h
+	cudacompinit.h
+	cudacomptest.h
+	cudacomp_MVMextractModesLoop.h
+	GPU_loop_MultMat_free.h
+	GPU_loop_MultMat_execute.h
+	GPU_loop_MultMat_setup.h
+	GPU_SVD_computeControlMatrix.h
+	GPUloadCmat.h
+	magma_compute_SVDpseudoInverse_SVD.h
+	magma_compute_SVDpseudoInverse.h
+	MatMatMult_testPseudoInverse.h
+)
 
 
 

@@ -14,9 +14,6 @@
 
 
 
-// uncomment for test print statements to stdout
-#define _PRINT_TEST
-
 
 /* =============================================================================================== */
 /* =============================================================================================== */
@@ -73,7 +70,7 @@
 #include "COREMOD_arith/COREMOD_arith.h"
 #include "COREMOD_tools/COREMOD_tools.h"
 
-#include "cudacomp/cudacomp.h"
+//#include "cudacomp/cudacomp.h"
 
 #include "linopt_imtools/linopt_imtools.h" // for testing
 
@@ -83,12 +80,125 @@
 
 
 
-/* =============================================================================================== */
-/* =============================================================================================== */
-/*                                  GLOBAL DATA DECLARATION                                        */
-/* =============================================================================================== */
-/* =============================================================================================== */
+#ifdef HAVE_CUDA
 
+
+// ==========================================
+// Forward declaration(s)
+// ==========================================
+
+errno_t CUDACOMP_MVMextractModesLoop_FPCONF();
+
+errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN();
+
+int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
+    const char *in_stream,           // input stream
+    const char *intot_stream,        // [optional]   input normalization stream
+    const char *IDmodes_name,        // Modes matrix
+    const char *IDrefin_name,        // [optional] input reference  - to be subtracted
+    const char *IDrefout_name,       // [optional] output reference - to be added
+    const char *IDmodes_val_name,    // ouput stream
+    int         GPUindex,            // GPU index
+    int         PROCESS,             // 1 if postprocessing
+    int         TRACEMODE,           // 1 if writing trace
+    int         MODENORM,            // 1 if input modes should be normalized
+    int         insem,               // input semaphore index
+    int         axmode,              // 0 for normal mode extraction, 1 for expansion
+    long        twait,               // if >0, insert time wait [us] at each iteration
+    int         semwarn              // 1 if warning when input stream semaphore >1
+);
+
+
+
+// ==========================================
+// Command line interface wrapper function(s)
+// ==========================================
+
+
+static errno_t CUDACOMP_MVMextractModesLoop_cli()
+{
+
+    // try FPS implementation
+    // set data.fpsname, providing default value as first arg, and set data.FPS_CMDCODE value
+    // default FPS name will be used if CLI process has NOT been named
+    // see code in function_parameter.c for detailed rules
+    function_parameter_getFPSname_from_CLIfunc("cudaMVM");
+
+    if(data.FPS_CMDCODE != 0)   // use FPS implementation
+    {
+        // set pointers to CONF and RUN functions
+        data.FPS_CONFfunc = CUDACOMP_MVMextractModesLoop_FPCONF;
+        data.FPS_RUNfunc  = CUDACOMP_MVMextractModesLoop_RUN;
+        function_parameter_execFPScmd();
+        return RETURN_SUCCESS;
+    }
+
+    // non FPS implementation - all parameters specified at function launch
+    if(
+        CLI_checkarg(1, 4) +
+        CLI_checkarg(2, 5) +
+        CLI_checkarg(3, 4) +
+        CLI_checkarg(4, 5) +
+        CLI_checkarg(5, 5) +
+        CLI_checkarg(6, 5) +
+        CLI_checkarg(7, 2) +
+        CLI_checkarg(8, 2) +
+        CLI_checkarg(9, 2) +
+        CLI_checkarg(10, 2) +
+        CLI_checkarg(11, 2) +
+        CLI_checkarg(12, 2) +
+        CLI_checkarg(13, 2) +
+        CLI_checkarg(14, 2)
+        == 0)
+    {
+        CUDACOMP_MVMextractModesLoop(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.string,
+            data.cmdargtoken[3].val.string,
+            data.cmdargtoken[4].val.string,
+            data.cmdargtoken[5].val.string,
+            data.cmdargtoken[6].val.string,
+            data.cmdargtoken[7].val.numl,
+            data.cmdargtoken[8].val.numl,
+            data.cmdargtoken[9].val.numl,
+            data.cmdargtoken[10].val.numl,
+            data.cmdargtoken[11].val.numl,
+            data.cmdargtoken[12].val.numl,
+            data.cmdargtoken[13].val.numl,
+            data.cmdargtoken[14].val.numl
+        );
+
+        return RETURN_SUCCESS;
+    }
+    else
+    {
+        return RETURN_FAILURE;
+    }
+}
+
+
+
+
+// ==========================================
+// Register CLI command(s)
+// ==========================================
+
+errno_t cudacomp_MVMextractModesLoop_addCLIcmd()
+{
+	
+    RegisterCLIcommand(
+        "cudaextrmodes",
+        __FILE__,
+        CUDACOMP_MVMextractModesLoop_cli,
+        "CUDA extract mode values loop. Note that intot and refout parameters can be NULL",
+        "<inval stream> <intot stream> <modes> <refin val> <refout_val> <outmode vals> <GPU index [long]> <PROCESS flag> <TRACEMODE flag> <MODE norm flag> <input semaphore> <axis orientation> <twait [us]> <semwarn>",
+        "cudaextrmodes inmap inmaptot modes imref imoutref modeval 3 1 1 1 3 0 0",
+        "int CUDACOMP_MVMextractModesLoop(const char *in_stream, const char *intot_stream, const char *IDmodes_name, const char *IDrefin_name, const char *IDrefout_name, const char *IDmodes_val_name, int GPUindex, int PROCESS, int TRACEMODE, int MODENORM, int insem, int axmode, long twait, int semwarn)"
+        );
+
+
+    return RETURN_SUCCESS;
+}
 
 
 
@@ -107,7 +217,7 @@
 
 
 
-#ifdef HAVE_CUDA
+
 
 
 
@@ -116,8 +226,8 @@
 // initializes configuration parameters structure
 //
 
-errno_t CUDACOMP_MVMextractModesLoop_FPCONF(
-) {
+errno_t CUDACOMP_MVMextractModesLoop_FPCONF() 
+{
 
     FPS_SETUP_INIT(data.FPS_name, data.FPS_CMDCODE);  // sets up fps
 
@@ -1314,11 +1424,30 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
 
 
-
-
-
-/** @brief extract mode coefficients from data stream (MVM)
+/**
+ * @brief extract mode coefficients from data stream
  *
+ * modes need to be orthogonal
+ * single GPU computation
+ *
+ * @param[in]   in_stream            input stream
+ * @param[in]   intot_stream         [optional]   input normalization stream
+ * @param[in]   IDmodes_name         Modes
+ * @param[in]   IDrefin_name         [optional] input reference  - to be subtracted
+ * @param[in]   IDrefout_name        [optional] output reference - to be added
+ * @param[out]  IDmodes_val_name     ouput stream
+ * @param[in]   GPUindex             GPU index
+ * @param[in]   PROCESS              1 if postprocessing
+ * @param[in]   TRACEMODE            1 if writing trace
+ * @param[in]   MODENORM             1 if input modes should be normalized
+ * @param[in]   insem                input semaphore index
+ * @param[in]   axmode               0 for normal mode extraction, 1 for expansion
+ * @param[in]   twait		         if >0, insert time wait [us] at each iteration
+ * @param[in]   semwarn              1 if warning when input stream semaphore >1
+ *
+ * @note IMPORTANT: if IDmodes_val_name exits, use it and do not compute it
+ *
+ * @note if IDrefout_name exists, match output image size to IDrefout_name
  */
 
 int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
@@ -1405,14 +1534,6 @@ int  __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
 }
 
 
-
-
-
-
-
-
-
-	
 
 
 
