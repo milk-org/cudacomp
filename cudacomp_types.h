@@ -2,9 +2,14 @@
 #define _CUDACOMP_TYPES_H
 
 
+
+#ifdef HAVE_CUDA
+#include <cuda_runtime_api.h>
+#include <cuda_runtime.h>
+#include <cublas_v2.h>
+#endif
+
 #include "CommandLineInterface/CLIcore.h"
-
-
 
 
 
@@ -84,7 +89,6 @@
 
 
 
-
 // data passed to each thread
 typedef struct
 {
@@ -105,7 +109,7 @@ typedef struct
 
 
 
-
+#ifdef HAVE_CUDA
 /** \brief This structure holds the GPU computation setup for matrix multiplication
  *
  * By declaring an array of these structures,
@@ -176,7 +180,7 @@ typedef struct
 
 
 } GPUMATMULTCONF;
-
+#endif
 
 
 

@@ -27,9 +27,6 @@
 #endif
 
 
-
-
-
 #include "cudacomp/cudacomp_MVMextractModesLoop.h"
 #include "cudacomp/cudacompinit.h"
 #include "cudacomp/cudacomptest.h"
@@ -40,6 +37,9 @@
 #include "cudacomp/magma_compute_SVDpseudoInverse.h"
 #include "cudacomp/magma_compute_SVDpseudoInverse_SVD.h"
 #include "cudacomp/MatMatMult_testPseudoInverse.h"
+#include "cudacomp/printGPUMATMULTCONF.h"
+
+#include "cudacomp/MVM_CPU.h"
 
 
 void __attribute__((constructor)) libinit_cudacomp();
