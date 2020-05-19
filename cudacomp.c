@@ -64,11 +64,18 @@ INIT_MODULE_LIB(cudacomp)
 static void __attribute__((constructor)) libinit_cudacomp_printinfo()
 {
 #ifdef HAVE_CUDA
-    printf("[CUDA]");
+    if(!getenv("MILK_QUIET"))
+    {
+        printf("[CUDA %d]", data.quiet);
+    }
+
 #endif
 
 #ifdef HAVE_MAGMA
-    printf("[MAGMA]");
+    if(!getenv("MILK_QUIET"))
+    {
+        printf("[MAGMA]");
+    }
 #endif
 }
 
