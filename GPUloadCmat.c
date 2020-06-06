@@ -53,19 +53,18 @@ errno_t GPUloadCmat(
     for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
     {
         cudaSetDevice(gpumatmultconf[index].GPUdevice[device]);
+        cublasStatus_t error = cublasSetMatrix(
+                                   gpumatmultconf[index].M,
+                                   gpumatmultconf[index].Nsize[device],
+                                   sizeof(float),
+                                   gpumatmultconf[index].cMat_part[device],
+                                   gpumatmultconf[index].M,
+                                   gpumatmultconf[index].d_cMat[device],
+                                   gpumatmultconf[index].M);
 
-        cudaError_t error = cublasSetMatrix(
-                    gpumatmultconf[index].M,
-                    gpumatmultconf[index].Nsize[device],
-                    sizeof(float),
-                    gpumatmultconf[index].cMat_part[device],
-                    gpumatmultconf[index].M,
-                    gpumatmultconf[index].d_cMat[device],
-                    gpumatmultconf[index].M);
-
-        if(error != cudaSuccess)
+        if(error != CUBLAS_STATUS_SUCCESS)
         {
-            printf("cudblasSetMatrix returned error code %d, line(%d)\n", error, __LINE__);
+            printf("cudblasSetMatrix returned error code %d, line(%d)\n", (int) error, __LINE__);
             exit(EXIT_FAILURE);
         }
     }
