@@ -338,7 +338,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     long        MaxNBmodes,
     const char *ID_VTmatrix_name,
     int         LOOPmode,
-    int         PSINV_MODE,
+    __attribute__((unused)) int         PSINV_MODE,
     __attribute__((unused)) double      qdwh_s,
     __attribute__((unused)) float       qdwh_tol,
     int 		testmode
