@@ -1044,6 +1044,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     processinfo_WriteMessage(processinfo, pinfomsg);
 
 
+	// set up input trigger stream
+	processinfo_waitoninputstream_init(processinfo, IDin,
+		PROCESSINFO_TRIGGERMODE_SEMAPHORE, 5);
+	
+	
     while(loopOK == 1) {
         struct timespec tdiff;
         double tdiffv;
@@ -1078,6 +1083,10 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 // Reference is already initialized
                 // wait for input stream to be changed to start computation
                 //
+                
+                processinfo_waitoninputstream(processinfo);
+
+                /*
                 if(data.image[IDin].md[0].sem == 0) {
                     // if not using semaphore, use counter #0
                     while((long long) (data.image[IDin].md[0].cnt0) == cnt) { // test if new frame exists
@@ -1110,6 +1119,9 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                     }
 
                 }
+                */
+                
+                
             } else { // compute response of reference immediately
                 printf("COMPUTE NEW REFERENCE RESPONSE\n");
                 semr = 0;
