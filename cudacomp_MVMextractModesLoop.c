@@ -1090,44 +1090,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 				else
 				{
 					doComputation = 0;
-				}
-
-                /*
-                if(data.image[IDin].md[0].sem == 0) {
-                    // if not using semaphore, use counter #0
-                    while((long long) (data.image[IDin].md[0].cnt0) == cnt) { // test if new frame exists
-                        struct timespec treq, trem;
-                        treq.tv_sec = 0;
-                        treq.tv_nsec = 5000;
-                        nanosleep(&treq, &trem);
-                    }
-                    cnt = data.image[IDin].md[0].cnt0;
-                    semr = 0;
-                } else {
-                    // if using semaphore
-
-                    // we wait for 1 sec max
-                    if(clock_gettime(CLOCK_REALTIME, &ts) == -1) {
-                        perror("clock_gettime");
-                        exit(EXIT_FAILURE);
-                    }
-                    ts.tv_sec += 1;
-                    semr = sem_timedwait(data.image[IDin].semptr[insem], &ts);
-
-                    // drive semaphore to zero if it isn't already
-                    while(sem_trywait(data.image[IDin].semptr[insem]) == 0) {
-                        if(semwarn == 1) {
-                            int semval;
-                            sem_getvalue(data.image[IDin].semptr[insem], &semval);
-                            printf("WARNING %s %d  : sem_trywait on IDin  seval = %d\n", __FILE__, __LINE__, semval);
-                            fflush(stdout);
-                        }
-                    }
-
-                }
-                */
-                
-                
+				}                
             } else { // compute response of reference immediately
                 printf("COMPUTE NEW REFERENCE RESPONSE\n");
                 doComputation = 1;
