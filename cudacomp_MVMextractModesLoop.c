@@ -122,7 +122,7 @@ static errno_t CUDACOMP_MVMextractModesLoop_cli()
     // set data.fpsname, providing default value as first arg, and set data.FPS_CMDCODE value
     // default FPS name will be used if CLI process has NOT been named
     // see code in function_parameter.c for detailed rules
-    function_parameter_getFPSname_from_CLIfunc("cudaMVM");
+    function_parameter_getFPSargs_from_CLIfunc("cudaMVM");
 
     if(data.FPS_CMDCODE != 0)   // use FPS implementation
     {
@@ -135,20 +135,20 @@ static errno_t CUDACOMP_MVMextractModesLoop_cli()
 
     // non FPS implementation - all parameters specified at function launch
     if(
-        CLI_checkarg(1, 4) +
-        CLI_checkarg(2, 5) +
-        CLI_checkarg(3, 4) +
-        CLI_checkarg(4, 5) +
-        CLI_checkarg(5, 5) +
-        CLI_checkarg(6, 5) +
-        CLI_checkarg(7, 2) +
-        CLI_checkarg(8, 2) +
-        CLI_checkarg(9, 2) +
-        CLI_checkarg(10, 2) +
-        CLI_checkarg(11, 2) +
-        CLI_checkarg(12, 2) +
-        CLI_checkarg(13, 2) +
-        CLI_checkarg(14, 2)
+        CLI_checkarg(1, CLIARG_IMG) +
+        CLI_checkarg(2, CLIARG_STR) +
+        CLI_checkarg(3, CLIARG_IMG) +
+        CLI_checkarg(4, CLIARG_STR) +
+        CLI_checkarg(5, CLIARG_STR) +
+        CLI_checkarg(6, CLIARG_STR) +
+        CLI_checkarg(7, CLIARG_LONG) +
+        CLI_checkarg(8, CLIARG_LONG) +
+        CLI_checkarg(9, CLIARG_LONG) +
+        CLI_checkarg(10, CLIARG_LONG) +
+        CLI_checkarg(11, CLIARG_LONG) +
+        CLI_checkarg(12, CLIARG_LONG) +
+        CLI_checkarg(13, CLIARG_LONG) +
+        CLI_checkarg(14, CLIARG_LONG)
         == 0)
     {
         CUDACOMP_MVMextractModesLoop(
@@ -388,8 +388,7 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF()
  *
  */
 
-errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
-)
+errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 {
     imageID IDmodes;
     imageID ID;
@@ -409,12 +408,10 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
     float alpha = 1.0;
     float beta  = 0.0;
-    struct timespec ts;
-    //long loopcnt;
-    long long cnt = -1;
+
+
     //long scnt;
     int semval;
-    int semr;
     long ii, jj, kk;
 
     long NBmodes;
@@ -442,7 +439,6 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
     imageID IDprocrms;
     long step;
 
-    long semnb;
     double tmpv;
 
 
@@ -1070,6 +1066,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
         // or we read it from ID_modeval stream (MODEVALCOMPUTE = 0)
 
         if(MODEVALCOMPUTE == 1) {
+			
+			int doComputation = 0;
 
             // Are we computing a new reference ?
             // if yes, set initref to 0 (reference is NOT initialized)
@@ -1085,6 +1083,14 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 //
                 
                 processinfo_waitoninputstream(processinfo);
+                if(processinfo->triggerstatus == PROCESSINFO_TRIGGERSTATUS_RECEIVED)
+                {
+					doComputation = 1;
+				}
+				else
+				{
+					doComputation = 0;
+				}
 
                 /*
                 if(data.image[IDin].md[0].sem == 0) {
@@ -1124,7 +1130,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 
             } else { // compute response of reference immediately
                 printf("COMPUTE NEW REFERENCE RESPONSE\n");
-                semr = 0;
+                doComputation = 1;
             }
 
             //t00OK = 1;
@@ -1132,7 +1138,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
 
             processinfo_exec_start(processinfo);
 
-            if(semr == 0) {
+            if(doComputation == 1) {
                 // load in_stream to GPU
                 if(initref == 0) {
                     cudaStat = cudaMemcpy(d_in, data.image[IDref].array.F, sizeof(float) * m, cudaMemcpyHostToDevice);
@@ -1221,14 +1227,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                             data.image[ID_modeval].array.F[k] = modevalarray[k];
                         }
 
-
-                    COREMOD_MEMORY_image_set_sempost_byID(ID_modeval, -1);
-
-                    data.image[ID_modeval].md[0].cnt0++;
-                    data.image[ID_modeval].md[0].write = 0;
+                    processinfo_update_output_stream(processinfo, ID_modeval);
                 }
             }
-        } else { // WAIT FOR NEW MODEVAL
+        } 
+        else 
+        { // WAIT FOR NEW MODEVAL
             int rval;
             rval = sem_wait(data.image[ID_modeval].semptr[insem]);
             if(rval == -1) // interrupt
@@ -1284,14 +1288,9 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 }
                 stepcoeff *= stepcoeff0;
             }
-            for(semnb = 0; semnb < data.image[IDprocave].md[0].sem; semnb++) {
-                sem_getvalue(data.image[IDprocave].semptr[semnb], &semval);
-                if(semval < SEMAPHORE_MAXVAL) {
-                    sem_post(data.image[IDprocave].semptr[semnb]);
-                }
-            }
-            data.image[IDprocave].md[0].cnt0++;
-            data.image[IDprocave].md[0].write = 0;
+            processinfo_update_output_stream(processinfo, IDprocave);
+
+
 
             stepcoeff = stepcoeff0;
             data.image[IDprocrms].md[0].write = 1;
@@ -1304,14 +1303,9 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN(
                 }
                 stepcoeff *= stepcoeff0;
             }
-            for(semnb = 0; semnb < data.image[IDprocrms].md[0].sem; semnb++) {
-                sem_getvalue(data.image[IDprocrms].semptr[semnb], &semval);
-                if(semval < SEMAPHORE_MAXVAL) {
-                    sem_post(data.image[IDprocrms].semptr[semnb]);
-                }
-            }
-            data.image[IDprocrms].md[0].cnt0++;
-            data.image[IDprocrms].md[0].write = 0;
+
+            processinfo_update_output_stream(processinfo, IDprocrms);
+            
         }
 
         //t06OK = 1;
