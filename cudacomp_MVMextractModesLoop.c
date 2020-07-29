@@ -1299,63 +1299,6 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         } else {
             twait1 --;
         }
-        //TEST TIMING
-        /*
-        		if(tdiffv>1.0e-3)
-        		{
-        			printf("  ... function CUDACOMP_extractModesLoop - TIMING GLITCH  [%09ld] [%d]\n", t0.tv_nsec, insem);
-        			printf("       %ld   timing info : %11.9lf  %ld %ld\n", iter, tdiffv, twait1, twait);
-        			fflush(stdout);
-
-        			tdiff = timespec_diff(t0, t00);
-        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        			printf(" %d            t00: %8.3lf\n", t00OK, 1.0e3*tdiffv);
-
-        			tdiff = timespec_diff(t0, t01);
-        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        			printf(" %d            t01: %8.3lf\n", t01OK, 1.0e3*tdiffv);
-
-        			tdiff = timespec_diff(t0, t02);
-        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        			printf(" %d            t02: %8.3lf\n", t02OK, 1.0e3*tdiffv);
-
-        			tdiff = timespec_diff(t0, t03);
-        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        			printf(" %d            t03: %8.3lf\n", t03OK, 1.0e3*tdiffv);
-
-        			tdiff = timespec_diff(t0, t04);
-        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        			printf(" %d            t04: %8.3lf\n", t04OK, 1.0e3*tdiffv);
-
-        			tdiff = timespec_diff(t0, t05);
-        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        			printf(" %d            t05: %8.3lf\n", t05OK, 1.0e3*tdiffv);
-
-        			tdiff = timespec_diff(t0, t06);
-        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        			printf(" %d            t06: %8.3lf\n", t06OK, 1.0e3*tdiffv);
-
-        			printf("---\n");
-
-
-
-        			tdiff = timespec_diff(t0, t04);
-        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        			printf("             0  -> 04: %8.3lf\n", 1.0e3*tdiffv);
-
-        			tdiff = timespec_diff(t04, t05);
-        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        			printf("             04 -> 05: %8.3lf\n", 1.0e3*tdiffv);
-
-        			tdiff = timespec_diff(t05, t06);
-        			tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-        			printf("             05 -> 06: %8.3lf\n", 1.0e3*tdiffv);
-
-        		}
-        	*/
-
-
-
         initref = 1;
     }
 
