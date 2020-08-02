@@ -230,6 +230,7 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF()
 {
 
     FPS_SETUP_INIT(data.FPS_name, data.FPS_CMDCODE);  // sets up fps
+    fps_add_processinfo_entries(&fps);
 
 
 
