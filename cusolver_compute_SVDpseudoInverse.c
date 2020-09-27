@@ -21,7 +21,9 @@ typedef int errno_t;
 #include "COREMOD_tools/COREMOD_tools.h"
 #include "CommandLineInterface/timeutils.h"
 #include "cudacomp_types.h"
-#include "cusolver_symmetrize.h"
+
+extern void ssymmetrize_lower(float *dA, int ldda);
+extern void dsymmetrize_lower(double *dA, int ldda);
 
 static struct cusolver_compute_SVDpseudoInverse_data CUSOLVER_DATA = {
     .loop_iter = 0,

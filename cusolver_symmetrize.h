@@ -5,7 +5,13 @@
 
 #ifdef HAVE_CUDA
 
+#include "cuda.h"
+#include "cuda_runtime.h"
+
+extern "C"
 void ssymmetrize_lower(float *dA, int ldda);
+
+extern "C"
 void dsymmetrize_lower(double *dA, int ldda);
 
 #endif  // HAVE_CUDA

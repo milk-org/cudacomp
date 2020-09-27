@@ -1,3 +1,6 @@
+#include "cuda.h"
+#include "cuda_runtime.h"
+
 #include "cusolver_symmetrize.h"
 
 #define NB 64
@@ -40,6 +43,7 @@ __global__ void kern_fill_dsym_matrix(char src_uplo, double *data, int N,
   }
 }
 
+extern "C"
 void ssymmetrize_lower(float *dA, int ldda) {
   if (ldda == 0) return;
 
@@ -49,6 +53,7 @@ void ssymmetrize_lower(float *dA, int ldda) {
   kern_fill_ssym_matrix<<<grid, threads, 0>>>('L', dA, N, ldda);
 }
 
+extern "C"
 void dsymmetrize_lower(double *dA, int ldda) {
   if (ldda == 0) return;
 

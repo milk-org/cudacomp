@@ -24,7 +24,7 @@ inline int testing_malloc_cpu_internal(void **ptr, size_t size, const char *var,
   do {                                                                    \
     testing_malloc_cpu_internal((void **)&ptr, size * sizeof(type), #ptr, \
                                 __FUNCTION__, __FILE__, __LINE__);        \
-  } while (0);
+  } while (0)
 
 #define TESTING_FREE_CPU(ptr) free(ptr)
 
@@ -45,7 +45,7 @@ inline int testing_malloc_pin_internal(void **ptr, size_t size, const char *var,
   do {                                                                    \
     testing_malloc_pin_internal((void **)&ptr, size * sizeof(type), #ptr, \
                                 __FUNCTION__, __FILE__, __LINE__);        \
-  } while (0);
+  } while (0)
 
 inline int testing_free_pin_internal(void *ptr, const char *var,
                                      const char *func, const char *file,
@@ -61,7 +61,7 @@ inline int testing_free_pin_internal(void *ptr, const char *var,
 #define TESTING_FREE_PIN(ptr)                                               \
   do {                                                                      \
     testing_free_pin_internal(ptr, #ptr, __FUNCTION__, __FILE__, __LINE__); \
-  } while (0);
+  } while (0)
 
 /******************* GPU memory */
 inline int testing_malloc_dev_internal(void **ptr, size_t size, const char *var,
@@ -79,7 +79,7 @@ inline int testing_malloc_dev_internal(void **ptr, size_t size, const char *var,
   do {                                                                    \
     testing_malloc_dev_internal((void **)&ptr, size * sizeof(type), #ptr, \
                                 __FUNCTION__, __FILE__, __LINE__);        \
-  } while (0);
+  } while (0)
 
 inline int testing_free_dev_internal(void *ptr, const char *var,
                                      const char *func, const char *file,
@@ -95,7 +95,7 @@ inline int testing_free_dev_internal(void *ptr, const char *var,
 #define TESTING_FREE_DEV(ptr)                                               \
   do {                                                                      \
     testing_free_dev_internal(ptr, #ptr, __FUNCTION__, __FILE__, __LINE__); \
-  } while (0);
+  } while (0)
 
 #endif  // HAVE_CUDA
 
