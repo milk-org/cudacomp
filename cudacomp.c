@@ -31,13 +31,14 @@
 #include "cudacomp_MVMextractModesLoop.h"
 #include "cudacompinit.h"
 #include "cudacomptest.h"
+#include "cusolver_compute_SVDpseudoInverse.h"
 #include "magma_compute_SVDpseudoInverse.h"
 #include "magma_compute_SVDpseudoInverse_SVD.h"
 #include "MatMatMult_testPseudoInverse.h"
 
 
 
-// globals 
+// globals
 
 imageID IDtimerinit = 0;
 imageID IDtiming = -1; // index to image where timing should be written
@@ -47,6 +48,7 @@ int cuda_deviceCount;
 GPUMATMULTCONF gpumatmultconf[20]; // supports up to 20 configurations per process
 float cublasSgemv_alpha = 1.0;
 float cublasSgemv_beta  = 0.0;
+
 #endif
 
 #ifdef HAVE_MAGMA
@@ -97,13 +99,16 @@ static errno_t init_module_CLI()
 
 	cudacompinit_addCLIcmd();
 	cudacomptest_addCLIcmd();
+	cusolver_compute_SVDpseudoInverse_addCLIcmd();
+#ifdef HAVE_MAGMA
 	MatMatMult_testPseudoInverse_addCLIcmd();
 	magma_compute_SVDpseudoInverse_addCLIcmd();
 	magma_compute_SVDpseudoInverse_SVD_addCLIcmd();
+#endif // HAVE_MAGMA
 	Coeff2Map_Loop_addCLIcmd();
 	cudacomp_MVMextractModesLoop_addCLIcmd();
 
-#endif
+#endif // HAVE_CUDA
     // add atexit functions here
 
     return RETURN_SUCCESS;
@@ -385,13 +390,3 @@ int CUDACOMP_createModesLoop(const char *DMmodeval_stream, const char *DMmodes, 
 
 
 #endif
-
-
-
-
-
-
-
-
-
-

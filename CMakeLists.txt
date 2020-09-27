@@ -14,9 +14,8 @@ set(SOURCEFILES
 	GPU_loop_MultMat_setup.c
 	GPU_SVD_computeControlMatrix.c
 	GPUloadCmat.c
-	magma_compute_SVDpseudoInverse_SVD.c
-	magma_compute_SVDpseudoInverse.c
-	MatMatMult_testPseudoInverse.c
+	cusolver_compute_SVDpseudoInverse.c
+	cusolver_symmetrize.cu
 	MVM_CPU.c
 	printGPUMATMULTCONF.c
 )
@@ -33,22 +32,36 @@ set(INCLUDEFILES
 	GPU_loop_MultMat_setup.h
 	GPU_SVD_computeControlMatrix.h
 	GPUloadCmat.h
-	magma_compute_SVDpseudoInverse_SVD.h
-	magma_compute_SVDpseudoInverse.h
-	MatMatMult_testPseudoInverse.h
+	cusolver_compute_SVDpseudoInverse.h
+	cusolver_symmetrize.h
 	MVM_CPU.h
 	printGPUMATMULTCONF.h
 )
 
+if(USE_MAGMA)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(MAGMA REQUIRED magma)
 
+set(SOURCEFILES
+${SOURCEFILES}
+magma_compute_SVDpseudoInverse_SVD.c
+magma_compute_SVDpseudoInverse.c
+MatMatMult_testPseudoInverse.c
+)
 
-
+set(INCLUDEFILES
+${INCLUDEFILES}
+magma_compute_SVDpseudoInverse_SVD.h
+magma_compute_SVDpseudoInverse.h
+MatMatMult_testPseudoInverse.h
+)
+endif(USE_MAGMA)
 
 # DEFAULT SETTINGS
 # Do not change unless needed
 # =====================================================================
 
-project(lib_${LIBNAME}_project)
+project(lib_${LIBNAME}_project C CUDA)
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 include_directories ("${PROJECT_SOURCE_DIR}/..")

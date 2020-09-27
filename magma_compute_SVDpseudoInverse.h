@@ -1,8 +1,10 @@
 /** @file magma_compute_SVDpseudoInverse.h
  */
 
+#ifndef MAGMA_COMPUTE_SVDPSEUDOINVERSE_H
+#define MAGMA_COMPUTE_SVDPSEUDOINVERSE_H
 
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA) && defined(HAVE_MAGMA)
 
 errno_t magma_compute_SVDpseudoInverse_addCLIcmd();
 
@@ -20,5 +22,6 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     int 		testmode
 );
 
+#endif  // defined(HAVE_CUDA) && defined(HAVE_MAGMA)
 
-#endif
+#endif  // MAGMA_COMPUTE_SVDPSEUDOINVERSE_H
