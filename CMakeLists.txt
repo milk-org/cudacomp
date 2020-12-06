@@ -38,6 +38,10 @@ set(INCLUDEFILES
 	printGPUMATMULTCONF.h
 )
 
+if(USE_CUDA)
+enable_language(CUDA)
+endif(USE_CUDA)
+
 if(USE_MAGMA)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(MAGMA REQUIRED magma)
@@ -61,7 +65,7 @@ endif(USE_MAGMA)
 # Do not change unless needed
 # =====================================================================
 
-project(lib_${LIBNAME}_project C CUDA)
+project(lib_${LIBNAME}_project C)
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 include_directories ("${PROJECT_SOURCE_DIR}/..")
