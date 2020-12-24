@@ -102,12 +102,10 @@ message("---- MAGMA_CFLAGS_OTHER =  ${MAGMA_CFLAGS_OTHER}" )
 target_include_directories(${LIBNAME} PUBLIC ${MAGMA_INCLUDE_DIRS})
 target_link_directories(${LIBNAME} PUBLIC ${MAGMA_LIBRARY_DIRS})
 target_link_libraries(${LIBNAME} PRIVATE ${MAGMA_LIBRARIES})
-target_compile_options(${LIBNAME} PRIVATE ${MAGMA_CFLAGS_OTHER})
+target_compile_options(${LIBNAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:${MAGMA_CFLAGS_OTHER}>)
 target_compile_options(${LIBNAME} PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA)
 #target_compile_options(${LIBNAME} PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA)
 endif(USE_MAGMA)
-
-
 
 if(USE_QDWHPARTIAL)
 message("---- QDWHPARTIAL_INCLUDE_PATH =  ${QDWHPARTIAL_INCLUDE_PATH}")
