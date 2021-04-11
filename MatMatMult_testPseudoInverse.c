@@ -9,19 +9,14 @@
 #ifdef HAVE_MAGMA
 #include "magma_v2.h"
 #include "magma_lapack.h"
-#endif
-
-
+extern int INIT_MAGMA;
+extern magma_queue_t   magmaqueue;
 
 #include "CommandLineInterface/CLIcore.h"
 #include "COREMOD_memory/COREMOD_memory.h"
 #include "cudacomp_types.h"
 
 
-
-
-extern int INIT_MAGMA;
-extern magma_queue_t   magmaqueue;
 
 
 // ==========================================
@@ -79,7 +74,7 @@ errno_t MatMatMult_testPseudoInverse_addCLIcmd()
         "<matA> <matAinv> <matOut>",
         "cudatestpsinv matA matAinv matOut",
         "long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *IDmatAinv_name, const char *IDmatOut_name)"
-        );
+    );
 
 
     return RETURN_SUCCESS;
@@ -112,11 +107,11 @@ long CUDACOMP_MatMatMult_testPseudoInverse(
     imageID IDmatAinv;
     imageID IDmatOut;
 
-	float *magmaf_h_A;
-	float *magmaf_d_A;
-	
-	float *magmaf_h_Ainv;
-	float *magmaf_d_Ainv;
+    float *magmaf_h_A;
+    float *magmaf_d_A;
+
+    float *magmaf_h_Ainv;
+    float *magmaf_d_Ainv;
 
     long ii;
     float *magmaf_d_AinvA;
@@ -244,7 +239,7 @@ long CUDACOMP_MatMatMult_testPseudoInverse(
 }
 
 
-
+#endif
 
 
 #endif

@@ -3,10 +3,11 @@
 
 #ifdef HAVE_CUDA
 
+
 #ifdef HAVE_MAGMA
 #include "magma_v2.h"
 #include "magma_lapack.h"
-#endif
+
 
 
 
@@ -79,7 +80,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli()
 
 errno_t magma_compute_SVDpseudoInverse_SVD_addCLIcmd()
 {
-	
+
     RegisterCLIcommand(
         "cudacomppsinvSVD",
         __FILE__,
@@ -345,8 +346,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
 }
 
 
-
-
+#endif
 
 
 

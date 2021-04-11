@@ -12,15 +12,10 @@
 #include <cusolverDn.h>
 
 
-
-
-
 #ifdef HAVE_MAGMA
 
 #include "magma_v2.h"
 #include "magma_lapack.h"
-
-#endif
 
 
 
@@ -1694,6 +1689,6 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
 
 
-
+#endif
 
 #endif
