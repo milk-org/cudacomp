@@ -159,9 +159,20 @@ static errno_t CUDACOMP_magma_compute_SVDpseudoInverse_cli()
 
 errno_t magma_compute_SVDpseudoInverse_addCLIcmd()
 {
-	
+
+#ifdef USE_MAGMA
     RegisterCLIcommand(
         "cudacomppsinv",
+        __FILE__,
+        CUDACOMP_magma_compute_SVDpseudoInverse_cli,
+        "compute pseudo inverse",
+        "<input matrix [string]> <output pseudoinv [string]> <eps [float]> <NBmodes [long]> <VTmat [string]>",
+        "cudacomppsinv matA matAinv 0.01 100 VTmat 0 1e-4 1e-7",
+        "int CUDACOMP_cusolver_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, double qdwh_s, float qdwh_tol)");
+#endif
+
+    RegisterCLIcommand(
+        "cudacomppsinv_magma",
         __FILE__,
         CUDACOMP_magma_compute_SVDpseudoInverse_cli,
         "compute pseudo inverse",
@@ -170,7 +181,7 @@ errno_t magma_compute_SVDpseudoInverse_addCLIcmd()
         "int CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name, int LOOPmode, int PSINV_MODE, double qdwh_s, float qdwh_tol)");
 
 
-    
+
     return RETURN_SUCCESS;
 }
 
