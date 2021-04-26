@@ -751,7 +751,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
     ID_modeval = image_ID(IDmodes_val_name);
     if(ID_modeval == -1) { // CREATE IT
-        ID_modeval = create_image_ID(IDmodes_val_name, 2, arraytmp, _DATATYPE_FLOAT, 1, 0);
+        ID_modeval = create_image_ID(IDmodes_val_name, 2, arraytmp, _DATATYPE_FLOAT, 1, 0, 0);
         COREMOD_MEMORY_image_set_createsem(IDmodes_val_name, 10);
         MODEVALCOMPUTE = 1;
     } else { // USE STREAM, DO NOT COMPUTE IT
@@ -885,7 +885,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
             }
         }
         if(imOK == 0) {
-            IDtrace = create_image_ID(traceim_name, 2, sizearraytmp, _DATATYPE_FLOAT, 1, 0);
+            IDtrace = create_image_ID(traceim_name, 2, sizearraytmp, _DATATYPE_FLOAT, 1, 0, 0);
         }
         COREMOD_MEMORY_image_set_createsem(traceim_name, 10);
         free(sizearraytmp);
@@ -923,7 +923,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
             }
         }
         if(imOK == 0) {
-            IDprocave = create_image_ID(process_ave_name, 2, sizearraytmp, _DATATYPE_FLOAT, 1, 0);
+            IDprocave = create_image_ID(process_ave_name, 2, sizearraytmp, _DATATYPE_FLOAT, 1, 0, 0);
         }
         COREMOD_MEMORY_image_set_createsem(process_ave_name, 10);
         free(sizearraytmp);
@@ -955,7 +955,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
             }
         }
         if(imOK == 0) {
-            IDprocrms = create_image_ID(process_rms_name, 2, sizearraytmp, _DATATYPE_FLOAT, 1, 0);
+            IDprocrms = create_image_ID(process_rms_name, 2, sizearraytmp, _DATATYPE_FLOAT, 1, 0, 0);
         }
         COREMOD_MEMORY_image_set_createsem(process_rms_name, 10);
         free(sizearraytmp);

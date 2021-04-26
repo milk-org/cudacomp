@@ -417,7 +417,7 @@ errno_t GPU_SVD_computeControlMatrix(
                      arraysizetmp,
                      _DATATYPE_FLOAT,
                      0,
-                     0);
+                     0, 0);
 
 
     //   cudaStat = cudaMemcpy(data.image[ID_Cmatrix].array.F, d_M, sizeof(float)*m*n, cudaMemcpyDeviceToHost);

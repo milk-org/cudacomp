@@ -172,18 +172,18 @@ errno_t GPUcomp_test(
     cmsize[0] = WFSsize;
     cmsize[1] = WFSsize;
     cmsize[2] = NBmodes;
-    ID_contrM = create_image_ID("cudatestcm", 3, cmsize, _DATATYPE_FLOAT, 1, 0);
+    ID_contrM = create_image_ID("cudatestcm", 3, cmsize, _DATATYPE_FLOAT, 1, 0, 0);
 
     wfssize = (uint32_t *) malloc(sizeof(uint32_t) * 2);
     wfssize[0] = WFSsize;
     wfssize[1] = WFSsize;
-    ID_WFS = create_image_ID("cudatestwfs", 2, wfssize, _DATATYPE_FLOAT, 1, 0);
+    ID_WFS = create_image_ID("cudatestwfs", 2, wfssize, _DATATYPE_FLOAT, 1, 0, 0);
 
     cmdmodessize = (uint32_t *) malloc(sizeof(uint32_t) * 2);
     cmdmodessize[0] = NBmodes;
     cmdmodessize[1] = 1;
     ID_cmd_modes = create_image_ID("cudatestcmd", 2, cmdmodessize, _DATATYPE_FLOAT,
-                                   1, 0);
+                                   1, 0, 0);
 
     GPU_loop_MultMat_setup(0, data.image[ID_contrM].name, data.image[ID_WFS].name,
                            data.image[ID_cmd_modes].name, GPUcnt, GPUdevices, 0, 1, 1, 0);

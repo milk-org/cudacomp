@@ -236,7 +236,7 @@ errno_t GPU_loop_MultMat_setup(
             sizearraytmp[0] = gpumatmultconf[index].M;
             sizearraytmp[1] = 1;
             gpumatmultconf[index].IDout = create_image_ID(IDoutdmmodes_name, 2,
-                                          sizearraytmp, _DATATYPE_FLOAT, 1, 10);
+                                          sizearraytmp, _DATATYPE_FLOAT, 1, 10, 0);
             free(sizearraytmp);
         }
         else

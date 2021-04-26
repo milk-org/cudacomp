@@ -274,7 +274,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
     if(datatype == _DATATYPE_FLOAT)
     {
         ID_VTmatrix = create_image_ID(ID_VTmatrix_name, 2, arraysizetmp,
-                                      _DATATYPE_FLOAT, 0, 0);
+                                      _DATATYPE_FLOAT, 0, 0, 0);
         for(ii = 0; ii < m; ii++) // modes
             for(k = 0; k < m; k++) // modes
             {
@@ -284,7 +284,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
     else
     {
         ID_VTmatrix = create_image_ID(ID_VTmatrix_name, 2, arraysizetmp,
-                                      _DATATYPE_DOUBLE, 0, 0);
+                                      _DATATYPE_DOUBLE, 0, 0, 0);
         for(ii = 0; ii < m; ii++) // modes
             for(k = 0; k < m; k++) // modes
             {
@@ -308,12 +308,12 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
     if(datatype == _DATATYPE_FLOAT)
     {
         ID_Cmatrix = create_image_ID(ID_Cmatrix_name,
-                                     data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, _DATATYPE_FLOAT, 0, 0);
+                                     data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, _DATATYPE_FLOAT, 0, 0, 0);
     }
     else
     {
         ID_Cmatrix = create_image_ID(ID_Cmatrix_name,
-                                     data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, _DATATYPE_DOUBLE, 0, 0);
+                                     data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, _DATATYPE_DOUBLE, 0, 0, 0);
     }
 
     // compute pseudo-inverse
