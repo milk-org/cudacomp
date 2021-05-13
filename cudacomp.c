@@ -85,11 +85,9 @@ static void __attribute__((constructor)) libinit_cudacomp_printinfo()
 
 static errno_t init_module_CLI()
 {
-    long i;
-
 #ifdef HAVE_CUDA
     //    printf("HAVE_CUDA defined\n");
-    for(i = 0; i < 20; i++)
+    for(int i = 0; i < 20; i++)
     {
         gpumatmultconf[i].init = 0;
         gpumatmultconf[i].alloc = 0;
