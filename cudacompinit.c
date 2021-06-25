@@ -39,7 +39,7 @@ static errno_t delete_image_ID__cli()
     {
         if(data.cmdargtoken[i].type == 4)
         {
-            delete_image_ID(data.cmdargtoken[i].val.string);
+            delete_image_ID(data.cmdargtoken[i].val.string, DELETE_IMAGE_ERRMODE_WARNING);
         }
         else
         {
@@ -60,7 +60,7 @@ static errno_t delete_image_ID__cli()
 
 errno_t cudacompinit_addCLIcmd()
 {
-	
+
     RegisterCLIcommand(
         "cudacompinit",
         __FILE__,
@@ -69,7 +69,7 @@ errno_t cudacompinit_addCLIcmd()
         "no argument",
         "cudacompinit",
         "int CUDACOMP_init()"
-        );
+    );
 
 
     return RETURN_SUCCESS;

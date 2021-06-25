@@ -881,7 +881,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         } else {
             if((data.image[IDtrace].md[0].size[0] != TRACEsize) || (data.image[IDtrace].md[0].size[1] != NBmodes)) {
                 imOK = 0;
-                delete_image_ID(traceim_name);
+                delete_image_ID(traceim_name, DELETE_IMAGE_ERRMODE_WARNING);
             }
         }
         if(imOK == 0) {
@@ -919,7 +919,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         } else {
             if((data.image[IDprocave].md[0].size[0] != NBmodes) || (data.image[IDprocave].md[0].size[1] != NBaveSTEP)) {
                 imOK = 0;
-                delete_image_ID(process_ave_name);
+                delete_image_ID(process_ave_name, DELETE_IMAGE_ERRMODE_WARNING);
             }
         }
         if(imOK == 0) {
@@ -951,7 +951,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         } else {
             if((data.image[IDprocrms].md[0].size[0] != NBmodes) || (data.image[IDprocrms].md[0].size[1] != NBaveSTEP)) {
                 imOK = 0;
-                delete_image_ID(process_rms_name);
+                delete_image_ID(process_rms_name, DELETE_IMAGE_ERRMODE_WARNING);
             }
         }
         if(imOK == 0) {

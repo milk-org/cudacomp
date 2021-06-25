@@ -204,9 +204,9 @@ errno_t GPUcomp_test(
     printf("done\n");
     fflush(stdout);
 
-    delete_image_ID("cudatestcm");
-    delete_image_ID("cudatestwfs");
-    delete_image_ID("cudatestcmd");
+    delete_image_ID("cudatestcm", DELETE_IMAGE_ERRMODE_WARNING);
+    delete_image_ID("cudatestwfs", DELETE_IMAGE_ERRMODE_WARNING);
+    delete_image_ID("cudatestcmd", DELETE_IMAGE_ERRMODE_WARNING);
 
     free(cmsize);
     free(wfssize);

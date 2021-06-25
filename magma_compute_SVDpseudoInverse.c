@@ -665,7 +665,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
         save_fits("mA", "!test_mA.QDWH.fits");
 
-        delete_image_ID("mA");
+        delete_image_ID("mA", DELETE_IMAGE_ERRMODE_WARNING);
     }
 
 
