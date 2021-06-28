@@ -17,7 +17,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
     int         PSINV_MODE,
     __attribute__((unused)) double      qdwh_s,
     __attribute__((unused)) float       qdwh_tol,
-    int 		testmode
+    int 		testmode,
+    int         precision
 );
 
 

@@ -89,7 +89,7 @@ errno_t magma_compute_SVDpseudoInverse_SVD_addCLIcmd()
         "<input matrix [string]> <output pseudoinv [string]> <eps [float]> <NBmodes [long]> <VTmat [string]>",
         "cudacomppsinvSVD matA matAinv 0.01 100 VTmat",
         "int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name, const char *ID_Cmatrix_name, double SVDeps, long MaxNBmodes, const char *ID_VTmatrix_name);"
-        );
+    );
 
 
 
@@ -271,10 +271,13 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
     // Write rotation matrix
     arraysizetmp[0] = m;
     arraysizetmp[1] = m;
+
+    create_image_ID(ID_VTmatrix_name, 2, arraysizetmp,
+                    _DATATYPE_FLOAT, 0, 0, 0,
+                    &ID_VTmatrix);
+
     if(datatype == _DATATYPE_FLOAT)
     {
-        ID_VTmatrix = create_image_ID(ID_VTmatrix_name, 2, arraysizetmp,
-                                      _DATATYPE_FLOAT, 0, 0, 0);
         for(ii = 0; ii < m; ii++) // modes
             for(k = 0; k < m; k++) // modes
             {
@@ -283,8 +286,6 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
     }
     else
     {
-        ID_VTmatrix = create_image_ID(ID_VTmatrix_name, 2, arraysizetmp,
-                                      _DATATYPE_DOUBLE, 0, 0, 0);
         for(ii = 0; ii < m; ii++) // modes
             for(k = 0; k < m; k++) // modes
             {
@@ -305,16 +306,11 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
         arraysizetmp[1] = m;
     }
 
-    if(datatype == _DATATYPE_FLOAT)
-    {
-        ID_Cmatrix = create_image_ID(ID_Cmatrix_name,
-                                     data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, _DATATYPE_FLOAT, 0, 0, 0);
-    }
-    else
-    {
-        ID_Cmatrix = create_image_ID(ID_Cmatrix_name,
-                                     data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, _DATATYPE_DOUBLE, 0, 0, 0);
-    }
+
+    create_image_ID(ID_Cmatrix_name,
+                    data.image[ID_Rmatrix].md[0].naxis, arraysizetmp, datatype, 0, 0, 0,
+                    &ID_Cmatrix);
+
 
     // compute pseudo-inverse
     // M+ = V Sig^-1 UT

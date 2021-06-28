@@ -208,8 +208,8 @@ long CUDACOMP_MatMatMult_testPseudoInverse(
 
     arraysizetmp[0] = N;
     arraysizetmp[1] = N;
-    IDmatOut = create_image_ID(IDmatOut_name, 2, arraysizetmp, _DATATYPE_FLOAT, 0,
-                               0, 0);
+     create_image_ID(IDmatOut_name, 2, arraysizetmp, _DATATYPE_FLOAT, 0,
+                               0, 0, &IDmatOut);
 
 
     for(ii = 0; ii < N * N; ii++)

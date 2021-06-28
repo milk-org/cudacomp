@@ -387,7 +387,7 @@ errno_t GPU_SVD_computeControlMatrix(
     save_fits(ID_VTmatrix_name, "!matVT.fits");
 
     cublasStatus_t cublasStat = cublasSgemm(cublasH, CUBLAS_OP_T, CUBLAS_OP_T, n, m, n, &alpha, d_VT,
-                           n, d_U, m, &beta, d_M, n);
+                                            n, d_U, m, &beta, d_M, n);
     if(cublasStat != CUBLAS_STATUS_SUCCESS)
     {
         printf("cublasSgemm returned error code %d, line(%d)\n", cudaStat, __LINE__);
@@ -411,13 +411,14 @@ errno_t GPU_SVD_computeControlMatrix(
     }
 
 
-    ID_Cmatrix = create_image_ID(
-                     ID_Cmatrix_name,
-                     data.image[ID_Rmatrix].md[0].naxis,
-                     arraysizetmp,
-                     _DATATYPE_FLOAT,
-                     0,
-                     0, 0);
+    create_image_ID(
+        ID_Cmatrix_name,
+        data.image[ID_Rmatrix].md[0].naxis,
+        arraysizetmp,
+        _DATATYPE_FLOAT,
+        0,
+        0, 0,
+        &ID_Cmatrix);
 
 
     //   cudaStat = cudaMemcpy(data.image[ID_Cmatrix].array.F, d_M, sizeof(float)*m*n, cudaMemcpyDeviceToHost);
