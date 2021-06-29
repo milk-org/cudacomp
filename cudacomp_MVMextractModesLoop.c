@@ -1,9 +1,9 @@
 /**
  * @file    cudacomp_MVMextractModesLoop.c
  * @brief   CUDA functions wrapper
- * 
+ *
  * Requires CUDA library
- *  
+ *
  */
 
 
@@ -30,7 +30,7 @@
 #include <string.h>
 #include <math.h>
 #include <sched.h>
-#include <signal.h> 
+#include <signal.h>
 
 
 #include <semaphore.h>
@@ -186,7 +186,7 @@ static errno_t CUDACOMP_MVMextractModesLoop_cli()
 
 errno_t cudacomp_MVMextractModesLoop_addCLIcmd()
 {
-	
+
     RegisterCLIcommand(
         "cudaextrmodes",
         __FILE__,
@@ -195,7 +195,7 @@ errno_t cudacomp_MVMextractModesLoop_addCLIcmd()
         "<inval stream> <intot stream> <modes> <refin val> <refout_val> <outmode vals> <GPU index [long]> <PROCESS flag> <TRACEMODE flag> <MODE norm flag> <input semaphore> <axis orientation> <twait [us]> <semwarn>",
         "cudaextrmodes inmap inmaptot modes imref imoutref modeval 3 1 1 1 3 0 0",
         "int CUDACOMP_MVMextractModesLoop(const char *in_stream, const char *intot_stream, const char *IDmodes_name, const char *IDrefin_name, const char *IDrefout_name, const char *IDmodes_val_name, int GPUindex, int PROCESS, int TRACEMODE, int MODENORM, int insem, int axmode, long twait, int semwarn)"
-        );
+    );
 
 
     return RETURN_SUCCESS;
@@ -207,9 +207,9 @@ errno_t cudacomp_MVMextractModesLoop_addCLIcmd()
 
 
 
-        
-    
-    
+
+
+
 
 
 
@@ -227,7 +227,7 @@ errno_t cudacomp_MVMextractModesLoop_addCLIcmd()
 // initializes configuration parameters structure
 //
 
-errno_t CUDACOMP_MVMextractModesLoop_FPCONF() 
+errno_t CUDACOMP_MVMextractModesLoop_FPCONF()
 {
 
     FPS_SETUP_INIT(data.FPS_name, data.FPS_CMDCODE);  // sets up fps
@@ -355,38 +355,38 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF()
 
 /**
  * @brief MVM, GPU-based
- * 
- * 
+ *
+ *
  * Used for AO application, single GPU
  * This is meant to be used as stand-alone MVM process managed by cacao
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * [axmode 0] Converting WFS image to modes
  * Input is 2D (WFS)
- * Output is 1D (modes) 
- * 
+ * Output is 1D (modes)
+ *
  * Matrix is 3D
- * (size[0], size[1]) = (sizeWFS[0], sizeWFS[1]) 
+ * (size[0], size[1]) = (sizeWFS[0], sizeWFS[1])
  * (size[2]) = NBmodes
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  * [axmode 1] Expanding DM vector to WFS vector
  * Input is 2D vector (DM)
  * Output is 2D vector (WFS)
  *
- * Matrix is 3D. 
- * (size[0], size[1]) = (sizeWFS[0], sizeWFS[1]) 
- * (size[2]) = sizeDM[0] x sizeDM[1] 
- * 
+ * Matrix is 3D.
+ * (size[0], size[1]) = (sizeWFS[0], sizeWFS[1])
+ * (size[2]) = sizeDM[0] x sizeDM[1]
+ *
  * Matrix internally remapped to :
  * (size[0], size[1]) = (sizeDM[0], sizeDM[1])
- * (size[2]) = sizeWFS[0] x sizeWFS[1] 
- * 
+ * (size[2]) = sizeWFS[0] x sizeWFS[1]
+ *
  *
  */
 
@@ -647,7 +647,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
     if(IDintot == -1) {
         INNORMMODE = 0;
-        IDintot = create_2Dimage_ID("intot_tmp", 1, 1);
+        create_2Dimage_ID("intot_tmp", 1, 1, &IDintot);
         data.image[IDintot].array.F[0] = 1.0;
     } else {
         INNORMMODE = 1;
@@ -660,7 +660,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     long IDref;
     IDref = image_ID(IDrefin_name);
     if(IDref == -1) {
-        IDref = create_2Dimage_ID("_tmprefin", data.image[IDin].md[0].size[0], data.image[IDin].md[0].size[1]);
+        create_2Dimage_ID("_tmprefin", data.image[IDin].md[0].size[0], data.image[IDin].md[0].size[1], &IDref);
+
         for(ii = 0; ii < data.image[IDin].md[0].size[0]*data.image[IDin].md[0].size[1]; ii++) {
             data.image[IDref].array.F[ii] = 0.0;
         }
@@ -697,7 +698,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         fflush(stdout);
 
 
-        IDmodes = create_3Dimage_ID("_tmpmodes", data.image[IDin].md[0].size[0], data.image[IDin].md[0].size[1], NBmodes);
+        create_3Dimage_ID("_tmpmodes", data.image[IDin].md[0].size[0], data.image[IDin].md[0].size[1], NBmodes, &IDmodes);
 
         for(ii = 0; ii < data.image[IDin].md[0].size[0]; ii++)
             for(jj = 0; jj < data.image[IDin].md[0].size[1]; jj++) {
@@ -1042,11 +1043,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     processinfo_WriteMessage(processinfo, pinfomsg);
 
 
-	// set up input trigger stream
-	processinfo_waitoninputstream_init(processinfo, IDin,
-		PROCESSINFO_TRIGGERMODE_SEMAPHORE, 5);
-	
-	
+    // set up input trigger stream
+    processinfo_waitoninputstream_init(processinfo, IDin,
+                                       PROCESSINFO_TRIGGERMODE_SEMAPHORE, 5);
+
+
     while(loopOK == 1) {
         struct timespec tdiff;
         double tdiffv;
@@ -1068,8 +1069,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         // or we read it from ID_modeval stream (MODEVALCOMPUTE = 0)
 
         if(MODEVALCOMPUTE == 1) {
-			
-			int doComputation = 0;
+
+            int doComputation = 0;
 
             // Are we computing a new reference ?
             // if yes, set initref to 0 (reference is NOT initialized)
@@ -1083,16 +1084,16 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                 // Reference is already initialized
                 // wait for input stream to be changed to start computation
                 //
-                
+
                 processinfo_waitoninputstream(processinfo);
                 if(processinfo->triggerstatus == PROCESSINFO_TRIGGERSTATUS_RECEIVED)
                 {
-					doComputation = 1;
-				}
-				else
-				{
-					doComputation = 0;
-				}                
+                    doComputation = 1;
+                }
+                else
+                {
+                    doComputation = 0;
+                }
             } else { // compute response of reference immediately
                 printf("COMPUTE NEW REFERENCE RESPONSE\n");
                 doComputation = 1;
@@ -1195,9 +1196,9 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                     processinfo_update_output_stream(processinfo, ID_modeval);
                 }
             }
-        } 
-        else 
-        { // WAIT FOR NEW MODEVAL
+        }
+        else
+        {   // WAIT FOR NEW MODEVAL
             int rval;
             rval = sem_wait(data.image[ID_modeval].semptr[insem]);
             if(rval == -1) // interrupt
@@ -1270,7 +1271,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
             }
 
             processinfo_update_output_stream(processinfo, IDprocrms);
-            
+
         }
 
         //t06OK = 1;

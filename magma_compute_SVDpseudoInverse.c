@@ -651,9 +651,11 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
     if(testmode == 1)
     {
-        long ID_A;
+        imageID ID_A;
 
-        ID_A = create_2Dimage_ID("mA", M, N);
+        FUNC_CHECK_RETURN(
+            create_2Dimage_ID("mA", M, N, &ID_A));
+
         if(MAGMAfloat == 1)
         {
             for(long ii = 0; ii < M * N; ii++)
@@ -763,7 +765,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
             }
 
 
-            imageID ID_AtA = create_2Dimage_ID("mAtA", N, N);
+            imageID ID_AtA;
+            FUNC_CHECK_RETURN(
+                create_2Dimage_ID("mAtA", N, N, &ID_AtA));
             if(MAGMAfloat == 1)
             {
                 for(long ii = 0; ii < N * N; ii++)
@@ -1081,7 +1085,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
         // copy eigenvectors from magma_h_AtA to VT
         {
-            imageID ID_VT = create_2Dimage_ID(ID_VTmatrix_name, N, N);
+            imageID ID_VT;
+            create_2Dimage_ID(ID_VTmatrix_name, N, N, &ID_VT);
 
             if(MAGMAfloat == 1)
             {
@@ -1214,9 +1219,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
         if(testmode == 1)
         {
-            long ID_M2;
+            imageID ID_M2;
 
-            ID_M2 = create_2Dimage_ID("mM2", N, N);
+            create_2Dimage_ID("mM2", N, N, &ID_M2);
 
             DEBUG_TRACEPOINT("Computing mM2");
 
@@ -1393,7 +1398,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
     if(testmode == 1)
     {
-        imageID ID_Ainv = create_2Dimage_ID("mAinv", M, N);
+        imageID ID_Ainv;
+        create_2Dimage_ID("mAinv", M, N, &ID_Ainv);
         if(MAGMAfloat == 1)
         {
 
@@ -1521,9 +1527,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
                         magma_d_Ainv, M, 0.0,  magma_d_AtA, N, magmaqueue);
         }
 
-        long ID_AinvA;
+        imageID ID_AinvA;
 
-        ID_AinvA = create_2Dimage_ID("AinvA", N, N);
+        create_2Dimage_ID("AinvA", N, N, &ID_AinvA);
 
 
 
@@ -1614,7 +1620,8 @@ int CUDACOMP_magma_compute_SVDpseudoInverse(
 
         magma_sgetmatrix(N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
 
-        long ID_PF = create_2Dimage_ID("psinvPFmat", N, K);
+        imageID ID_PF;
+        create_2Dimage_ID("psinvPFmat", N, K, &ID_PF);
         list_image_ID();
         memcpy(data.image[ID_PF].array.F, magmaf_h_PF, sizeof(float)*N * K);
         save_fits("psinvPFmat", "psinvPFmat.fits");

@@ -110,7 +110,7 @@ errno_t GPUcomp_test(
     //printf("Testing SVD on CPU\n");
     // linopt_compute_reconstructionMatrix("Rmat", "Cmat", SVDeps, "VTmat");
 
-    create_2Dimage_ID("Rmat", WFSsize, WFSsize);
+    create_2Dimage_ID("Rmat", WFSsize, WFSsize, NULL);
 
     printf("Testing SVD on GPU\n");
     GPU_SVD_computeControlMatrix(0, "Rmat", "Cmat", SVDeps, "VTmat");

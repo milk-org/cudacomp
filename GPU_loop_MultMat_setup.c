@@ -96,7 +96,7 @@ errno_t GPU_loop_MultMat_setup(
 
             if(IDtiming == -1)
             {
-                IDtiming = create_2Dimage_ID(name, 50, 1);
+                create_2Dimage_ID(name, 50, 1, &IDtiming);
             }
         }
 
