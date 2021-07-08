@@ -680,9 +680,13 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
 
 
 
-        save_fits("mA", "test_mA.QDWH.fits");
+        FUNC_CHECK_RETURN(
+            save_fits("mA", "test_mA.QDWH.fits")
+        );
 
-        delete_image_ID("mA", DELETE_IMAGE_ERRMODE_WARNING);
+        FUNC_CHECK_RETURN(
+            delete_image_ID("mA", DELETE_IMAGE_ERRMODE_WARNING)
+        );
     }
 
 
@@ -983,7 +987,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         if(testmode == 1)
         {
             char fname[STRINGMAXLEN_FILENAME];
-            WRITE_FILENAME(fname, "test_eigenv.dat");
+            WRITE_FILENAME(fname, "eigenv.dat");
             FILE *fp;
 
             if((fp = fopen(fname, "w")) == NULL)
