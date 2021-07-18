@@ -152,7 +152,7 @@ errno_t GPUcomp_test(
                        val += data.image[ID_C].array.F[ii*m+k] * data.image[ID_R].array.F[jj*m+k];
                    data.image[ID].array.F[jj*n+ii] = val;
                }
-       save_fits("SVDcheck", "!SVDcheck.fits");
+       save_fits("SVDcheck", "SVDcheck.fits");
 
     free(arraysizetmp);
        printf("DONE\n");

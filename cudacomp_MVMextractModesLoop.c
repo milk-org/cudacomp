@@ -708,7 +708,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                 }
             }
 
-        //save_fits("_tmpmodes", "!_test_tmpmodes.fits");
+        //save_fits("_tmpmodes", "_test_tmpmodes.fits");
     }
 
 

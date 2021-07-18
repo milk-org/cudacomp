@@ -324,7 +324,7 @@ errno_t GPU_SVD_computeControlMatrix(
 
     cudaMemcpy(data.image[ID].array.F, d_U, sizeof(float)*m * m,
                cudaMemcpyDeviceToHost);
-    save_fits("matU", "!matU.fits");
+    save_fits("matU", "matU.fits");
 
     h_U1 = (float *) malloc(sizeof(float) * m * n);
     cudaStat = cudaMalloc((void **)&d_U1, sizeof(float) * m * n);
@@ -347,7 +347,7 @@ errno_t GPU_SVD_computeControlMatrix(
 
     cudaMemcpy(data.image[ID].array.F, d_U1, sizeof(float)*m * n,
                cudaMemcpyDeviceToHost);
-    save_fits("matU1", "!matU1.fits");
+    save_fits("matU1", "matU1.fits");
 
 
 
@@ -392,7 +392,7 @@ errno_t GPU_SVD_computeControlMatrix(
     }
 
 
-    save_fits(ID_VTmatrix_name, "!matVT.fits");
+    save_fits(ID_VTmatrix_name, "matVT.fits");
 
     cublasStatus_t cublasStat = cublasSgemm(cublasH, CUBLAS_OP_T, CUBLAS_OP_T, n, m, n, &alpha, d_VT,
                                             n, d_U, m, &beta, d_M, n);

@@ -195,7 +195,7 @@ void __attribute__((hot)) *GPUcomputeMVM_function(
                                    (float *) ptr0, 1, gpumatmultconf[index].d_wfsVec[device], 1);
             if(stat != CUBLAS_STATUS_SUCCESS)
             {
-                fprintf(stderr, "!!!! device access error (read C)\n");
+                fprintf(stderr, "!! device access error (read C)\n");
                 if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
                 {
                     printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
@@ -331,7 +331,7 @@ void __attribute__((hot)) *GPUcomputeMVM_function(
 
             if(stat != CUBLAS_STATUS_SUCCESS)
             {
-                fprintf(stderr, "!!!! device access error (read C)\n");
+                fprintf(stderr, "!! device access error (read C)\n");
                 if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
                 {
                     printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
@@ -482,7 +482,7 @@ void __attribute__((hot)) *GPUcomputeMVM_function(
 
                 if(stat != CUBLAS_STATUS_SUCCESS)
                 {
-                    fprintf(stderr, "!!!! device access error (read C)\n");
+                    fprintf(stderr, "!! device access error (read C)\n");
                     if(stat == CUBLAS_STATUS_NOT_INITIALIZED)
                     {
                         printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
