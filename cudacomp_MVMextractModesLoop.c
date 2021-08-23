@@ -250,70 +250,70 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF()
 
 
     long GPUindex_default[4] = { 0, 0, 9, 0 };
-    __attribute__((unused)) long fp_GPUindex        =
-        function_parameter_add_entry(&fps, ".GPUindex", "GPU index",
-                                     FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, &GPUindex_default);
+    //long fp_GPUindex = 0;
+    function_parameter_add_entry(&fps, ".GPUindex", "GPU index",
+                                 FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, &GPUindex_default, NULL);
 
 
-    __attribute__((unused)) long fp_streamname_in          =
-        function_parameter_add_entry(&fps, ".sname_in",  "input stream vector",
-                                     FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT_STREAM, pNull);
+    //long fp_streamname_in = 0;
+    function_parameter_add_entry(&fps, ".sname_in",  "input stream vector",
+                                 FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT_STREAM, pNull, NULL);
 
-    __attribute__((unused)) long fp_streamname_modes       =
-        function_parameter_add_entry(&fps, ".sname_modes",  "input modes matrix",
-                                     FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT_STREAM, pNull);
+    //long fp_streamname_modes = 0;
+    function_parameter_add_entry(&fps, ".sname_modes",  "input modes matrix",
+                                 FPTYPE_STREAMNAME, FPFLAG_DEFAULT_INPUT_STREAM, pNull, NULL);
 
     FPFLAG = FPFLAG_DEFAULT_INPUT_STREAM;
     FPFLAG &= ~FPFLAG_STREAM_RUN_REQUIRED;
-    __attribute__((unused)) long fp_streamname_intot       =
-        function_parameter_add_entry(&fps, ".option.sname_intot",  "optional input normalization stream",
-                                     FPTYPE_STREAMNAME, FPFLAG, pNull);
+    //long fp_streamname_intot = 0;
+    function_parameter_add_entry(&fps, ".option.sname_intot",  "optional input normalization stream",
+                                 FPTYPE_STREAMNAME, FPFLAG, pNull, NULL);
 
-    __attribute__((unused)) long fp_streamname_refin       =
-        function_parameter_add_entry(&fps, ".option.sname_refin",  "optional input reference to be subtracted stream",
-                                     FPTYPE_STREAMNAME, FPFLAG, pNull);
+    //long fp_streamname_refin = 0;
+    function_parameter_add_entry(&fps, ".option.sname_refin",  "optional input reference to be subtracted stream",
+                                 FPTYPE_STREAMNAME, FPFLAG, pNull, NULL);
 
-    __attribute__((unused)) long fp_streamname_refout      =
-        function_parameter_add_entry(&fps, ".option.sname_refout",  "optional output reference to be subtracted stream",
-                                     FPTYPE_STREAMNAME, FPFLAG, pNull);
+    //long fp_streamname_refout = 0;
+    function_parameter_add_entry(&fps, ".option.sname_refout",  "optional output reference to be subtracted stream",
+                                 FPTYPE_STREAMNAME, FPFLAG, pNull, NULL);
 
-    __attribute__((unused)) long fp_stream_outmodesval     =
-        function_parameter_add_entry(&fps, ".sname_outmodesval", "output mode coefficients stream",
-                                     FPTYPE_STREAMNAME, FPFLAG, pNull);
+    //long fp_stream_outmodesval = 0;
+    function_parameter_add_entry(&fps, ".sname_outmodesval", "output mode coefficients stream",
+                                 FPTYPE_STREAMNAME, FPFLAG, pNull, NULL);
 
-    __attribute__((unused)) long fp_outinit                =
-        function_parameter_add_entry(&fps, ".outinit", "output stream init mode",
-                                     FPTYPE_ONOFF, FPFLAG, pNull);
+    //long fp_outinit = 0;
+    function_parameter_add_entry(&fps, ".outinit", "output stream init mode",
+                                 FPTYPE_ONOFF, FPFLAG, pNull, NULL);
 
 
 
-    __attribute__((unused)) long fp_PROCESS         =
-        function_parameter_add_entry(&fps, ".option.PROCESS", "1 if processing",
-                                     FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+    //long fp_PROCESS = 0;
+    function_parameter_add_entry(&fps, ".option.PROCESS", "1 if processing",
+                                 FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull, NULL);
 
-    __attribute__((unused)) long fp_TRACEMODE       =
-        function_parameter_add_entry(&fps, ".option.TRACEMODE", "1 if writing trace",
-                                     FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+    //long fp_TRACEMODE = 0;
+    function_parameter_add_entry(&fps, ".option.TRACEMODE", "1 if writing trace",
+                                 FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull, NULL);
 
-    __attribute__((unused)) long fp_MODENORM        =
-        function_parameter_add_entry(&fps, ".option.MODENORM", "1 if input modes should be normalized",
-                                     FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+    //long fp_MODENORM = 0;
+    function_parameter_add_entry(&fps, ".option.MODENORM", "1 if input modes should be normalized",
+                                 FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull, NULL);
 
-    __attribute__((unused)) long fp_insem           =
-        function_parameter_add_entry(&fps, ".option.insem", "input semaphore index",
-                                     FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
+    //long fp_insem = 0;
+    function_parameter_add_entry(&fps, ".option.insem", "input semaphore index",
+                                 FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull, NULL);
 
-    __attribute__((unused)) long fp_axmode          =
-        function_parameter_add_entry(&fps, ".option.axmode", "0 for normal mode extraction, 1 for expansion",
-                                     FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull);
+    //long fp_axmode = 0;
+    function_parameter_add_entry(&fps, ".option.axmode", "0 for normal mode extraction, 1 for expansion",
+                                 FPTYPE_INT64, FPFLAG_DEFAULT_INPUT, pNull, NULL);
 
-    __attribute__((unused)) long fp_twait           =
-        function_parameter_add_entry(&fps, ".option.twait", "if >0, insert time wait [us] at each iteration",
-                                     FPTYPE_INT64, FPFLAG_DEFAULT_INPUT|FPFLAG_WRITERUN, pNull);
+    //long fp_twait = 0;
+    function_parameter_add_entry(&fps, ".option.twait", "if >0, insert time wait [us] at each iteration",
+                                 FPTYPE_INT64, FPFLAG_DEFAULT_INPUT|FPFLAG_WRITERUN, pNull, NULL);
 
-    __attribute__((unused)) long fp_semwarn         =
-        function_parameter_add_entry(&fps, ".option.semwarn", "issue warning when input stream semaphore >1",
-                                     FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull);
+    //long fp_semwarn = 0;
+    function_parameter_add_entry(&fps, ".option.semwarn", "issue warning when input stream semaphore >1",
+                                 FPTYPE_ONOFF, FPFLAG_DEFAULT_INPUT, pNull, NULL);
 
 
 
