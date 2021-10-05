@@ -18,6 +18,7 @@ set(SOURCEFILES
 	magma_compute_SVDpseudoInverse.c
 	MatMatMult_testPseudoInverse.c
 	MVM_CPU.c
+	PCA.c
 	printGPUMATMULTCONF.c
 )
 
@@ -37,6 +38,7 @@ set(INCLUDEFILES
 	magma_compute_SVDpseudoInverse.h
 	MatMatMult_testPseudoInverse.h
 	MVM_CPU.h
+	PCA.h
 	printGPUMATMULTCONF.h
 )
 

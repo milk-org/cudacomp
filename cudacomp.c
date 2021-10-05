@@ -35,9 +35,9 @@
 #include "magma_compute_SVDpseudoInverse_SVD.h"
 #include "MatMatMult_testPseudoInverse.h"
 
+#include "PCA.h"
 
-
-// globals 
+// globals
 
 imageID IDtimerinit = 0;
 imageID IDtiming = -1; // index to image where timing should be written
@@ -93,13 +93,18 @@ static errno_t init_module_CLI()
         gpumatmultconf[i].alloc = 0;
     }
 
-	cudacompinit_addCLIcmd();
-	cudacomptest_addCLIcmd();
-	MatMatMult_testPseudoInverse_addCLIcmd();
-	magma_compute_SVDpseudoInverse_addCLIcmd();
-	magma_compute_SVDpseudoInverse_SVD_addCLIcmd();
-	Coeff2Map_Loop_addCLIcmd();
-	cudacomp_MVMextractModesLoop_addCLIcmd();
+    cudacompinit_addCLIcmd();
+    cudacomptest_addCLIcmd();
+
+    CLIADDCMD_cudacomp__PCAdecomp();
+
+    MatMatMult_testPseudoInverse_addCLIcmd();
+    magma_compute_SVDpseudoInverse_addCLIcmd();
+    magma_compute_SVDpseudoInverse_SVD_addCLIcmd();
+    Coeff2Map_Loop_addCLIcmd();
+    cudacomp_MVMextractModesLoop_addCLIcmd();
+
+
 
 #endif
     // add atexit functions here
