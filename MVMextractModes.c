@@ -577,7 +577,9 @@ static errno_t compute_function()
         }
     }
 
-    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
+    printf(" m       = %ld\n", m);
+    printf(" n       = %ld\n", n);
+    printf(" NBmodes = %ld\n", NBmodes);
 
 
     int BETAMODE = 0;
