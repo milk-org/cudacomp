@@ -529,7 +529,6 @@ static errno_t compute_function()
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_START
 
-    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_END
 
