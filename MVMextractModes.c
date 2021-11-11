@@ -227,21 +227,22 @@ static errno_t compute_function()
 
     // CONNECT TO INPUT REFERENCE STREAM OR CREATE IT
     imageID IDref = -1;
-    IMGID imginref = makeIMGID(inrefsname);
+    /*IMGID imginref = makeIMGID(inrefsname);
     resolveIMGID(&imgin, ERRMODE_WARN);
     if(imginref.ID == -1)
     {
+        */
         create_2Dimage_ID("_tmprefin", imgin.md->size[0], imgin.md->size[1], &IDref);
         for(uint64_t ii = 0; ii < imgin.md->size[0]*imgin.md->size[1]; ii++)
         {
             data.image[IDref].array.F[ii] = 0.0;
         }
-    }
+/*    }
     else
     {
         IDref = imginref.ID;
     }
-
+*/
 
 
     // CONNECT TO MODES STREAM
@@ -288,8 +289,8 @@ static errno_t compute_function()
             for(uint32_t jj = 0; jj < imgin.md->size[1]; jj++) {
                 for(long kk = 0; kk < NBmodes; kk++)
                 {
-                    data.image[IDmodes].array.F[kk * imgin.md->size[0]*imgin.md->size[1] + jj * imgin.md->size[0] + ii] =
-                        imgmodes.im->array.F[NBmodes * (jj * imgin.md->size[0] + ii) + kk];
+                    data.image[IDmodes].array.F[kk * imgin.md->size[0]*imgin.md->size[1] + jj * imgin.md->size[0] + ii] = 0.0;
+//                        imgmodes.im->array.F[NBmodes * (jj * imgin.md->size[0] + ii) + kk];
                 }
             }
 
@@ -415,11 +416,8 @@ static errno_t compute_function()
             printf("cudaMalloc d_modes returned error code %d, line %d\n", cudaStat, __LINE__);
             exit(EXIT_FAILURE);
         }
-
-
-
-//        cudaStat = cudaMemcpy(d_modes, data.image[IDmodes].array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
-        cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
+        cudaStat = cudaMemcpy(d_modes, data.image[IDmodes].array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
+        //cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
         if(cudaStat != cudaSuccess) {
             printf("cudaMemcpy returned error code %d, line %d\n", cudaStat, __LINE__);
             exit(EXIT_FAILURE);
