@@ -627,7 +627,7 @@ static errno_t compute_function()
 
 
     cudaMemset ( d_in, 0, sizeof(float) *  m);
-    cudaMemset ( d_modes, 0, sizeof(float) *  m * NBmodes);
+    //cudaMemset ( d_modes, 0, sizeof(float) *  m * NBmodes);
     //cudaMemset ( d_modeval, 0, sizeof(float) * NBmodes);
 
 
