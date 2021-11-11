@@ -419,7 +419,7 @@ static errno_t compute_function()
 
 
 //        cudaStat = cudaMemcpy(d_modes, data.image[IDmodes].array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
-        cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
+        cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
         if(cudaStat != cudaSuccess) {
             printf("cudaMemcpy returned error code %d, line %d\n", cudaStat, __LINE__);
             exit(EXIT_FAILURE);
