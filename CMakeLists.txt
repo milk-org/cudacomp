@@ -20,6 +20,7 @@ set(SOURCEFILES
 	MVM_CPU.c
 	PCA.c
 	printGPUMATMULTCONF.c
+	MVMextractModes.c
 )
 
 set(INCLUDEFILES
@@ -40,6 +41,7 @@ set(INCLUDEFILES
 	MVM_CPU.h
 	PCA.h
 	printGPUMATMULTCONF.h
+	MVMextractModes.h
 )
 
 

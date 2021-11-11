@@ -34,6 +34,7 @@
 #include "magma_compute_SVDpseudoInverse.h"
 #include "magma_compute_SVDpseudoInverse_SVD.h"
 #include "MatMatMult_testPseudoInverse.h"
+#include "MVMextractModes.h"
 
 #include "PCA.h"
 
@@ -105,7 +106,7 @@ static errno_t init_module_CLI()
     cudacomp_MVMextractModesLoop_addCLIcmd();
 
 
-
+    CLIADDCMD_cudacomp__MVMextractModes();
 #endif
     // add atexit functions here
 
