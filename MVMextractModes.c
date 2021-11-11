@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include <cusolverDn.h>
 
-#endif
+
 
 
 
@@ -728,3 +728,4 @@ errno_t CLIADDCMD_cudacomp__MVMextractModes()
     return RETURN_SUCCESS;
 }
 
+#endif
