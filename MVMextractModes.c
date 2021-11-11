@@ -546,11 +546,8 @@ static errno_t compute_function()
     }
 
 
-    initref = 0;
+    initref = 0; // 1 when reference has been processed
 
-
-
-    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
     long twait1 = *twait;
 
@@ -586,8 +583,18 @@ static errno_t compute_function()
     int BETAMODE = 0;
     float alpha = 1.0;
     float beta  = 0.0;
+    uint64_t refindex = 0;
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_START
+
+
+    // Are we computing a new reference ?
+    // if yes, set initref to 0 (reference is NOT initialized)
+    //
+    if(refindex != data.image[IDref].md[0].cnt0) {
+        initref = 0;
+        refindex = data.image[IDref].md[0].cnt0;
+    }
 
 
 
@@ -679,6 +686,7 @@ static errno_t compute_function()
         processinfo_update_output_stream(processinfo, ID_modeval);
     }
 
+    initref = 1;
 
 
 
