@@ -145,7 +145,7 @@ static errno_t compute_function()
 {
     DEBUG_TRACE_FSTART();
 
-/*
+
     int MODEVALCOMPUTE = 1; // 1 if compute, 0 if import
 
     cublasHandle_t cublasH = NULL;
@@ -523,17 +523,17 @@ static errno_t compute_function()
     }
 
     printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
-*/
+
     INSERT_STD_PROCINFO_COMPUTEFUNC_START
 
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_END
 
-  /*  free(normcoeff);
+    free(normcoeff);
     free(modevalarray);
     free(modevalarrayref);
 
-*/
+
     DEBUG_TRACE_FEXIT();
     return RETURN_SUCCESS;
 }
@@ -545,8 +545,8 @@ INSERT_STD_FPSCLIfunctions
 errno_t CLIADDCMD_cudacomp__MVMextractModes()
 {
 
-    //CLIcmddata.FPS_customCONFsetup = customCONFsetup;
-    //CLIcmddata.FPS_customCONFcheck = customCONFcheck;
+    CLIcmddata.FPS_customCONFsetup = customCONFsetup;
+    CLIcmddata.FPS_customCONFcheck = customCONFcheck;
     INSERT_STD_CLIREGISTERFUNC
 
     return RETURN_SUCCESS;
