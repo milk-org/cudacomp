@@ -539,14 +539,21 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         {
             printf(">>> LINE %d\n", __LINE__);//TBE
             TESTING_MALLOC_CPU(magma_h_A, double, M * N);
+            printf(">>> LINE %d\n", __LINE__);//TBE
             TESTING_MALLOC_DEV(magma_d_A, double, M * N);
+            printf(">>> LINE %d\n", __LINE__);//TBE
 
             TESTING_MALLOC_CPU(magma_h_AtA, double, N * N);
+            printf(">>> LINE %d\n", __LINE__);//TBE
             TESTING_MALLOC_DEV(magma_d_AtA, double, N * N);
+            printf(">>> LINE %d\n", __LINE__);//TBE
 
             TESTING_MALLOC_CPU(magma_h_VT1, double, N * N);
+            printf(">>> LINE %d\n", __LINE__);//TBE
             TESTING_MALLOC_DEV(magma_d_VT1, double, N * N);
+            printf(">>> LINE %d\n", __LINE__);//TBE
             TESTING_MALLOC_DEV(magma_d_M2, double, N * N);
+            printf(">>> LINE %d\n", __LINE__);//TBE
         }
         else
         {
