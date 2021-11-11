@@ -565,7 +565,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
 
 
 
-
+    printf(">>> LINE %d\n", __LINE__);//TBE
 
     if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
     {
@@ -573,21 +573,26 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         fflush(stdout);
     }
 
+    printf(">>> LINE %d\n", __LINE__);//TBE
 
     if(MAGMAloop_iter == 0)
     {
         magma_queue_create(0, &magmaqueue);
     }
+    printf(">>> LINE %d\n", __LINE__);//TBE
+
     if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
     {
         printf("MAGMA: CREATE QUEUE\n");
         fflush(stdout);
     }
+    printf(">>> LINE %d\n", __LINE__);//TBE
 
     // if(timing==1)
     magma_queue_sync(magmaqueue);
     clock_gettime(CLOCK_REALTIME, &t1);
 
+    printf(">>> LINE %d\n", __LINE__);//TBE
 
     // ****************************************************
     // STEP 1 :   Fill input data into magmaf_h_A on host
@@ -595,9 +600,10 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
     // magma array is column-major.
     //
 
-
+    printf(">>> LINE %d\n", __LINE__);//TBE
     if(datatype == _DATATYPE_FLOAT)
     {
+        printf(">>> LINE %d\n", __LINE__);//TBE
         if(MAGMAfloat == 1)
         {
             if((testmode == 1)) // need magmaf_h_A, otherwise, straight to magmaf_d_A
@@ -627,6 +633,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
     }
     else
     {
+        printf(">>> LINE %d\n", __LINE__);//TBE
         if(MAGMAfloat == 1)
         {
             for(long ii = 0; ii < M * N; ii++)
@@ -655,6 +662,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         }
     }
 
+    printf(">>> LINE %d\n", __LINE__);//TBE
 
     if(testmode == 1)
     {
