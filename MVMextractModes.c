@@ -415,6 +415,10 @@ static errno_t compute_function()
             printf("cudaMalloc d_modes returned error code %d, line %d\n", cudaStat, __LINE__);
             exit(EXIT_FAILURE);
         }
+
+        printf(">>>>>>>>>>>>>> ID = %ld   size %ld %ld\n", IDmodes, m, NBmodes);
+        list_image_ID();
+
         cudaStat = cudaMemcpy(d_modes, data.image[IDmodes].array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
         //cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
         if(cudaStat != cudaSuccess) {
@@ -626,9 +630,9 @@ static errno_t compute_function()
     }
 
 
-    cudaMemset ( d_in, 0, sizeof(float) *  m);
-    //cudaMemset ( d_modes, 0, sizeof(float) *  m * NBmodes);
-    cudaMemset ( d_modeval, 0, sizeof(float) * NBmodes);
+    cudaMemset ( d_in, 0, sizeof(float) *  m); //TBE
+    //cudaMemset ( d_modes, 0, sizeof(float) *  m * NBmodes); //TBE
+    cudaMemset ( d_modeval, 0, sizeof(float) * NBmodes); //TBE
 
 
     // compute
