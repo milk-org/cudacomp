@@ -545,7 +545,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
                     magma_malloc( (void**) &magma_d_A, (size_t) sizeof(double)*M*N )) {
                         printf(">>> LINE %d\n", __LINE__);//TBE
 
-                fprintf( stderr, "!!!! magma_malloc failed for: %s  size = %ld  typesize = %d\n", #ptr, (long) size, (int) sizeof(type) );
+                fprintf( stderr, "!!!! magma_malloc failed for:  size = %ld  typesize = %d\n", (long) size, (int) sizeof(type) );
                 magma_finalize();
                 exit(-1);
             }
