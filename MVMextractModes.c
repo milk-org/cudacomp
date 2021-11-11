@@ -625,7 +625,7 @@ static errno_t compute_function()
 
 
     // compute
-    cublas_status = cublasSgemv(cublasH, CUBLAS_OP_T, m, NBmodes, &alpha, d_modes, m, d_in, 1, &beta, d_modeval, 1);
+    cublas_status = cublasSgemv(cublasH, CUBLAS_OP_N, m, NBmodes, &alpha, d_modes, m, d_in, 1, &beta, d_modeval, 1);
     if(cublas_status != CUBLAS_STATUS_SUCCESS) {
         printf("cublasSgemv returned error code %d, line(%d)\n", cublas_status, __LINE__);
         fflush(stdout);
