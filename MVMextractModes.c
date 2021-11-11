@@ -268,7 +268,7 @@ static errno_t compute_function()
 
 
 
-
+    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
     uint32_t *arraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
 
@@ -306,7 +306,7 @@ static errno_t compute_function()
     list_image_ID();
 
 
-
+    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
 
 
@@ -383,7 +383,7 @@ static errno_t compute_function()
 
 
 
-
+    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
     if( (*TRACEMODE) == 1)
     {
@@ -421,7 +421,7 @@ static errno_t compute_function()
         free(sizearraytmp);
     }
 
-
+    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
     if( (*PROCESS) == 1) {
         uint32_t *sizearraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
@@ -495,7 +495,7 @@ static errno_t compute_function()
 
 
 
-
+    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
     long twait1 = *twait;
 
@@ -525,11 +525,11 @@ static errno_t compute_function()
         }
     }
 
-
+    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_START
 
-
+    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_END
 
