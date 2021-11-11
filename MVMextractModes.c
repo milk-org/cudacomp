@@ -252,12 +252,14 @@ static errno_t compute_function()
 
     long n;
     long NBmodes = 1;
+    imageID IDmodes = -1;
     if((*axmode) == 0) {
         //
         // Extract modes.
         // This is the default geometry, no need to remap
         //
         n = imgmodes.md->size[2];
+        IDmodes = imgmodes.ID;
         NBmodes = n;
         printf("NBmodes = %ld\n", NBmodes);
         fflush(stdout);
@@ -280,7 +282,6 @@ static errno_t compute_function()
                NBmodes);
         fflush(stdout);
 
-        imageID IDmodes = -1;
         create_3Dimage_ID("_tmpmodes", imgin.md->size[0], imgin.md->size[1], NBmodes, &IDmodes);
 
         for(uint32_t ii = 0; ii < imgin.md->size[0]; ii++)
@@ -414,7 +415,10 @@ static errno_t compute_function()
             printf("cudaMalloc d_modes returned error code %d, line %d\n", cudaStat, __LINE__);
             exit(EXIT_FAILURE);
         }
-        cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
+
+
+
+        cudaStat = cudaMemcpy(d_modes, data.image[IDmodes].array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
         if(cudaStat != cudaSuccess) {
             printf("cudaMemcpy returned error code %d, line %d\n", cudaStat, __LINE__);
             exit(EXIT_FAILURE);
