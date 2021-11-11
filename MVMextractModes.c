@@ -5,6 +5,14 @@
 static uint32_t *GPUindex;
 long fpi_GPUindex;
 
+static char *insname;
+long fpi_insname;
+
+static char *immodes;
+long fpi_immodes;
+
+static char *outcoeff;
+long fpi_outcoeff;
 
 
 
@@ -13,6 +21,18 @@ static CLICMDARGDEF farg[] =
     {
         CLIARG_UINT32, ".GPUindex", "GPU index", "0",
         CLIARG_VISIBLE_DEFAULT, (void **) &GPUindex, &fpi_GPUindex
+    },
+    {
+        CLIARG_STREAM, ".insname", "input stream name", "null",
+        CLIARG_VISIBLE_DEFAULT, (void **) &insname, &fpi_insname
+    },
+    {
+        CLIARG_STREAM, ".immodes", "modes stream name", "null",
+        CLIARG_VISIBLE_DEFAULT, (void **) &immodes, &fpi_immodes
+    },
+    {
+        CLIARG_STREAM, ".outcoeff", "output coefficients", "null",
+        CLIARG_VISIBLE_DEFAULT, (void **) &outcoeff, &fpi_outcoeff
     }
 };
 
@@ -65,6 +85,12 @@ static errno_t help_function()
 static errno_t compute_function()
 {
     DEBUG_TRACE_FSTART();
+
+    // connect to input streams
+    IMGID imgin = makeIMGID(insname);
+    resolveIMGID(&imgin, ERRMODE_ABORT);
+    printf("Input stream size : %u %u\n", imgin.md->size[0], imgin.md->size[1]);
+
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_START
 
