@@ -537,6 +537,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
 
         if(MAGMAfloat == 0)
         {
+            printf(">>> LINE %d\n", __LINE__);//TBE
             TESTING_MALLOC_CPU(magma_h_A, double, M * N);
             TESTING_MALLOC_DEV(magma_d_A, double, M * N);
 
@@ -549,6 +550,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         }
         else
         {
+            printf(">>> LINE %d\n", __LINE__);//TBE
             TESTING_MALLOC_CPU(magmaf_h_A, float, M * N);
             printf("Allocating magmaf_d_A on device ...\n");
             fflush(stdout);
