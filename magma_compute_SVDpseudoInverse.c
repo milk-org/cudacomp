@@ -527,12 +527,14 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
 
     if(VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
     {
-        printf("ALLOCATION FOR PSINV MAGMA M=%ld N=%ld\n", (long) M, (long) N);
+        printf(">>> ALLOCATION FOR PSINV MAGMA M=%ld N=%ld\n", (long) M, (long) N);
         fflush(stdout);
     }
 
     if(MAGMAloop_iter == 0) /// memory is only allocated on first pass
     {
+        printf(">>> LINE %d\n", __LINE__);//TBE
+
         if(MAGMAfloat == 0)
         {
             TESTING_MALLOC_CPU(magma_h_A, double, M * N);
