@@ -127,7 +127,8 @@ static errno_t customCONFsetup()
 {
     if(data.fpsptr != NULL)
     {
-
+        data.fpsptr->parray[fpi_insname].fpflag |= FPFLAG_STREAM_RUN_REQUIRED|FPFLAG_CHECKSTREAM;
+        data.fpsptr->parray[fpi_immodes].fpflag |= FPFLAG_STREAM_RUN_REQUIRED|FPFLAG_CHECKSTREAM;
     }
 
     return RETURN_SUCCESS;
@@ -164,6 +165,9 @@ static errno_t help_function()
 
 
 
+
+
+
 static errno_t compute_function()
 {
     DEBUG_TRACE_FSTART();
@@ -173,8 +177,8 @@ static errno_t compute_function()
 
     cublasHandle_t cublasH = NULL;
     cublasStatus_t cublas_status = CUBLAS_STATUS_SUCCESS;
-    cudaError_t cudaStat = cudaSuccess;
-    struct cudaDeviceProp deviceProp;
+    cudaError_t    cudaStat = cudaSuccess;
+    struct  cudaDeviceProp deviceProp;
 
     float *d_modes   = NULL; // linear memory of GPU
     float *d_in      = NULL;
@@ -253,6 +257,7 @@ static errno_t compute_function()
     long n;
     long NBmodes = 1;
     imageID IDmodes = -1;
+
     if((*axmode) == 0) {
         //
         // Extract modes.
@@ -326,15 +331,21 @@ static errno_t compute_function()
 
 
 
-    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
     uint32_t *arraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
 
     //IDrefout = image_ID(IDrefout_name);
     imageID IDrefout = -1; //TODO handle this
     if(IDrefout == -1) {
-        arraytmp[0] = NBmodes;
-        arraytmp[1] = 1;
+        if((*axmode) == 0) {
+            arraytmp[0] = NBmodes;
+            arraytmp[1] = 1;
+        }
+        else
+        {
+            arraytmp[0] = imgmodes.md->size[0];
+            arraytmp[1] = imgmodes.md->size[1];
+        }
     } else {
         arraytmp[0] = data.image[IDrefout].md[0].size[0];
         arraytmp[1] = data.image[IDrefout].md[0].size[1];
@@ -482,7 +493,6 @@ static errno_t compute_function()
         free(sizearraytmp);
     }
 
-    printf(">>>>>>>>>>>>. LINT %d\n", __LINE__); //TBE
 
     if( (*PROCESS) == 1) {
         uint32_t *sizearraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
@@ -713,6 +723,8 @@ static errno_t compute_function()
     DEBUG_TRACE_FEXIT();
     return RETURN_SUCCESS;
 }
+
+
 
 
 INSERT_STD_FPSCLIfunctions
