@@ -539,7 +539,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         {
             printf(">>> LINE %d\n", __LINE__);//TBE
             TESTING_MALLOC_CPU(magma_h_A, double, M * N);
-            printf(">>> LINE %d\n", __LINE__);//TBE
+            printf("MAGMA allocating %d x %d = %ld byte\n", (int) M, (int) N, sizeof(double)*M*N);
             //TESTING_MALLOC_DEV(magma_d_A, double, M * N);
             if ( MAGMA_SUCCESS !=
                     magma_malloc( (void**) &magma_d_A, (size_t) sizeof(double)*M*N )) {
