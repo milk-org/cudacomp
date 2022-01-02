@@ -535,11 +535,11 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
     {
         printf(">>> LINE %d\n", __LINE__);//TBE
 
-        if(MAGMAfloat == 0)
+        if(MAGMAfloat == 0) // double
         {
             printf(">>> LINE %d\n", __LINE__);//TBE
-            TESTING_MALLOC_CPU(magma_h_A, double, M * N);
-            printf("MAGMA allocating %d x %d = %ld byte\n", (int) M, (int) N, sizeof(double)*M*N);
+            TESTING_DMALLOC_CPU(magma_h_A, M * N);
+            printf("MAGMA allocating double %d x %d = %ld byte\n", (int) M, (int) N, sizeof(double)*M*N);
             //TESTING_MALLOC_DEV(magma_d_A, double, M * N);
             if ( MAGMA_SUCCESS !=
                     magma_dmalloc( &magma_d_A, (size_t) sizeof(double)*M*N )) {
@@ -551,16 +551,16 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
             }
             printf(">>> LINE %d\n", __LINE__);//TBE
 
-            TESTING_MALLOC_CPU(magma_h_AtA, double, N * N);
+            TESTING_DMALLOC_CPU(magma_h_AtA, N * N);
             printf(">>> LINE %d\n", __LINE__);//TBE
-            TESTING_MALLOC_DEV(magma_d_AtA, double, N * N);
+            TESTING_DMALLOC_DEV(magma_d_AtA, N * N);
             printf(">>> LINE %d\n", __LINE__);//TBE
 
-            TESTING_MALLOC_CPU(magma_h_VT1, double, N * N);
+            TESTING_DMALLOC_CPU(magma_h_VT1, N * N);
             printf(">>> LINE %d\n", __LINE__);//TBE
-            TESTING_MALLOC_DEV(magma_d_VT1, double, N * N);
+            TESTING_DMALLOC_DEV(magma_d_VT1, N * N);
             printf(">>> LINE %d\n", __LINE__);//TBE
-            TESTING_MALLOC_DEV(magma_d_M2, double, N * N);
+            TESTING_DMALLOC_DEV(magma_d_M2, N * N);
             printf(">>> LINE %d\n", __LINE__);//TBE
         }
         else

@@ -25,6 +25,15 @@
         exit(-1);                                                          \
     }
 
+#define TESTING_DMALLOC_CPU( ptr, size )                                   \
+    if ( MAGMA_SUCCESS !=                                                  \
+            magma_dmalloc_cpu( &ptr, (size)*sizeof(double) )) {            \
+        fprintf( stderr, "!!!! magma_malloc_cpu failed for: %s\n", #ptr ); \
+        magma_finalize();                                                  \
+        exit(-1);                                                          \
+    }
+
+
 #define TESTING_FREE_CPU( ptr ) magma_free_cpu( ptr )
 
 
@@ -64,6 +73,15 @@
             magma_finalize();                                                  \
             exit(-1);                                                          \
         }
+
+#define TESTING_DMALLOC_DEV( ptr, size )                              \
+        if ( MAGMA_SUCCESS !=                                                  \
+                magma_dmalloc( &ptr, (size_t) sizeof(double)*size )) {          \
+            fprintf( stderr, "!!!! magma_malloc failed for: %s  size = %ld  typesize = %d\n", #ptr, (long) size, (int) sizeof(double) );     \
+            magma_finalize();                                                  \
+            exit(-1);                                                          \
+        }
+
 #else
 // For OpenCL, ptr is cl_mem* and there is no cast.
 #define TESTING_MALLOC_DEV( ptr, type, size )                              \
