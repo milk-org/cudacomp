@@ -499,10 +499,10 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
     static magma_int_t *num_dev;
 
     magma_getdevices( devices,
-                      10,
+                      5,
                       num_dev
                     );
-    printf("%d devices detected\n", *num_dev);
+   // printf("%d devices detected\n", *num_dev);
 
 
 
