@@ -584,7 +584,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         if(MAGMAfloat == 0) // double
         {
             printf(">>> LINE %d\n", __LINE__);//TBE
-            TESTING_DMALLOC_CPU(magma_h_A, M * N);
 
 
             printf("MAGMA allocating double %d x %d = %ld byte\n", (int) M, (int) N, sizeof(double)*M*N);
@@ -598,6 +597,9 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
                 exit(-1);
             }
             printf(">>> LINE %d\n", __LINE__);//TBE
+
+
+            TESTING_DMALLOC_CPU(magma_h_A, M * N);
 
             TESTING_DMALLOC_CPU(magma_h_AtA, N * N);
             printf(">>> LINE %d\n", __LINE__);//TBE
