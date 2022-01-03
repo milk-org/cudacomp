@@ -789,11 +789,11 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
     {
         if(MAGMAfloat == 1)
         {
-            TESTING_MALLOC_CPU(magmaf_h_Ainv, float, N * M);
+            TESTING_SMALLOC_CPU(magmaf_h_Ainv, N * M);
         }
         else
         {
-            TESTING_MALLOC_CPU(magma_h_Ainv, double, N * M);
+            TESTING_DMALLOC_CPU(magma_h_Ainv, N * M);
         }
     }
 
@@ -1311,7 +1311,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
 
             if(MAGMAfloat == 1)
             {
-                TESTING_MALLOC_CPU(magmaf_h_M2, float, N * N);
+                TESTING_SMALLOC_CPU(magmaf_h_M2, N * N);
                 magma_sgetmatrix(N, N, magmaf_d_M2, N, magmaf_h_M2, N, magmaqueue);
 
                 for(long ii = 0; ii < N; ii++)
@@ -1322,7 +1322,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
             }
             else
             {
-                TESTING_MALLOC_CPU(magma_h_M2, double, N * N);
+                TESTING_DMALLOC_CPU(magma_h_M2, N * N);
                 magma_dgetmatrix(N, N, magma_d_M2, N, magma_h_M2, N, magmaqueue);
 
                 for(long ii = 0; ii < N; ii++)
@@ -1373,11 +1373,11 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
             dAinvMODE = 1;
             if(MAGMAfloat == 1)
             {
-                TESTING_MALLOC_DEV(magmaf_d_Ainv, float, N * M);
+                TESTING_SMALLOC_DEV(magmaf_d_Ainv, N * M);
             }
             else
             {
-                TESTING_MALLOC_DEV(magma_d_Ainv, double, N * M);
+                TESTING_DMALLOC_DEV(magma_d_Ainv, N * M);
             }
         }
 
@@ -1690,9 +1690,9 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         float *magmaf_h_PF;
 
 
-        TESTING_MALLOC_DEV(magmaf_d_PFfmdat, float, M * K);
-        TESTING_MALLOC_DEV(magmaf_d_PF, float, N * K);
-        TESTING_MALLOC_CPU(magmaf_h_PF, float, N * K);
+        TESTING_SMALLOC_DEV(magmaf_d_PFfmdat, M * K);
+        TESTING_SMALLOC_DEV(magmaf_d_PF, N * K);
+        TESTING_SMALLOC_CPU(magmaf_h_PF, N * K);
 
         magma_ssetmatrix(M, K, data.image[ID_PFfmdat].array.F, M, magmaf_d_PFfmdat, M,
                          magmaqueue);
