@@ -82,17 +82,17 @@
             exit(-1);                                                          \
         }
 
-#define TESTING_DMALLOC_DEV( ptr, size )                              \
+#define TESTING_DMALLOC_DEV( ptr, size )                                       \
         if ( MAGMA_SUCCESS !=                                                  \
-                magma_dmalloc( &ptr, (size_t) (size) )) {          \
+                magma_dmalloc( &ptr, (size_t) (size) )) {                      \
             fprintf( stderr, "!!!! magma_dmalloc failed for: %s  size = %ld  typesize = %d\n", #ptr, (long) size, (int) sizeof(double) );     \
             magma_finalize();                                                  \
             exit(-1);                                                          \
         }
 
-#define TESTING_SMALLOC_DEV( ptr, size )                              \
+#define TESTING_SMALLOC_DEV( ptr, size )                                       \
         if ( MAGMA_SUCCESS !=                                                  \
-                magma_smalloc( &ptr, (size_t) (size) )) {          \
+                magma_smalloc( &ptr, (size_t) (size) )) {                      \
             fprintf( stderr, "!!!! magma_fmalloc failed for: %s  size = %ld  typesize = %d\n", #ptr, (long) size, (int) sizeof(float) );     \
             magma_finalize();                                                  \
             exit(-1);                                                          \
