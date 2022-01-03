@@ -505,7 +505,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
                     );
     printf("%d devices detected\n", num_dev);
 
-    int sdev = 1;
+    int sdev = 5;
     printf("Selecting device %d\n", sdev);
     magma_setdevice(devices[1]);
 
@@ -585,8 +585,10 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         {
             printf(">>> LINE %d\n", __LINE__);//TBE
             TESTING_DMALLOC_CPU(magma_h_A, M * N);
+
+
             printf("MAGMA allocating double %d x %d = %ld byte\n", (int) M, (int) N, sizeof(double)*M*N);
-            //TESTING_MALLOC_DEV(magma_d_A, double, M * N);
+            //TESTING_MALLOC_DEV(magma_d_A, M * N);
             if ( MAGMA_SUCCESS !=
                     magma_dmalloc( &magma_d_A, M*N )) {
                 printf(">>> LINE %d\n", __LINE__);//TBE
