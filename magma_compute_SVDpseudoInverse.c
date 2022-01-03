@@ -48,6 +48,7 @@ extern magma_queue_t   magmaqueue;
 
 static long MAGMAloop_iter = 0;
 
+/*
 static double *magma_h_A;
 static double *magma_d_A;
 static double *magma_d_AtA;
@@ -84,7 +85,7 @@ static float *magmaf_h_M2;
 //static float *magmaf_d_U; //left singular vectors
 //static float *magmaf_d_VT; //right singular vectors
 //static float *magmaf_d_B;
-
+*/
 
 static magma_int_t magma_aux_iwork[1];
 static magma_int_t magma_lwork, magma_liwork;
@@ -496,7 +497,35 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
 
 
 
+    double *magma_h_A;
+    double *magma_d_A;
+    double *magma_d_AtA;
+    double *magma_h_AtA;
+    double *magma_w1; // eigenvalues
+    double *magma_h_R;
+    double *magma_h_work;
+    double *magma_d_VT1;
+    double *magma_h_VT1;
+    double *magma_d_M2;
+    double *magma_d_Ainv;
+    double *magma_h_Ainv;
+    double *magma_h_M2;
 
+
+
+    float *magmaf_h_A;
+    float *magmaf_d_A;
+    float *magmaf_d_AtA;
+    float *magmaf_h_AtA;
+    float *magmaf_w1; // eigenvalues
+    float *magmaf_h_R;
+    float *magmaf_h_work;
+    float *magmaf_d_VT1;
+    float *magmaf_h_VT1;
+    float *magmaf_d_M2;
+    float *magmaf_d_Ainv;
+    float *magmaf_h_Ainv;
+    float *magmaf_h_M2;
 
 
     // =================================================================
@@ -543,7 +572,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
             //TESTING_MALLOC_DEV(magma_d_A, double, M * N);
             if ( MAGMA_SUCCESS !=
                     magma_dmalloc( &magma_d_A, (size_t) sizeof(double)*M*N )) {
-                        printf(">>> LINE %d\n", __LINE__);//TBE
+                printf(">>> LINE %d\n", __LINE__);//TBE
 
                 fprintf( stderr, "!!!! magma_malloc failed\n");
                 magma_finalize();
