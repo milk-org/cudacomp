@@ -4,6 +4,7 @@
 
 
 #ifdef HAVE_CUDA
+#define HAVE_CUBLAS
 #include <cuda_runtime_api.h>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
