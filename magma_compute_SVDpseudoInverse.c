@@ -498,19 +498,19 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
     printf("Selecting device\n");
     fflush(stdout);
     magma_int_t num_dev;
-    magma_device_t * devices = (magma_device_t *) malloc(sizeof(magma_device_t) * 10);
-    magma_getdevices( devices,
+    magma_device_t * devicearray = (magma_device_t *) malloc(sizeof(magma_device_t) * 10);
+    magma_getdevices( devicearray,
                       10,
                       &num_dev
                     );
     printf("%d devices detected\n", num_dev);
 
-    int sdev = 5;
-    printf("Selecting device %d\n", sdev);
-    magma_setdevice(devices[sdev]);
+    int GPUdevice = 5;
+    printf("Selecting device %d\n", GPUdevice);
+    magma_setdevice(devicearray[GPUdevice]);
 
     fflush(stdout);
-    free(devices);
+    
 
 
 
@@ -649,7 +649,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
 
     if(MAGMAloop_iter == 0)
     {
-        magma_queue_create(0, &magmaqueue);
+        magma_queue_create(devicearray[GPUdevice], &magmaqueue);
     }
     printf(">>> LINE %d\n", __LINE__);//TBE
 
@@ -1774,6 +1774,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
 
     if(LOOPmode == 0)
     {
+        free(devicearray);
         magma_queue_destroy(magmaqueue);
         magma_finalize();                                //  finalize  Magma
     }
