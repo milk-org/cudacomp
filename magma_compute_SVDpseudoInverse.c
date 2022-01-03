@@ -504,6 +504,11 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
                       &num_dev
                     );
     printf("%d devices detected\n", num_dev);
+
+    int sdev = 1;
+    printf("Selecting device %d\n", sdev);
+    magma_setdevice(devices[1]);
+
     fflush(stdout);
     free(devices);
 
