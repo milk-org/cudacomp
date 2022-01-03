@@ -495,15 +495,16 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         INIT_MAGMA = 1;
     }
 
-    static magma_device_t *devices;
-    static magma_int_t *num_dev;
-
-    devices = (magma_device_t *) malloc(sizeof(magma_device_t) * 10);
+    printf("Selecting device\n");
+    fflush(stdout);
+    magma_int_t num_dev;
+    magma_device_t * devices = (magma_device_t *) malloc(sizeof(magma_device_t) * 10);
     magma_getdevices( devices,
                       10,
-                      num_dev
+                      &num_dev
                     );
-    printf("%d devices detected\n", *num_dev);
+    printf("%d devices detected\n", num_dev);
+    fflush(stdout);
     free(devices);
 
 
