@@ -612,19 +612,19 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(
         else
         {
             printf(">>> LINE %d\n", __LINE__);//TBE
-            TESTING_FMALLOC_CPU(magmaf_h_A, M * N);
+            TESTING_SMALLOC_CPU(magmaf_h_A, M * N);
             printf("Allocating magmaf_d_A on device ...\n");
             fflush(stdout);
-            TESTING_FMALLOC_DEV(magmaf_d_A, M * N);
+            TESTING_SMALLOC_DEV(magmaf_d_A, M * N);
             printf(" ... done\n");
             fflush(stdout);
 
-            TESTING_FMALLOC_CPU(magmaf_h_AtA, N * N);
-            TESTING_FMALLOC_DEV(magmaf_d_AtA, N * N);
+            TESTING_SMALLOC_CPU(magmaf_h_AtA, N * N);
+            TESTING_SMALLOC_DEV(magmaf_d_AtA, N * N);
 
-            TESTING_FMALLOC_CPU(magmaf_h_VT1, N * N);
-            TESTING_FMALLOC_DEV(magmaf_d_VT1, N * N);
-            TESTING_FMALLOC_DEV(magmaf_d_M2,  N * N);
+            TESTING_SMALLOC_CPU(magmaf_h_VT1, N * N);
+            TESTING_SMALLOC_DEV(magmaf_d_VT1, N * N);
+            TESTING_SMALLOC_DEV(magmaf_d_M2,  N * N);
         }
     }
 

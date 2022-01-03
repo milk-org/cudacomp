@@ -33,7 +33,7 @@
         exit(-1);                                                          \
     }
 
-#define TESTING_FMALLOC_CPU( ptr, size )                                   \
+#define TESTING_SMALLOC_CPU( ptr, size )                                   \
     if ( MAGMA_SUCCESS !=                                                  \
             magma_smalloc_cpu( &ptr, (size_t) (size) )) {            \
         fprintf( stderr, "!!!! magma_fmalloc_cpu failed for: %s\n", #ptr ); \
@@ -90,7 +90,7 @@
             exit(-1);                                                          \
         }
 
-#define TESTING_FMALLOC_DEV( ptr, size )                              \
+#define TESTING_SMALLOC_DEV( ptr, size )                              \
         if ( MAGMA_SUCCESS !=                                                  \
                 magma_smalloc( &ptr, (size_t) (size) )) {          \
             fprintf( stderr, "!!!! magma_fmalloc failed for: %s  size = %ld  typesize = %d\n", #ptr, (long) size, (int) sizeof(float) );     \

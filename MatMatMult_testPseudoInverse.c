@@ -175,14 +175,14 @@ long CUDACOMP_MatMatMult_testPseudoInverse(
     }
     magma_queue_create(0, &magmaqueue);
 
-    TESTING_MALLOC_CPU(magmaf_h_A, float, M * N);
-    TESTING_MALLOC_DEV(magmaf_d_A, float, M * N);
+    TESTING_SMALLOC_CPU(magmaf_h_A, M * N);
+    TESTING_SMALLOC_DEV(magmaf_d_A, M * N);
 
-    TESTING_MALLOC_CPU(magmaf_h_Ainv, float, M * N);
-    TESTING_MALLOC_DEV(magmaf_d_Ainv, float, M * N);
+    TESTING_SMALLOC_CPU(magmaf_h_Ainv, M * N);
+    TESTING_SMALLOC_DEV(magmaf_d_Ainv, M * N);
 
-    TESTING_MALLOC_CPU(magmaf_h_AinvA, float, N * N);
-    TESTING_MALLOC_DEV(magmaf_d_AinvA, float, N * N);
+    TESTING_SMALLOC_CPU(magmaf_h_AinvA, N * N);
+    TESTING_SMALLOC_DEV(magmaf_d_AinvA, N * N);
 
 
     /// load matA in h_A -> d_A
