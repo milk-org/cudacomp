@@ -8,33 +8,30 @@
  *
  */
 
-
 #define MODULE_SHORTNAME_DEFAULT "cuda"
-#define MODULE_DESCRIPTION       "CUDA wrapper"
+#define MODULE_DESCRIPTION "CUDA wrapper"
 
 #ifdef HAVE_CUDA
 #include <cublas_v2.h>
 #endif
 
 #ifdef HAVE_MAGMA
-#include "magma_v2.h"
 #include "magma_lapack.h"
+#include "magma_v2.h"
 #endif
-
-
 
 #include "CommandLineInterface/CLIcore.h"
 
 #include "cudacomp_types.h"
 
 #include "Coeff2Map_Loop.h"
+#include "MVMextractModes.h"
+#include "MatMatMult_testPseudoInverse.h"
 #include "cudacomp_MVMextractModesLoop.h"
 #include "cudacompinit.h"
 #include "cudacomptest.h"
 #include "magma_compute_SVDpseudoInverse.h"
 #include "magma_compute_SVDpseudoInverse_SVD.h"
-#include "MatMatMult_testPseudoInverse.h"
-#include "MVMextractModes.h"
 
 #include "PCA.h"
 
@@ -47,25 +44,20 @@ imageID IDtiming = -1; // index to image where timing should be written
 int cuda_deviceCount;
 GPUMATMULTCONF gpumatmultconf[20]; // supports up to 20 configurations per process
 float cublasSgemv_alpha = 1.0;
-float cublasSgemv_beta  = 0.0;
+float cublasSgemv_beta = 0.0;
 #endif
 
 #ifdef HAVE_MAGMA
 int INIT_MAGMA = 0;
-magma_queue_t   magmaqueue;
+magma_queue_t magmaqueue;
 #endif
-
-
-
-
-
 
 INIT_MODULE_LIB(cudacomp)
 
 static void __attribute__((constructor)) libinit_cudacomp_printinfo()
 {
 #ifdef HAVE_CUDA
-    if(!getenv("MILK_QUIET"))
+    if (!getenv("MILK_QUIET"))
     {
         printf("[CUDA %d]", data.quiet);
     }
@@ -73,22 +65,18 @@ static void __attribute__((constructor)) libinit_cudacomp_printinfo()
 #endif
 
 #ifdef HAVE_MAGMA
-    if(!getenv("MILK_QUIET"))
+    if (!getenv("MILK_QUIET"))
     {
         printf("[MAGMA]");
     }
 #endif
 }
 
-
-
-
-
 static errno_t init_module_CLI()
 {
 #ifdef HAVE_CUDA
     //    printf("HAVE_CUDA defined\n");
-    for(int i = 0; i < 20; i++)
+    for (int i = 0; i < 20; i++)
     {
         gpumatmultconf[i].init = 0;
         gpumatmultconf[i].alloc = 0;
@@ -105,7 +93,6 @@ static errno_t init_module_CLI()
     Coeff2Map_Loop_addCLIcmd();
     cudacomp_MVMextractModesLoop_addCLIcmd();
 
-
     CLIADDCMD_cudacomp__MVMextractModes();
 #endif
     // add atexit functions here
@@ -113,21 +100,7 @@ static errno_t init_module_CLI()
     return RETURN_SUCCESS;
 }
 
-
-
-
-
-
-
-
-
-
 #ifdef HAVE_CUDA
-
-
-
-
-
 
 // extract mode coefficients from data stream
 /*
@@ -382,20 +355,4 @@ int CUDACOMP_createModesLoop(const char *DMmodeval_stream, const char *DMmodes, 
 
 */
 
-
-
-
-
-
-
 #endif
-
-
-
-
-
-
-
-
-
-

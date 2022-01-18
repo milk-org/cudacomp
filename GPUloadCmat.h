@@ -3,10 +3,6 @@
 
 #ifdef HAVE_CUDA
 
-
-errno_t GPUloadCmat(
-    int index
-);
-
+errno_t GPUloadCmat(int index);
 
 #endif

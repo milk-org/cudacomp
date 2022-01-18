@@ -5,11 +5,7 @@
 
 errno_t MatMatMult_testPseudoInverse_addCLIcmd();
 
-
-long CUDACOMP_MatMatMult_testPseudoInverse(
-    const char *IDmatA_name,
-    const char *IDmatAinv_name,
-    const char *IDmatOut_name
-);
+long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *IDmatAinv_name,
+                                           const char *IDmatOut_name);
 
 #endif

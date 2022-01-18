@@ -3,15 +3,13 @@
 
 #ifdef HAVE_CUDA
 
-#include <cuda_runtime_api.h>
-#include <cuda_runtime.h>
 #include <cublas_v2.h>
-
+#include <cuda_runtime.h>
+#include <cuda_runtime_api.h>
 
 #include "cudacomp_types.h"
 
 extern GPUMATMULTCONF gpumatmultconf[20];
-
 
 int GPU_loop_MultMat_free(int index)
 {
@@ -24,7 +22,7 @@ int GPU_loop_MultMat_free(int index)
     cudaFree(gpumatmultconf[index].d_dmRef);
     free(gpumatmultconf[index].stream);
 
-    for(device = 0; device < gpumatmultconf[index].NBstreams; device++)
+    for (device = 0; device < gpumatmultconf[index].NBstreams; device++)
     {
         // free memory for stream
         cublasDestroy(gpumatmultconf[index].handle[device]);
@@ -48,9 +46,7 @@ int GPU_loop_MultMat_free(int index)
 
     free(gpumatmultconf[index].GPUdevice);
 
-    return(0);
+    return (0);
 }
-
-
 
 #endif
