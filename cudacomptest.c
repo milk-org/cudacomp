@@ -1,8 +1,9 @@
 /** @file cudacomptest.c
  */
 
-#include "COREMOD_memory/COREMOD_memory.h"
 #include "CommandLineInterface/CLIcore.h"
+
+#include "COREMOD_memory/COREMOD_memory.h"
 
 #include "GPU_SVD_computeControlMatrix.h"
 #include "GPU_loop_MultMat_execute.h"

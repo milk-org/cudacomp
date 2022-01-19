@@ -11,8 +11,10 @@
 extern int INIT_MAGMA;
 extern magma_queue_t magmaqueue;
 
-#include "COREMOD_memory/COREMOD_memory.h"
 #include "CommandLineInterface/CLIcore.h"
+
+#include "COREMOD_memory/COREMOD_memory.h"
+
 #include "cudacomp_types.h"
 
 // ==========================================

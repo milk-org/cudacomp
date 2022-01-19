@@ -6,8 +6,9 @@
 #include "magma_v2.h"
 #endif
 
-#include "COREMOD_memory/COREMOD_memory.h"
 #include "CommandLineInterface/CLIcore.h"
+
+#include "COREMOD_memory/COREMOD_memory.h"
 
 #ifdef HAVE_CUDA
 

@@ -7,8 +7,9 @@
 #include <fcntl.h>
 #include <pthread.h>
 
-#include "COREMOD_memory/COREMOD_memory.h"
 #include "CommandLineInterface/CLIcore.h"
+
+#include "COREMOD_memory/COREMOD_memory.h"
 
 #include "GPU_loop_MultMat_free.h"
 #include "GPUloadCmat.h"
