@@ -16,13 +16,23 @@
 // Local variables pointers
 static char *inimname;
 
-static CLICMDARGDEF farg[] = {
-    {CLIARG_IMG, ".in_name", "input image", "im1", CLIARG_VISIBLE_DEFAULT, (void **)&inimname, NULL}};
+static CLICMDARGDEF farg[] = {{CLIARG_IMG,
+                               ".in_name",
+                               "input image",
+                               "im1",
+                               CLIARG_VISIBLE_DEFAULT,
+                               (void **) &inimname,
+                               NULL}};
 
-static CLICMDDATA CLIcmddata = {"PCAdecomp", "Principal Components Analysis decomposition", CLICMD_FIELDS_DEFAULTS};
+static CLICMDDATA CLIcmddata = {"PCAdecomp",
+                                "Principal Components Analysis decomposition",
+                                CLICMD_FIELDS_DEFAULTS};
 
 // detailed help
-static errno_t help_function() { return RETURN_SUCCESS; }
+static errno_t help_function()
+{
+    return RETURN_SUCCESS;
+}
 
 void printMatrix(int m, int n, const double *A, int lda, const char *name)
 {
@@ -49,21 +59,25 @@ static imageID image_PCAdecomp(IMGID *img)
     // Create image if needed
     //imageID ID = img->ID;
 
-    printf("Image size : %u %u %u\n", img->md->size[0], img->md->size[1], img->md->size[2]);
+    printf("Image size : %u %u %u\n",
+           img->md->size[0],
+           img->md->size[1],
+           img->md->size[2]);
 
 #ifdef HAVE_CUDA
-    cusolverDnHandle_t cusolverH = NULL;
-    cublasHandle_t cublasH = NULL;
-    cublasStatus_t cublas_status = CUBLAS_STATUS_SUCCESS;
+    cusolverDnHandle_t cusolverH     = NULL;
+    cublasHandle_t     cublasH       = NULL;
+    cublasStatus_t     cublas_status = CUBLAS_STATUS_SUCCESS;
 
-    const int m = img->md->size[2];                    // number of sammples
-    const int n = img->md->size[0] * img->md->size[1]; // number of image pixels in each sample
+    const int m = img->md->size[2]; // number of sammples
+    const int n = img->md->size[0] *
+                  img->md->size[1]; // number of image pixels in each sample
 
     printf("A size   %d %d\n", m, n);
 
     const int lda = m;
 
-    double *A = (double *)malloc(sizeof(double) * lda * n);
+    double *A = (double *) malloc(sizeof(double) * lda * n);
 
     for (int ii = 0; ii < n; ii++) // pixel
     {
@@ -73,19 +87,19 @@ static imageID image_PCAdecomp(IMGID *img)
         }
     }
 
-    double S[n]; // singular value
-    double *d_A = NULL;
-    double *d_S = NULL;
-    double *d_U = NULL;
-    double *d_VT = NULL;
-    int *devInfo = NULL;
-    double *d_work = NULL;
+    double  S[n]; // singular value
+    double *d_A     = NULL;
+    double *d_S     = NULL;
+    double *d_U     = NULL;
+    double *d_VT    = NULL;
+    int    *devInfo = NULL;
+    double *d_work  = NULL;
     double *d_rwork = NULL;
-    double *d_W = NULL; // W = S*VT
+    double *d_W     = NULL; // W = S*VT
 
-    int lwork = 0;
-    int info_gpu = 0;
-    const double h_one = 1;
+    int          lwork       = 0;
+    int          info_gpu    = 0;
+    const double h_one       = 1;
     const double h_minus_one = -1;
 
     printf("A = \n");
@@ -95,58 +109,65 @@ static imageID image_PCAdecomp(IMGID *img)
     // step 1: create cusolverDn/cublas handle
     cusolverStatus_t cusolver_status = cusolverDnCreate(&cusolverH);
     assert(CUSOLVER_STATUS_SUCCESS == cusolver_status);
-    (void)cusolver_status;
+    (void) cusolver_status;
 
     cublas_status = cublasCreate(&cublasH);
     assert(CUBLAS_STATUS_SUCCESS == cublas_status);
 
     // step 2: copy A and B to device
     {
-        cudaError_t cudaStat = cudaMalloc((void **)&d_A, sizeof(double) * lda * n);
+        cudaError_t cudaStat =
+            cudaMalloc((void **) &d_A, sizeof(double) * lda * n);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     {
-        cudaError_t cudaStat = cudaMalloc((void **)&d_S, sizeof(double) * n);
+        cudaError_t cudaStat = cudaMalloc((void **) &d_S, sizeof(double) * n);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     {
-        cudaError_t cudaStat = cudaMalloc((void **)&d_U, sizeof(double) * lda * m);
+        cudaError_t cudaStat =
+            cudaMalloc((void **) &d_U, sizeof(double) * lda * m);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     {
-        cudaError_t cudaStat = cudaMalloc((void **)&d_VT, sizeof(double) * lda * n);
+        cudaError_t cudaStat =
+            cudaMalloc((void **) &d_VT, sizeof(double) * lda * n);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     {
-        cudaError_t cudaStat = cudaMalloc((void **)&devInfo, sizeof(int));
+        cudaError_t cudaStat = cudaMalloc((void **) &devInfo, sizeof(int));
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     {
-        cudaError_t cudaStat = cudaMalloc((void **)&d_W, sizeof(double) * lda * n);
+        cudaError_t cudaStat =
+            cudaMalloc((void **) &d_W, sizeof(double) * lda * n);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     {
-        cudaError_t cudaStat = cudaMemcpy(d_A, A, sizeof(double) * lda * n, cudaMemcpyHostToDevice);
+        cudaError_t cudaStat = cudaMemcpy(d_A,
+                                          A,
+                                          sizeof(double) * lda * n,
+                                          cudaMemcpyHostToDevice);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
-    double dR0 = 0.0;
+    double dR0    = 0.0;
     cublas_status = cublasDnrm2_v2(cublasH, lda * n, d_A, 1, &dR0);
     assert(CUBLAS_STATUS_SUCCESS == cublas_status);
-    (void)cublas_status;
+    (void) cublas_status;
 
     printf("dR0 = %f\n", dR0);
 
@@ -155,50 +176,75 @@ static imageID image_PCAdecomp(IMGID *img)
     assert(cusolver_status == CUSOLVER_STATUS_SUCCESS);
 
     {
-        cudaError_t cudaStat = cudaMalloc((void **)&d_work, sizeof(double) * lwork);
+        cudaError_t cudaStat =
+            cudaMalloc((void **) &d_work, sizeof(double) * lwork);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     // step 4: compute SVD
-    signed char jobu = 'A';  // all m columns of U
+    signed char jobu  = 'A'; // all m columns of U
     signed char jobvt = 'A'; // all n columns of VT
-    cusolver_status = cusolverDnDgesvd(cusolverH, jobu, jobvt, m, n, d_A, lda, d_S, d_U,
+    cusolver_status   = cusolverDnDgesvd(cusolverH,
+                                       jobu,
+                                       jobvt,
+                                       m,
+                                       n,
+                                       d_A,
+                                       lda,
+                                       d_S,
+                                       d_U,
                                        lda, // ldu
                                        d_VT,
                                        lda, // ldvt,
-                                       d_work, lwork, d_rwork, devInfo);
+                                       d_work,
+                                       lwork,
+                                       d_rwork,
+                                       devInfo);
 
     {
         cudaError_t cudaStat = cudaDeviceSynchronize();
         assert(CUSOLVER_STATUS_SUCCESS == cusolver_status);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
-    double *U = (double *)malloc(sizeof(double) * lda * m);
+    double *U = (double *) malloc(sizeof(double) * lda * m);
     {
-        cudaError_t cudaStat = cudaMemcpy(U, d_U, sizeof(double) * lda * m, cudaMemcpyDeviceToHost);
+        cudaError_t cudaStat = cudaMemcpy(U,
+                                          d_U,
+                                          sizeof(double) * lda * m,
+                                          cudaMemcpyDeviceToHost);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
-    double *VT = (double *)malloc(sizeof(double) * lda * n);
+    double *VT = (double *) malloc(sizeof(double) * lda * n);
     {
-        cudaError_t cudaStat = cudaMemcpy(VT, d_VT, sizeof(double) * lda * n, cudaMemcpyDeviceToHost);
+        cudaError_t cudaStat = cudaMemcpy(VT,
+                                          d_VT,
+                                          sizeof(double) * lda * n,
+                                          cudaMemcpyDeviceToHost);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     // Write PCA compents
-    int lmax = 1000;
+    int       lmax = 1000;
     uint32_t *imPCAsize;
-    imPCAsize = (uint32_t *)malloc(sizeof(uint32_t) * 3);
+    imPCAsize    = (uint32_t *) malloc(sizeof(uint32_t) * 3);
     imPCAsize[0] = img->md->size[0];
     imPCAsize[1] = img->md->size[1];
     imPCAsize[2] = lmax;
     imageID outPCAID;
-    create_image_ID("imPCA", 3, imPCAsize, _DATATYPE_DOUBLE, 0, 10, 0, &outPCAID);
+    create_image_ID("imPCA",
+                    3,
+                    imPCAsize,
+                    _DATATYPE_DOUBLE,
+                    0,
+                    10,
+                    0,
+                    &outPCAID);
     for (uint32_t jj = 0; jj < lmax; jj++)
     {
         for (uint32_t ii = 0; ii < n; ii++)
@@ -209,15 +255,17 @@ static imageID image_PCAdecomp(IMGID *img)
     free(imPCAsize);
 
     {
-        cudaError_t cudaStat = cudaMemcpy(S, d_S, sizeof(double) * n, cudaMemcpyDeviceToHost);
+        cudaError_t cudaStat =
+            cudaMemcpy(S, d_S, sizeof(double) * n, cudaMemcpyDeviceToHost);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     {
-        cudaError_t cudaStat = cudaMemcpy(&info_gpu, devInfo, sizeof(int), cudaMemcpyDeviceToHost);
+        cudaError_t cudaStat =
+            cudaMemcpy(&info_gpu, devInfo, sizeof(int), cudaMemcpyDeviceToHost);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     printf("after gesvd: info_gpu = %d\n", info_gpu);
@@ -239,9 +287,9 @@ static imageID image_PCAdecomp(IMGID *img)
     // process S
     double *d_S1 = NULL;
     {
-        cudaError_t cudaStat = cudaMalloc((void **)&d_S1, sizeof(double) * n);
+        cudaError_t cudaStat = cudaMalloc((void **) &d_S1, sizeof(double) * n);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     for (uint32_t k = 50; k < n; k++)
@@ -250,21 +298,34 @@ static imageID image_PCAdecomp(IMGID *img)
     }
 
     {
-        cudaError_t cudaStat = cudaMemcpy(d_S1, S, sizeof(double) * n, cudaMemcpyHostToDevice);
+        cudaError_t cudaStat =
+            cudaMemcpy(d_S1, S, sizeof(double) * n, cudaMemcpyHostToDevice);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     // step 6: |A - U*S*VT|
     // W = S*VT
-    cublas_status = cublasDdgmm(cublasH, CUBLAS_SIDE_LEFT, n, n, d_VT, lda, d_S1, 1, d_W, lda);
+    cublas_status = cublasDdgmm(cublasH,
+                                CUBLAS_SIDE_LEFT,
+                                n,
+                                n,
+                                d_VT,
+                                lda,
+                                d_S1,
+                                1,
+                                d_W,
+                                lda);
     assert(CUBLAS_STATUS_SUCCESS == cublas_status);
 
     // A := -U*W + A
     {
-        cudaError_t cudaStat = cudaMemcpy(d_A, A, sizeof(double) * lda * n, cudaMemcpyHostToDevice);
+        cudaError_t cudaStat = cudaMemcpy(d_A,
+                                          A,
+                                          sizeof(double) * lda * n,
+                                          cudaMemcpyHostToDevice);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
     cublas_status = cublasDgemm_v2(cublasH,
@@ -276,9 +337,11 @@ static imageID image_PCAdecomp(IMGID *img)
                                    &h_minus_one, /* host pointer */
                                    d_U,          // U
                                    lda,
-                                   d_W,         // W
-                                   lda, &h_one, /* hostpointer */
-                                   d_A, lda);
+                                   d_W, // W
+                                   lda,
+                                   &h_one, /* hostpointer */
+                                   d_A,
+                                   lda);
     assert(CUBLAS_STATUS_SUCCESS == cublas_status);
 
     double dR_fro = 0.0;
@@ -289,18 +352,24 @@ static imageID image_PCAdecomp(IMGID *img)
 
     // copy residual to host
     {
-        cudaError_t cudaStat = cudaMemcpy(A, d_A, sizeof(double) * lda * n, cudaMemcpyDeviceToHost);
+        cudaError_t cudaStat = cudaMemcpy(A,
+                                          d_A,
+                                          sizeof(double) * lda * n,
+                                          cudaMemcpyDeviceToHost);
         assert(cudaSuccess == cudaStat);
-        (void)cudaStat;
+        (void) cudaStat;
     }
 
-    IMGID imgAres = makeIMGID_3D("imAres", img->md->size[0], img->md->size[1], img->md->size[2]);
+    IMGID imgAres = makeIMGID_3D("imAres",
+                                 img->md->size[0],
+                                 img->md->size[1],
+                                 img->md->size[2]);
     imcreateIMGID(&imgAres);
     for (int ii = 0; ii < n; ii++) // pixel
     {
         for (int kk = 0; kk < m; kk++) // sample
         {
-            imgAres.im->array.F[kk * n + ii] = (float)A[ii * m + kk];
+            imgAres.im->array.F[kk * n + ii] = (float) A[ii * m + kk];
         }
     }
 

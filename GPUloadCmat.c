@@ -19,15 +19,21 @@ errno_t GPUloadCmat(int index)
     for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
     {
         for (unsigned int n = gpumatmultconf[index].Noffset[device];
-             n < gpumatmultconf[index].Noffset[device] + gpumatmultconf[index].Nsize[device]; n++)
+             n < gpumatmultconf[index].Noffset[device] +
+                     gpumatmultconf[index].Nsize[device];
+             n++)
         {
             if (gpumatmultconf[index].orientation == 0)
             {
                 for (unsigned int m = 0; m < gpumatmultconf[index].M; m++)
                 {
                     gpumatmultconf[index]
-                        .cMat_part[device][(n - gpumatmultconf[index].Noffset[device]) * gpumatmultconf[index].M + m] =
-                        gpumatmultconf[index].cMat[m * gpumatmultconf[index].N + n];
+                        .cMat_part[device]
+                                  [(n - gpumatmultconf[index].Noffset[device]) *
+                                       gpumatmultconf[index].M +
+                                   m] =
+                        gpumatmultconf[index]
+                            .cMat[m * gpumatmultconf[index].N + n];
                 }
             }
             else
@@ -35,8 +41,12 @@ errno_t GPUloadCmat(int index)
                 for (unsigned int m = 0; m < gpumatmultconf[index].M; m++)
                 {
                     gpumatmultconf[index]
-                        .cMat_part[device][(n - gpumatmultconf[index].Noffset[device]) * gpumatmultconf[index].M + m] =
-                        gpumatmultconf[index].cMat[n * gpumatmultconf[index].M + m];
+                        .cMat_part[device]
+                                  [(n - gpumatmultconf[index].Noffset[device]) *
+                                       gpumatmultconf[index].M +
+                                   m] =
+                        gpumatmultconf[index]
+                            .cMat[n * gpumatmultconf[index].M + m];
                 }
             }
         }
@@ -46,13 +56,19 @@ errno_t GPUloadCmat(int index)
     {
         cudaSetDevice(gpumatmultconf[index].GPUdevice[device]);
         cublasStatus_t error =
-            cublasSetMatrix(gpumatmultconf[index].M, gpumatmultconf[index].Nsize[device], sizeof(float),
-                            gpumatmultconf[index].cMat_part[device], gpumatmultconf[index].M,
-                            gpumatmultconf[index].d_cMat[device], gpumatmultconf[index].M);
+            cublasSetMatrix(gpumatmultconf[index].M,
+                            gpumatmultconf[index].Nsize[device],
+                            sizeof(float),
+                            gpumatmultconf[index].cMat_part[device],
+                            gpumatmultconf[index].M,
+                            gpumatmultconf[index].d_cMat[device],
+                            gpumatmultconf[index].M);
 
         if (error != CUBLAS_STATUS_SUCCESS)
         {
-            printf("cudblasSetMatrix returned error code %d, line(%d)\n", (int)error, __LINE__);
+            printf("cudblasSetMatrix returned error code %d, line(%d)\n",
+                   (int) error,
+                   __LINE__);
             exit(EXIT_FAILURE);
         }
     }

@@ -9,7 +9,7 @@
  */
 
 #define MODULE_SHORTNAME_DEFAULT "cuda"
-#define MODULE_DESCRIPTION "CUDA wrapper"
+#define MODULE_DESCRIPTION       "CUDA wrapper"
 
 #ifdef HAVE_CUDA
 #include <cublas_v2.h>
@@ -38,17 +38,18 @@
 // globals
 
 imageID IDtimerinit = 0;
-imageID IDtiming = -1; // index to image where timing should be written
+imageID IDtiming    = -1; // index to image where timing should be written
 
 #ifdef HAVE_CUDA
 int cuda_deviceCount;
-GPUMATMULTCONF gpumatmultconf[20]; // supports up to 20 configurations per process
+GPUMATMULTCONF
+gpumatmultconf[20]; // supports up to 20 configurations per process
 float cublasSgemv_alpha = 1.0;
-float cublasSgemv_beta = 0.0;
+float cublasSgemv_beta  = 0.0;
 #endif
 
 #ifdef HAVE_MAGMA
-int INIT_MAGMA = 0;
+int           INIT_MAGMA = 0;
 magma_queue_t magmaqueue;
 #endif
 
@@ -78,7 +79,7 @@ static errno_t init_module_CLI()
     //    printf("HAVE_CUDA defined\n");
     for (int i = 0; i < 20; i++)
     {
-        gpumatmultconf[i].init = 0;
+        gpumatmultconf[i].init  = 0;
         gpumatmultconf[i].alloc = 0;
     }
 

@@ -32,7 +32,8 @@ static errno_t delete_image_ID__cli()
     {
         if (data.cmdargtoken[i].type == 4)
         {
-            delete_image_ID(data.cmdargtoken[i].val.string, DELETE_IMAGE_ERRMODE_WARNING);
+            delete_image_ID(data.cmdargtoken[i].val.string,
+                            DELETE_IMAGE_ERRMODE_WARNING);
         }
         else
         {
@@ -51,7 +52,12 @@ static errno_t delete_image_ID__cli()
 errno_t cudacompinit_addCLIcmd()
 {
 
-    RegisterCLIcommand("cudacompinit", __FILE__, CUDACOMP_init, "init CUDA comp", "no argument", "cudacompinit",
+    RegisterCLIcommand("cudacompinit",
+                       __FILE__,
+                       CUDACOMP_init,
+                       "init CUDA comp",
+                       "no argument",
+                       "cudacompinit",
                        "int CUDACOMP_init()");
 
     return RETURN_SUCCESS;
@@ -68,7 +74,7 @@ errno_t cudacompinit_addCLIcmd()
  */
 int CUDACOMP_init()
 {
-    int device;
+    int                   device;
     struct cudaDeviceProp deviceProp;
 
     cudaGetDeviceCount(&cuda_deviceCount);
@@ -77,13 +83,22 @@ int CUDACOMP_init()
     for (device = 0; device < cuda_deviceCount; ++device)
     {
         cudaGetDeviceProperties(&deviceProp, device);
-        printf("Device %d [ %20s ]  has compute capability %d.%d.\n", device, deviceProp.name, deviceProp.major,
+        printf("Device %d [ %20s ]  has compute capability %d.%d.\n",
+               device,
+               deviceProp.name,
+               deviceProp.major,
                deviceProp.minor);
-        printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n",
-               (float)deviceProp.totalGlobalMem / 1048576.0f, (unsigned long long)deviceProp.totalGlobalMem);
+        printf(
+            "  Total amount of global memory:                 %.0f MBytes "
+            "(%llu bytes)\n",
+            (float) deviceProp.totalGlobalMem / 1048576.0f,
+            (unsigned long long) deviceProp.totalGlobalMem);
         printf("  (%2d) Multiprocessors\n", deviceProp.multiProcessorCount);
-        printf("  GPU Clock rate:                                %.0f MHz (%0.2f GHz)\n", deviceProp.clockRate * 1e-3f,
-               deviceProp.clockRate * 1e-6f);
+        printf(
+            "  GPU Clock rate:                                %.0f MHz (%0.2f "
+            "GHz)\n",
+            deviceProp.clockRate * 1e-3f,
+            deviceProp.clockRate * 1e-6f);
         printf("\n");
 #ifdef HAVE_MAGMA
         printf("Using MAGMA library\n");
@@ -93,13 +108,13 @@ int CUDACOMP_init()
         printf("\n");
     }
 
-    return ((int)cuda_deviceCount);
+    return ((int) cuda_deviceCount);
 }
 
 void *GPU_scanDevices(void *deviceCount_void_ptr)
 {
-    int *devcnt_ptr = (int *)deviceCount_void_ptr;
-    int device;
+    int                  *devcnt_ptr = (int *) deviceCount_void_ptr;
+    int                   device;
     struct cudaDeviceProp deviceProp;
 
     printf("Scanning for GPU devices ...\n");
@@ -113,16 +128,25 @@ void *GPU_scanDevices(void *deviceCount_void_ptr)
     for (device = 0; device < cuda_deviceCount; ++device)
     {
         cudaGetDeviceProperties(&deviceProp, device);
-        printf("Device %d [ %20s ]  has compute capability %d.%d.\n", device, deviceProp.name, deviceProp.major,
+        printf("Device %d [ %20s ]  has compute capability %d.%d.\n",
+               device,
+               deviceProp.name,
+               deviceProp.major,
                deviceProp.minor);
 
-        printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n",
-               (float)deviceProp.totalGlobalMem / 1048576.0f, (unsigned long long)deviceProp.totalGlobalMem);
+        printf(
+            "  Total amount of global memory:                 %.0f MBytes "
+            "(%llu bytes)\n",
+            (float) deviceProp.totalGlobalMem / 1048576.0f,
+            (unsigned long long) deviceProp.totalGlobalMem);
 
         printf("  (%2d) Multiprocessors\n", deviceProp.multiProcessorCount);
 
-        printf("  GPU Clock rate:                                %.0f MHz (%0.2f GHz)\n", deviceProp.clockRate * 1e-3f,
-               deviceProp.clockRate * 1e-6f);
+        printf(
+            "  GPU Clock rate:                                %.0f MHz (%0.2f "
+            "GHz)\n",
+            deviceProp.clockRate * 1e-3f,
+            deviceProp.clockRate * 1e-6f);
 
         printf("\n");
     }

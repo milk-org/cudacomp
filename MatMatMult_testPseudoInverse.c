@@ -8,7 +8,7 @@
 #ifdef HAVE_MAGMA
 #include "magma_lapack.h"
 #include "magma_v2.h"
-extern int INIT_MAGMA;
+extern int           INIT_MAGMA;
 extern magma_queue_t magmaqueue;
 
 #include "CommandLineInterface/CLIcore.h"
@@ -21,7 +21,8 @@ extern magma_queue_t magmaqueue;
 // Forward declaration(s)
 // ==========================================
 
-long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *IDmatAinv_name,
+long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name,
+                                           const char *IDmatAinv_name,
                                            const char *IDmatOut_name);
 
 // ==========================================
@@ -32,7 +33,8 @@ static errno_t CUDACOMP_MatMatMult_testPseudoInverse_cli()
 {
     if (CLI_checkarg(1, 4) + CLI_checkarg(2, 4) + CLI_checkarg(3, 3) == 0)
     {
-        CUDACOMP_MatMatMult_testPseudoInverse(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string,
+        CUDACOMP_MatMatMult_testPseudoInverse(data.cmdargtoken[1].val.string,
+                                              data.cmdargtoken[2].val.string,
                                               data.cmdargtoken[3].val.string);
 
         return CLICMD_SUCCESS;
@@ -50,9 +52,14 @@ static errno_t CUDACOMP_MatMatMult_testPseudoInverse_cli()
 errno_t MatMatMult_testPseudoInverse_addCLIcmd()
 {
 
-    RegisterCLIcommand("cudatestpsinv", __FILE__, CUDACOMP_MatMatMult_testPseudoInverse_cli, "test pseudo inverse",
-                       "<matA> <matAinv> <matOut>", "cudatestpsinv matA matAinv matOut",
-                       "long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char "
+    RegisterCLIcommand("cudatestpsinv",
+                       __FILE__,
+                       CUDACOMP_MatMatMult_testPseudoInverse_cli,
+                       "test pseudo inverse",
+                       "<matA> <matAinv> <matOut>",
+                       "cudatestpsinv matA matAinv matOut",
+                       "long CUDACOMP_MatMatMult_testPseudoInverse(const char "
+                       "*IDmatA_name, const char "
                        "*IDmatAinv_name, const char *IDmatOut_name)");
 
     return RETURN_SUCCESS;
@@ -62,7 +69,8 @@ errno_t MatMatMult_testPseudoInverse_addCLIcmd()
  *
  */
 
-long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *IDmatAinv_name,
+long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name,
+                                           const char *IDmatAinv_name,
                                            const char *IDmatOut_name)
 {
     imageID IDmatA;
@@ -75,11 +83,11 @@ long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *
     float *magmaf_h_Ainv;
     float *magmaf_d_Ainv;
 
-    long ii;
+    long   ii;
     float *magmaf_d_AinvA;
     float *magmaf_h_AinvA;
 
-    uint32_t *arraysizetmp;
+    uint32_t   *arraysizetmp;
     magma_int_t M, N;
 
     /**
@@ -106,9 +114,9 @@ long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *
     /// j = 0 ... N
     ///
 
-    arraysizetmp = (uint32_t *)malloc(sizeof(uint32_t) * 3);
+    arraysizetmp = (uint32_t *) malloc(sizeof(uint32_t) * 3);
 
-    IDmatA = image_ID(IDmatA_name);
+    IDmatA    = image_ID(IDmatA_name);
     IDmatAinv = image_ID(IDmatAinv_name);
 
     if (data.image[IDmatA].md[0].naxis == 3)
@@ -157,14 +165,33 @@ long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name, const char *
     }
     magma_ssetmatrix(M, N, magmaf_h_Ainv, M, magmaf_d_Ainv, M, magmaqueue);
 
-    magma_sgemm(MagmaTrans, MagmaNoTrans, N, N, M, 1.0, magmaf_d_Ainv, M, magmaf_d_A, M, 0.0, magmaf_d_AinvA, N,
+    magma_sgemm(MagmaTrans,
+                MagmaNoTrans,
+                N,
+                N,
+                M,
+                1.0,
+                magmaf_d_Ainv,
+                M,
+                magmaf_d_A,
+                M,
+                0.0,
+                magmaf_d_AinvA,
+                N,
                 magmaqueue);
 
     magma_sgetmatrix(N, N, magmaf_d_AinvA, N, magmaf_h_AinvA, N, magmaqueue);
 
     arraysizetmp[0] = N;
     arraysizetmp[1] = N;
-    create_image_ID(IDmatOut_name, 2, arraysizetmp, _DATATYPE_FLOAT, 0, 0, 0, &IDmatOut);
+    create_image_ID(IDmatOut_name,
+                    2,
+                    arraysizetmp,
+                    _DATATYPE_FLOAT,
+                    0,
+                    0,
+                    0,
+                    &IDmatOut);
 
     for (ii = 0; ii < N * N; ii++)
     {
