@@ -133,6 +133,7 @@ static errno_t compute_function()
 
     int initref = 0; // 1 when reference has been processed
 
+
     // CONNECT TO INPUT STREAM
     IMGID imgin = makeIMGID(insname);
     resolveIMGID(&imgin, ERRMODE_ABORT);
@@ -295,6 +296,10 @@ static errno_t compute_function()
 
     printf("OUTPUT STREAM : %s  ID: %ld\n", outcoeff, ID_modeval);
     list_image_ID();
+    
+    
+    /* INITIALIZE PROCESSINFO AND PROMOTE SCHED PARAMS BEFORE SPAWNING CUDE THREADS */
+    INSERT_STD_PROCINFO_COMPUTEFUNC_INIT;
 
     if (MODEVALCOMPUTE == 1)
     {
@@ -307,7 +312,7 @@ static errno_t compute_function()
         for (int k = 0; k < deviceCount; k++)
         {
             cudaGetDeviceProperties(&deviceProp, k);
-            printf("Device %d / %d [ %20s ]  has compute capability %d.%d.\n", k, deviceCount, deviceProp.name,
+            printf("Device %d / %d [ %20s ]  has compute capability %d.%d.\n", k+1, deviceCount, deviceProp.name,
                    deviceProp.major, deviceProp.minor);
             printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n",
                    (float)deviceProp.totalGlobalMem / 1048576.0f, (unsigned long long)deviceProp.totalGlobalMem);
@@ -374,6 +379,7 @@ static errno_t compute_function()
             exit(EXIT_FAILURE);
         }
     }
+    
 
     if ((*TRACEMODE) == 1)
     {
@@ -540,7 +546,7 @@ static errno_t compute_function()
     float beta = 0.0;
     uint64_t refindex = 0;
 
-    INSERT_STD_PROCINFO_COMPUTEFUNC_START
+    INSERT_STD_PROCINFO_COMPUTEFUNC_LOOPSTART
 
     // Are we computing a new reference ?
     // if yes, set initref to 0 (reference is NOT initialized)
