@@ -230,7 +230,7 @@ static imageID image_PCAdecomp(IMGID *img)
     }
 
     // Write PCA compents
-    int       lmax = 1000;
+    uint32_t  lmax = 1000;
     uint32_t *imPCAsize;
     imPCAsize    = (uint32_t *) malloc(sizeof(uint32_t) * 3);
     imPCAsize[0] = img->md->size[0];
@@ -247,7 +247,7 @@ static imageID image_PCAdecomp(IMGID *img)
                     &outPCAID);
     for (uint32_t jj = 0; jj < lmax; jj++)
     {
-        for (uint32_t ii = 0; ii < n; ii++)
+        for (uint32_t ii = 0; ii < (uint32_t) n; ii++)
         {
             data.image[outPCAID].array.D[jj * n + ii] = VT[ii * m + jj];
         }
@@ -292,7 +292,7 @@ static imageID image_PCAdecomp(IMGID *img)
         (void) cudaStat;
     }
 
-    for (uint32_t k = 50; k < n; k++)
+    for (uint32_t k = 50; k < (uint32_t) n; k++)
     {
         S[k] = 0.0;
     }

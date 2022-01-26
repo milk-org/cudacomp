@@ -195,9 +195,9 @@ static errno_t compute_function()
     float *d_in      = NULL;
     float *d_modeval = NULL;
 
-    char    traceim_name[STRINGMAXLEN_IMGNAME];
-    long    TRACEsize  = 2000;
-    long    TRACEindex = 0;
+    char traceim_name[STRINGMAXLEN_IMGNAME];
+    long TRACEsize = 2000;
+    //long    TRACEindex = 0;
     imageID IDtrace;
 
     char    process_ave_name[STRINGMAXLEN_IMGNAME];
@@ -658,7 +658,7 @@ static errno_t compute_function()
 
     initref = 0; // 1 when reference has been processed
 
-    long twait1 = *twait;
+    //long twait1 = *twait;
 
     printf("LOOP START   MODEVALCOMPUTE = %d\n", MODEVALCOMPUTE);
     fflush(stdout);
