@@ -373,14 +373,6 @@ static errno_t compute_function()
     if (ID_modeval == -1)
     { // CREATE
         printf("======== Creating stream %s\n", outcoeff);
-        create_image_ID(outcoeff,
-                        2,
-                        arraytmp,
-                        _DATATYPE_FLOAT,
-                        1,
-                        0,
-                        0,
-                        &ID_modeval);
         MODEVALCOMPUTE = 1;
     }
     else
@@ -393,10 +385,24 @@ static errno_t compute_function()
         else
             MODEVALCOMPUTE = 1;
     }
+
+    // create stream if wrong size
+    create_image_ID(outcoeff,
+                    2,
+                    arraytmp,
+                    _DATATYPE_FLOAT,
+                    1,
+                    0,
+                    0,
+                    &ID_modeval);
+
+
     free(arraytmp);
 
     printf("OUTPUT STREAM : %s  ID: %ld\n", outcoeff, ID_modeval);
     list_image_ID();
+
+
 
 
     /* INITIALIZE PROCESSINFO AND PROMOTE SCHED PARAMS BEFORE SPAWNING CUDE THREADS */
