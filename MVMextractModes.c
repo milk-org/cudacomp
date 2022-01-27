@@ -368,9 +368,11 @@ static errno_t compute_function()
     }
 
     // CONNNECT TO OR CREATE OUTPUT STREAM
+    list_image_ID();
     imageID ID_modeval = image_ID(outcoeff);
     if (ID_modeval == -1)
-    { // CREATE IT
+    { // CREATE
+        printf("======== Creating stream %s\n", outcoeff);
         create_image_ID(outcoeff,
                         2,
                         arraytmp,
