@@ -373,6 +373,15 @@ static errno_t compute_function()
     if (ID_modeval == -1)
     { // CREATE
         printf("======== Creating stream %s\n", outcoeff);
+        // create stream if wrong size
+        create_image_ID(outcoeff,
+                        2,
+                        arraytmp,
+                        _DATATYPE_FLOAT,
+                        1,
+                        0,
+                        0,
+                        &ID_modeval);
         MODEVALCOMPUTE = 1;
     }
     else
@@ -386,15 +395,7 @@ static errno_t compute_function()
             MODEVALCOMPUTE = 1;
     }
 
-    // create stream if wrong size
-    create_image_ID(outcoeff,
-                    2,
-                    arraytmp,
-                    _DATATYPE_FLOAT,
-                    1,
-                    0,
-                    0,
-                    &ID_modeval);
+
 
 
     free(arraytmp);
