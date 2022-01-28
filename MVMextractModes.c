@@ -368,7 +368,21 @@ static errno_t compute_function()
     }
 
     // CONNNECT TO OR CREATE OUTPUT STREAM
-    list_image_ID();
+
+    IMGID imgout = makeIMGID(outcoeff);
+    resolveIMGID(&imgout, ERRMODE_WARN);
+
+    // create blank img for comparison
+    IMGID imgc      = makeIMGID_blank();
+    imgc.datatype   = _DATATYPE_FLOAT;
+    imgc.naxis      = 2;
+    imgc.size[0]    = arraytmp[0];
+    imgc.size[1]    = arraytmp[1];
+    uint64_t imgerr = IMGIDcompare(imgout, imgc);
+    printf("%lu errors\n", imgerr);
+
+
+    // Stream should already be in memory
     imageID ID_modeval = image_ID(outcoeff);
     if (ID_modeval == -1)
     { // CREATE
@@ -394,8 +408,6 @@ static errno_t compute_function()
         else
             MODEVALCOMPUTE = 1;
     }
-
-
 
 
     free(arraytmp);
