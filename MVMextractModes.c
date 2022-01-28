@@ -371,23 +371,28 @@ static errno_t compute_function()
 
     IMGID imgout = makeIMGID(outcoeff);
     resolveIMGID(&imgout, ERRMODE_WARN);
+    imageID ID_modeval = imgout.ID;
 
-    // create blank img for comparison
-    IMGID imgc      = makeIMGID_blank();
-    imgc.datatype   = _DATATYPE_FLOAT;
-    imgc.naxis      = 2;
-    imgc.size[0]    = arraytmp[0];
-    imgc.size[1]    = arraytmp[1];
-    uint64_t imgerr = IMGIDcompare(imgout, imgc);
-    printf("%lu errors\n", imgerr);
+    if (imgout.ID != -1)
+    {
+        // create blank img for comparison
+        IMGID imgc      = makeIMGID_blank();
+        imgc.datatype   = _DATATYPE_FLOAT;
+        imgc.naxis      = 2;
+        imgc.size[0]    = arraytmp[0];
+        imgc.size[1]    = arraytmp[1];
+        uint64_t imgerr = IMGIDcompare(imgout, imgc);
+        printf("%lu errors\n", imgerr);
 
-
-    // Stream should already be in memory
-    imageID ID_modeval = image_ID(outcoeff);
-    if (ID_modeval == -1)
-    { // CREATE
-        printf("======== Creating stream %s\n", outcoeff);
-        // create stream if wrong size
+        if (imgerr != 0)
+        {
+            //ImageStreamIO_destroyIm(imgout.im);
+            delete_image_ID(outcoeff, DELETE_IMAGE_ERRMODE_WARNING);
+            imgout.ID = -1;
+        }
+    }
+    if (imgout.ID == -1)
+    {
         create_image_ID(outcoeff,
                         2,
                         arraytmp,
@@ -396,19 +401,40 @@ static errno_t compute_function()
                         0,
                         0,
                         &ID_modeval);
-        MODEVALCOMPUTE = 1;
     }
-    else
-    { // USE STREAM, DO NOT COMPUTE IT
-        printf("======== Using pre-existing stream %s\n", outcoeff);
-        fflush(stdout);
 
-        if (outinit == 0)
-            MODEVALCOMPUTE = 0;
-        else
+
+    MODEVALCOMPUTE = 1;
+
+
+    /*
+        // Stream should already be in memory
+        imageID ID_modeval = image_ID(outcoeff);
+        if (ID_modeval == -1)
+        {   // CREATE
+            printf("======== Creating stream %s\n", outcoeff);
+            // create stream if wrong size
+            create_image_ID(outcoeff,
+                            2,
+                            arraytmp,
+                            _DATATYPE_FLOAT,
+                            1,
+                            0,
+                            0,
+                            &ID_modeval);
             MODEVALCOMPUTE = 1;
-    }
+        }
+        else
+        {   // USE STREAM, DO NOT COMPUTE IT
+            printf("======== Using pre-existing stream %s\n", outcoeff);
+            fflush(stdout);
 
+            if (outinit == 0)
+                MODEVALCOMPUTE = 0;
+            else
+                MODEVALCOMPUTE = 1;
+        }
+    */
 
     free(arraytmp);
 
