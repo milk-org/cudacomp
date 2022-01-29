@@ -369,7 +369,7 @@ static errno_t compute_function()
 
 
     // CONNNECT TO OR CREATE OUTPUT STREAM
-    // TO BE MOVED AS MACRO
+    // TODO: replace with stream_connect_create_2Df32
 
     // try to connect to local memory
     IMGID imgout = mkIMGID_from_name(outcoeff);
