@@ -212,7 +212,7 @@ static errno_t compute_function()
 
 
     // CONNECT TO INPUT STREAM
-    IMGID imgin = makeIMGID(insname);
+    IMGID imgin = mkIMGID_from_name(insname);
     resolveIMGID(&imgin, ERRMODE_ABORT);
     printf("Input stream size : %u %u\n", imgin.md->size[0], imgin.md->size[1]);
     long m = imgin.md->size[0] * imgin.md->size[1];
@@ -236,7 +236,7 @@ static errno_t compute_function()
 
     // CONNECT TO INPUT REFERENCE STREAM OR CREATE IT
     imageID IDref    = -1;
-    IMGID   imginref = makeIMGID(inrefsname);
+    IMGID   imginref = mkIMGID_from_name(inrefsname);
     resolveIMGID(&imgin, ERRMODE_WARN);
     if (imginref.ID == -1)
     {
@@ -255,7 +255,7 @@ static errno_t compute_function()
     }
 
     // CONNECT TO MODES STREAM
-    IMGID imgmodes = makeIMGID(immodes);
+    IMGID imgmodes = mkIMGID_from_name(immodes);
     resolveIMGID(&imgmodes, ERRMODE_ABORT);
     printf("Modes stream size : %u %u\n",
            imgmodes.md->size[0],
@@ -367,14 +367,18 @@ static errno_t compute_function()
         arraytmp[1] = data.image[IDrefout].md[0].size[1];
     }
 
-    // CONNNECT TO OR CREATE OUTPUT STREAM
 
-    IMGID imgout = makeIMGID(outcoeff);
+    // CONNNECT TO OR CREATE OUTPUT STREAM
+    // TO BE MOVED AS MACRO
+
+    // try to connect to local memory
+    IMGID imgout = mkIMGID_from_name(outcoeff);
     resolveIMGID(&imgout, ERRMODE_WARN);
     imageID ID_modeval = imgout.ID;
 
     if (imgout.ID != -1)
     {
+        // if in local memory,
         // create blank img for comparison
         IMGID imgc      = makeIMGID_blank();
         imgc.datatype   = _DATATYPE_FLOAT;
@@ -384,13 +388,15 @@ static errno_t compute_function()
         uint64_t imgerr = IMGIDcompare(imgout, imgc);
         printf("%lu errors\n", imgerr);
 
+        // if doesn't pass test, erase from local memory
         if (imgerr != 0)
         {
-            //ImageStreamIO_destroyIm(imgout.im);
             delete_image_ID(outcoeff, DELETE_IMAGE_ERRMODE_WARNING);
             imgout.ID = -1;
         }
     }
+
+    // if not in local memory, (re)-create
     if (imgout.ID == -1)
     {
         create_image_ID(outcoeff,
@@ -403,38 +409,7 @@ static errno_t compute_function()
                         &ID_modeval);
     }
 
-
     MODEVALCOMPUTE = 1;
-
-
-    /*
-        // Stream should already be in memory
-        imageID ID_modeval = image_ID(outcoeff);
-        if (ID_modeval == -1)
-        {   // CREATE
-            printf("======== Creating stream %s\n", outcoeff);
-            // create stream if wrong size
-            create_image_ID(outcoeff,
-                            2,
-                            arraytmp,
-                            _DATATYPE_FLOAT,
-                            1,
-                            0,
-                            0,
-                            &ID_modeval);
-            MODEVALCOMPUTE = 1;
-        }
-        else
-        {   // USE STREAM, DO NOT COMPUTE IT
-            printf("======== Using pre-existing stream %s\n", outcoeff);
-            fflush(stdout);
-
-            if (outinit == 0)
-                MODEVALCOMPUTE = 0;
-            else
-                MODEVALCOMPUTE = 1;
-        }
-    */
 
     free(arraytmp);
 

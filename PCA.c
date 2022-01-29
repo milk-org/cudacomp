@@ -414,7 +414,7 @@ static errno_t compute_function()
 
     DEBUG_TRACEPOINT("PCA of %s", inimname);
 
-    IMGID img = makeIMGID(inimname);
+    IMGID img = mkIMGID_from_name(inimname);
     resolveIMGID(&img, ERRMODE_ABORT);
 
     printf("PCA of %s\n", inimname);
