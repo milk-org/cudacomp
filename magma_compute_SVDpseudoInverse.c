@@ -428,7 +428,7 @@ CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
     magma_getdevices(devicearray, 10, &num_dev);
     printf("%d devices detected\n", num_dev);
 
-    int GPUdevice = 5;
+    int GPUdevice = 0;
     printf("Selecting device %d\n", GPUdevice);
     magma_setdevice(devicearray[GPUdevice]);
 
