@@ -1048,11 +1048,11 @@ CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
 
             if (MAGMAfloat == 1)
             {
-                TESTING_FREE_PIN(magma_h_work);
+                TESTING_FREE_PIN(magmaf_h_work);
             }
             else
             {
-                TESTING_FREE_PIN(magmaf_h_work);
+                TESTING_FREE_PIN(magma_h_work);
             }
         }
 
@@ -1218,7 +1218,7 @@ CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
 
         if (testmode == 1)
         {
-            FUNC_CHECK_RETURN(save_fits("mVT", "test_mVT.fits"));
+            FUNC_CHECK_RETURN(save_fits(ID_VTmatrix_name, "test_mVT.fits"));
         }
 
         // ****************************************************
