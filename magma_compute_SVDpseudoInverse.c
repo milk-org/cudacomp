@@ -78,19 +78,16 @@ static magma_int_t *magma_iwork;
 // Forward declaration(s)
 // ==========================================
 
-errno_t
-CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
-                                        const char *ID_Cmatrix_name,
-                                        double      SVDeps,
-                                        long        MaxNBmodes,
-                                        const char *ID_VTmatrix_name,
-                                        int         LOOPmode,
-                                        int         PSINV_MODE,
-                                        __attribute__((unused)) double qdwh_s,
-                                        __attribute__((unused)) float  qdwh_tol,
-                                        int                            testmode,
-                                        int      precision,
-                                        imageID *outID);
+errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
+                                                const char *ID_Cmatrix_name,
+                                                double      SVDeps,
+                                                long        MaxNBmodes,
+                                                const char *ID_VTmatrix_name,
+                                                int         LOOPmode,
+                                                int         testmode,
+                                                int         precision,
+                                                int         GPUdevice,
+                                                imageID    *outID);
 
 // ==========================================
 // Command line interface wrapper function(s)
@@ -109,11 +106,9 @@ static errno_t CUDACOMP_magma_compute_SVDpseudoInverse_cli()
                                                 data.cmdargtoken[4].val.numl,
                                                 data.cmdargtoken[5].val.string,
                                                 0,
-                                                data.cmdargtoken[6].val.numl,
-                                                data.cmdargtoken[7].val.numf,
-                                                data.cmdargtoken[8].val.numf,
                                                 0,
                                                 64,
+                                                0,
                                                 NULL);
 
         return CLICMD_SUCCESS;
@@ -286,19 +281,16 @@ errno_t magma_compute_SVDpseudoInverse_addCLIcmd()
  * test_AinvA.QDWH.fits       product of Ainv with A, should be close to identity matrix size NxN
  */
 
-errno_t
-CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
-                                        const char *ID_Cmatrix_name,
-                                        double      SVDeps,
-                                        long        MaxNBmodes,
-                                        const char *ID_VTmatrix_name,
-                                        int         LOOPmode,
-                                        __attribute__((unused)) int PSINV_MODE,
-                                        __attribute__((unused)) double qdwh_s,
-                                        __attribute__((unused)) float  qdwh_tol,
-                                        int                            testmode,
-                                        int      precision,
-                                        imageID *outID)
+errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
+                                                const char *ID_Cmatrix_name,
+                                                double      SVDeps,
+                                                long        MaxNBmodes,
+                                                const char *ID_VTmatrix_name,
+                                                int         LOOPmode,
+                                                int         testmode,
+                                                int         precision,
+                                                int         GPUdevice,
+                                                imageID    *outID)
 {
     DEBUG_TRACE_FSTART();
 
@@ -428,7 +420,6 @@ CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
     magma_getdevices(devicearray, 10, &num_dev);
     printf("%d devices detected\n", num_dev);
 
-    int GPUdevice = 0;
     printf("Selecting device %d\n", GPUdevice);
     magma_setdevice(devicearray[GPUdevice]);
 
