@@ -583,9 +583,8 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         printf(">>> LINE %d\n", __LINE__); //TBE
         if (MAGMAfloat == 1)
         {
-            if ((testmode ==
-                 1)) // need magmaf_h_A, otherwise, straight to magmaf_d_A
-            {
+            if ((testmode == 1))
+            { // need magmaf_h_A, otherwise, straight to magmaf_d_A
 
                 memcpy(magmaf_h_A,
                        data.image[ID_Rmatrix].array.F,
