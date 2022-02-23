@@ -295,7 +295,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
     DEBUG_TRACE_FSTART();
 
     // input identifier
-    long    ID_Rmatrix;
+    imageID ID_Rmatrix;
     uint8_t datatype;
 
     // output result

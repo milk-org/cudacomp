@@ -172,13 +172,16 @@ static errno_t customCONFcheck()
 }
 
 static CLICMDDATA CLIcmddata = {
-    "MVMmextrmodes", "extract modes from WFS", CLICMD_FIELDS_DEFAULTS};
+    "MVMmextrmodes", "extract modes by MVM", CLICMD_FIELDS_DEFAULTS};
 
 // detailed help
 static errno_t help_function()
 {
     return RETURN_SUCCESS;
 }
+
+
+
 
 static errno_t compute_function()
 {
@@ -723,6 +726,9 @@ static errno_t compute_function()
     float    beta     = 0.0;
     uint64_t refindex = 0;
 
+
+
+
     INSERT_STD_PROCINFO_COMPUTEFUNC_LOOPSTART
 
     // Are we computing a new reference ?
@@ -883,6 +889,9 @@ static errno_t compute_function()
     DEBUG_TRACE_FEXIT();
     return RETURN_SUCCESS;
 }
+
+
+
 
 INSERT_STD_FPSCLIfunctions
 
