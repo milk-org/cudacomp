@@ -1836,7 +1836,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         printf("   1 M = %d\n", M);
         magma_sgetmatrix(N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
 
-        /* magma_sgemm(MagmaTrans,
+        magma_sgemm(MagmaTrans,
                     MagmaNoTrans,
                     N,
                     K,
@@ -1850,7 +1850,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
                     magmaf_d_PF,
                     N,
                     magmaqueue);
-                    */
+
 
         printf("   2 N = %d\n", N);
         printf("   2 K = %ld\n", K);
