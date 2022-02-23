@@ -1816,6 +1816,10 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         TESTING_SMALLOC_DEV(magmaf_d_PF, N * K);
         TESTING_SMALLOC_CPU(magmaf_h_PF, N * K);
 
+        printf("   0 N = %d\n", N);
+        printf("   0 K = %ld\n", K);
+        magma_sgetmatrix(N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
+
         magma_ssetmatrix(M,
                          K,
                          data.image[ID_PFfmdat].array.F,
@@ -1823,6 +1827,11 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
                          magmaf_d_PFfmdat,
                          M,
                          magmaqueue);
+
+
+        printf("   1 N = %d\n", N);
+        printf("   1 K = %ld\n", K);
+        magma_sgetmatrix(N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
 
         magma_sgemm(MagmaTrans,
                     MagmaNoTrans,
@@ -1839,8 +1848,8 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
                     N,
                     magmaqueue);
 
-        printf("    N = %d\n", N);
-        printf("    K = %ld\n", K);
+        printf("   2 N = %d\n", N);
+        printf("   2 K = %ld\n", K);
         magma_sgetmatrix(N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
 
         imageID ID_PF;
