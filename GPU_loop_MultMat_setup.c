@@ -61,6 +61,8 @@ errno_t GPU_loop_MultMat_setup(int         index,
 {
     //CUDACOMP_printGPUMATMULTCONF(index);
 
+    DEBUG_TRACE_FSTART();
+
     /// This function will not do anything if the initialization has already been performed
 
     if (gpumatmultconf[index].init == 0)
@@ -69,16 +71,15 @@ errno_t GPU_loop_MultMat_setup(int         index,
         //struct cudaDeviceProp deviceProp;
         char sname[200];
 
-        imageID IDcontrM;
         imageID IDwfsim;
         imageID IDwfsref;
 
-        printf("STARTING SETUP %d .....\n", index);
+        printf("STARTING SETUP of GPU MVM #%d .....\n", index);
         fflush(stdout);
 
         pid = getpid();
 
-        if (IDtimerinit == 0)
+        /*if (IDtimerinit == 0)
         {
             char name[200];
 
@@ -89,7 +90,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
             {
                 create_2Dimage_ID(name, 50, 1, &IDtiming);
             }
-        }
+        }*/
 
         if (gpumatmultconf[index].alloc == 1)
         {
@@ -111,23 +112,24 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
         gpumatmultconf[index].orientation = orientation;
 
-        printf("input CM name : %s\n", IDcontrM_name);
-        fflush(stdout);
-        //sleep(2);
-        gpumatmultconf[index].CM_ID = image_ID(IDcontrM_name);
 
-        printf("CM_ID = %ld\n", gpumatmultconf[index].CM_ID);
-        fflush(stdout);
-        //	sleep(2);
+
+        // Load Control Matrix
+        //
+        printf("Using Matrix %s\n", IDcontrM_name);
+        imageID IDcontrM            = image_ID(IDcontrM_name);
+        gpumatmultconf[index].CM_ID = IDcontrM;
+        printf("    size : [");
+        for (int dim = 0; dim < data.image[IDcontrM].md->naxis; dim++)
+        {
+            printf(" %d", data.image[IDcontrM].md[0].size[dim]);
+        }
+        printf(" ]\n");
+
 
         gpumatmultconf[index].CM_cnt =
             data.image[gpumatmultconf[index].CM_ID].md[0].cnt0;
 
-        /// Load Control Matrix
-        IDcontrM = image_ID(IDcontrM_name);
-        //		printf("control matrix loaded: IDcontrM = %ld\n", IDcontrM);
-        //        fflush(stdout);
-        //	sleep(2);
 
         if (orientation == 0)
         {
@@ -193,13 +195,14 @@ errno_t GPU_loop_MultMat_setup(int         index,
                             data.image[IDwfsim].md[0].size[1]) !=
                 gpumatmultconf[index].N)
             {
-                printf(
-                    "ERROR: CONTRmat and WFSvec size not compatible: %ld %d\n",
+                PRINT_ERROR(
+                    "CONTRmat and WFSvec size not compatible: %ld vs %d\n",
                     (long) (data.image[IDwfsim].md[0].size[0] *
                             data.image[IDwfsim].md[0].size[1]),
                     (int) gpumatmultconf[index].N);
                 fflush(stdout);
-                sleep(2);
+                DEBUG_TRACE_FEXIT();
+                return (EXIT_FAILURE);
                 exit(0);
             }
         }
@@ -829,6 +832,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
     //	CUDACOMP_printGPUMATMULTCONF(index);
 
+    DEBUG_TRACE_FEXIT();
     return RETURN_SUCCESS;
 }
 
