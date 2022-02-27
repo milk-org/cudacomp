@@ -1858,7 +1858,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
 
         imageID ID_PF;
         FUNC_CHECK_RETURN(create_2Dimage_ID("psinvPFmat", N, K, &ID_PF));
-        list_image_ID();
+
         memcpy(data.image[ID_PF].array.F, magmaf_h_PF, sizeof(float) * N * K);
         FUNC_CHECK_RETURN(save_fits("psinvPFmat", "psinvPFmat.fits"));
 
