@@ -453,6 +453,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
     float *magmaf_h_Ainv;
     float *magmaf_h_M2;
 
+
     // =================================================================
     //             MEMORY ALLOCATION
     //
@@ -476,14 +477,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
     // magma_d_M2
     //
     // =================================================================
-
-    if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-    {
-        printf(">>> ALLOCATION FOR PSINV MAGMA M=%ld N=%ld\n",
-               (long) M,
-               (long) N);
-        fflush(stdout);
-    }
 
     if (MAGMAloop_iter == 0) /// memory is only allocated on first pass
     {
@@ -528,23 +521,9 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         }
     }
 
-
-    if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-    {
-        printf("MAGMA READY\n");
-        fflush(stdout);
-    }
-
-
     if (MAGMAloop_iter == 0)
     {
         magma_queue_create(devicearray[GPUdevice], &magmaqueue);
-    }
-
-    if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-    {
-        printf("MAGMA: CREATE QUEUE\n");
-        fflush(stdout);
     }
 
     // if(timing==1)
@@ -667,11 +646,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
     // STEP 2 :   Copy input data from CPU to GPU
     // ****************************************************
 
-    if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-    {
-        printf("MAGMA: OFFLOAD TO THE GPU\n");
-        fflush(stdout);
-    }
 
     // copy from host to device
     //
@@ -693,12 +667,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
 
         magma_queue_sync(magmaqueue);
         clock_gettime(CLOCK_REALTIME, &t2);
-
-        if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-        {
-            printf("MAGMA: COMPUTE trans(A) x A\n");
-            fflush(stdout);
-        }
 
         // ****************************************************
         // STEP 3 :   Compute trans(A) x A    : magmaf_d_A x magmaf_d_A      -> magmaf_d_AtA      (NxN matrix on device)
@@ -798,11 +766,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         //
         // ****************************************************
 
-        if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-        {
-            printf("COMPUTE eigenvalues and eigenvectors of AT A\n");
-            fflush(stdout);
-        }
 
         if (MAGMAloop_iter == 0)
         {
@@ -880,11 +843,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
             magma_liwork = magma_aux_iwork[0];
         }
 
-        if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-        {
-            printf("MAGMA: allocate & compute\n");
-            fflush(stdout);
-        }
 
         if (MAGMAloop_iter == 0)
         {
@@ -910,16 +868,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
 
         if (MAGMAfloat == 1)
         {
-
-            //	printf("============== %s %d\n", __FILE__, __LINE__);
-            //	fflush(stdout);
-
-            if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-            {
-                printf(" -> FLOAT [%d] magma_ssyevd_gpu -> ", magmaXmode);
-                fflush(stdout);
-            }
-
             // SSYEVD computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix A
             if (magmaXmode == 1)
             {
@@ -959,23 +907,9 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
                                  magma_liwork,
                                  &info);
             }
-
-            //			printf("============== %s %d\n", __FILE__, __LINE__);
-            //	fflush(stdout);
-
-            if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-            {
-                printf(" DONE\n");
-                fflush(stdout);
-            }
         }
         else
         {
-            if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-            {
-                printf(" -> DOUBLE [%d] magma_dsyevd_gpu -> ", magmaXmode);
-                fflush(stdout);
-            }
             // CODE CAN HANG HERE - THIS HAPPENS ONCE OUT OF multiple 1000s EXECUTIONS WHEN RUNNING IN A LOOP.. SEEMS TO BE A MAGMA ISSUE
 
             // SSYEVD computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix A
@@ -1027,11 +961,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         magma_queue_sync(magmaqueue);
         clock_gettime(CLOCK_REALTIME, &t5);
 
-        if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-        {
-            printf("Write eigenvalues to file\n");
-            fflush(stdout);
-        }
 
         if (testmode == 1)
         {
@@ -1260,20 +1189,8 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         // ****************************************************
         DEBUG_TRACEPOINT("Compute M2 = VT1 VT = (AT A)^-1");
 
-        if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-        {
-            printf("compute M2 = VT1 VT\n");
-            fflush(stdout);
-        }
-
         if (MAGMAfloat == 1)
         {
-            if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-            {
-                printf(" -> magma_sgemm ");
-                fflush(stdout);
-            }
-
             magma_sgemm(MagmaTrans,
                         MagmaTrans,
                         N,
@@ -1288,21 +1205,9 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
                         magmaf_d_M2,
                         N,
                         magmaqueue);
-
-            if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-            {
-                printf("-> DONE\n");
-                fflush(stdout);
-            }
         }
         else
         {
-            if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-            {
-                printf(" -> magma_dgemm ");
-                fflush(stdout);
-            }
-
             magma_dgemm(MagmaTrans,
                         MagmaTrans,
                         N,
@@ -1422,12 +1327,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
 
         if (MAGMAfloat == 1)
         {
-            if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-            {
-                printf(" -> magma_sgemm ");
-                fflush(stdout);
-            }
-
             magma_sgemm(MagmaNoTrans,
                         MagmaNoTrans,
                         M,
@@ -1442,20 +1341,9 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
                         magmaf_d_Ainv,
                         M,
                         magmaqueue);
-
-            if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-            {
-                printf("-> DONE\n");
-                fflush(stdout);
-            }
         }
         else
         {
-            if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-            {
-                printf(" -> magma_dgemm ");
-                fflush(stdout);
-            }
             DEBUG_TRACEPOINT("double precision running magma_dgemm");
             magma_dgemm(MagmaNoTrans,
                         MagmaNoTrans,
@@ -1472,12 +1360,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
                         M,
                         magmaqueue);
             DEBUG_TRACEPOINT("double precision magma_dgemm done");
-
-            if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-            {
-                printf("-> DONE\n");
-                fflush(stdout);
-            }
         }
 
         DEBUG_TRACEPOINT("free");
@@ -1528,11 +1410,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
     // At this point, pseudo-inverse is in magma_h_Ainv or magmaf_h_Ainv
     //
 
-    if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
-    {
-        printf("END OF PSINV\n");
-        fflush(stdout);
-    }
 
     if (testmode == 1)
     {
