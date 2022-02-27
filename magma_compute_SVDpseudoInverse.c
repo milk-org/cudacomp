@@ -487,12 +487,8 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
 
     if (MAGMAloop_iter == 0) /// memory is only allocated on first pass
     {
-        printf(">>> LINE %d\n", __LINE__); //TBE
-
         if (MAGMAfloat == 0) // double
         {
-            printf(">>> LINE %d\n", __LINE__); //TBE
-
             printf("MAGMA allocating double %d x %d = %ld byte\n",
                    (int) M,
                    (int) N,
@@ -501,31 +497,21 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
             //TESTING_MALLOC_DEV(magma_d_A, M * N);
             if (MAGMA_SUCCESS != magma_dmalloc(&magma_d_A, M * N))
             {
-                printf(">>> LINE %d\n", __LINE__); //TBE
-
                 fprintf(stderr, "!!!! magma_malloc failed\n");
                 magma_finalize();
                 exit(-1);
             }
-            printf(">>> LINE %d\n", __LINE__); //TBE
-
             TESTING_DMALLOC_CPU(magma_h_A, M * N);
 
             TESTING_DMALLOC_CPU(magma_h_AtA, N * N);
-            printf(">>> LINE %d\n", __LINE__); //TBE
             TESTING_DMALLOC_DEV(magma_d_AtA, N * N);
-            printf(">>> LINE %d\n", __LINE__); //TBE
 
             TESTING_DMALLOC_CPU(magma_h_VT1, N * N);
-            printf(">>> LINE %d\n", __LINE__); //TBE
             TESTING_DMALLOC_DEV(magma_d_VT1, N * N);
-            printf(">>> LINE %d\n", __LINE__); //TBE
             TESTING_DMALLOC_DEV(magma_d_M2, N * N);
-            printf(">>> LINE %d\n", __LINE__); //TBE
         }
         else
         {
-            printf(">>> LINE %d\n", __LINE__); //TBE
             TESTING_SMALLOC_CPU(magmaf_h_A, M * N);
             printf("Allocating magmaf_d_A on device ...\n");
             fflush(stdout);
@@ -542,7 +528,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         }
     }
 
-    printf(">>> LINE %d\n", __LINE__); //TBE
 
     if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
     {
@@ -550,26 +535,22 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         fflush(stdout);
     }
 
-    printf(">>> LINE %d\n", __LINE__); //TBE
 
     if (MAGMAloop_iter == 0)
     {
         magma_queue_create(devicearray[GPUdevice], &magmaqueue);
     }
-    printf(">>> LINE %d\n", __LINE__); //TBE
 
     if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
     {
         printf("MAGMA: CREATE QUEUE\n");
         fflush(stdout);
     }
-    printf(">>> LINE %d\n", __LINE__); //TBE
 
     // if(timing==1)
     magma_queue_sync(magmaqueue);
     clock_gettime(CLOCK_REALTIME, &t1);
 
-    printf(">>> LINE %d\n", __LINE__); //TBE
 
     // ****************************************************
     // STEP 1 :   Fill input data into magmaf_h_A on host
@@ -577,10 +558,8 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
     // magma array is column-major.
     //
 
-    printf(">>> LINE %d\n", __LINE__); //TBE
     if (datatype == _DATATYPE_FLOAT)
     {
-        printf(">>> LINE %d\n", __LINE__); //TBE
         if (MAGMAfloat == 1)
         {
             if ((testmode == 1))
@@ -622,7 +601,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
     }
     else
     {
-        printf(">>> LINE %d\n", __LINE__); //TBE
         if (MAGMAfloat == 1)
         {
             for (long ii = 0; ii < M * N; ii++)
@@ -658,7 +636,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         }
     }
 
-    printf(">>> LINE %d\n", __LINE__); //TBE
 
     if (testmode == 1)
     {
@@ -1796,10 +1773,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
     ID_PFfmdat = image_ID("PFfmdat");
     if (ID_PFfmdat != -1)
     {
-        printf("=============================================\n");
-        printf("=========// OUTPUT M-M MULTIPLY //===========\n");
-        printf("=============================================\n");
-
         printf("Transp(Ainv)     N x M   = %d x %d\n", N, M);
         printf("PFfmdat  M x K           = %d x %d\n",
                data.image[ID_PFfmdat].md[0].size[0],
@@ -1815,9 +1788,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         TESTING_SMALLOC_DEV(magmaf_d_PF, N * K);
         TESTING_SMALLOC_CPU(magmaf_h_PF, N * K);
 
-        printf("   0 N = %d\n", N);
-        printf("   0 K = %ld\n", K);
-        printf("   0 M = %d\n", M);
         magma_sgetmatrix(N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
 
         magma_ssetmatrix(M,
@@ -1830,9 +1800,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
 
 
 
-        printf("   1 N = %d\n", N);
-        printf("   1 K = %ld\n", K);
-        printf("   1 M = %d\n", M);
         magma_sgetmatrix(N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
 
         magma_sgemm(MagmaTrans,
@@ -1851,9 +1818,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
                     magmaqueue);
 
 
-        printf("   2 N = %d\n", N);
-        printf("   2 K = %ld\n", K);
-        printf("   2 M = %d\n", M);
         magma_sgetmatrix(N, K, magmaf_d_PF, N, magmaf_h_PF, N, magmaqueue);
 
         imageID ID_PF;
@@ -1977,7 +1941,7 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
 
     if (VERBOSE_CUDACOMP_magma_compute_SVDpseudoInverse == 1)
     {
-        printf("\n\n");
+        printf("\n");
         fflush(stdout);
     }
 
