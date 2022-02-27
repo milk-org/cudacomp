@@ -1519,26 +1519,6 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
                              magmaqueue);
         }
 
-        DEBUG_TRACEPOINT("set result 2");
-        if (MAGMAfloat == 1)
-        {
-            for (int elem = 0; elem < 10; elem++)
-            {
-                printf("TEST magmaf_h_Ainv[%2d] = %.16f\n",
-                       elem,
-                       magmaf_h_Ainv[elem]);
-            }
-        }
-        else
-        {
-            for (int elem = 0; elem < 10; elem++)
-            {
-                printf("TEST magmaf_h_Ainv[%2d] = %.16f\n",
-                       elem,
-                       magma_h_Ainv[elem]);
-            }
-        }
-
         DEBUG_TRACEPOINT("end of magma computation");
 
     } // END STD MAGMA =================================================
