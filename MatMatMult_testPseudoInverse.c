@@ -22,8 +22,8 @@ extern magma_queue_t magmaqueue;
 // ==========================================
 
 long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name,
-                                           const char *IDmatAinv_name,
-                                           const char *IDmatOut_name);
+        const char *IDmatAinv_name,
+        const char *IDmatOut_name);
 
 // ==========================================
 // Command line interface wrapper function(s)
@@ -31,7 +31,7 @@ long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name,
 
 static errno_t CUDACOMP_MatMatMult_testPseudoInverse_cli()
 {
-    if (CLI_checkarg(1, 4) + CLI_checkarg(2, 4) + CLI_checkarg(3, 3) == 0)
+    if(CLI_checkarg(1, 4) + CLI_checkarg(2, 4) + CLI_checkarg(3, 3) == 0)
     {
         CUDACOMP_MatMatMult_testPseudoInverse(data.cmdargtoken[1].val.string,
                                               data.cmdargtoken[2].val.string,
@@ -70,8 +70,8 @@ errno_t MatMatMult_testPseudoInverse_addCLIcmd()
  */
 
 long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name,
-                                           const char *IDmatAinv_name,
-                                           const char *IDmatOut_name)
+        const char *IDmatAinv_name,
+        const char *IDmatOut_name)
 {
     imageID IDmatA;
     imageID IDmatAinv;
@@ -119,7 +119,7 @@ long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name,
     IDmatA    = image_ID(IDmatA_name);
     IDmatAinv = image_ID(IDmatAinv_name);
 
-    if (data.image[IDmatA].md[0].naxis == 3)
+    if(data.image[IDmatA].md[0].naxis == 3)
     {
         /// each column (N=cst) of A is a z=cst slice of image Rmatrix
         M = data.image[IDmatA].md[0].size[0] * data.image[IDmatA].md[0].size[1];
@@ -133,7 +133,7 @@ long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name,
     }
 
     /// Initialize MAGAM if needed
-    if (INIT_MAGMA == 0)
+    if(INIT_MAGMA == 0)
     {
         magma_init();
         magma_print_environment();
@@ -152,14 +152,14 @@ long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name,
     TESTING_SMALLOC_DEV(magmaf_d_AinvA, N * N);
 
     /// load matA in h_A -> d_A
-    for (ii = 0; ii < M * N; ii++)
+    for(ii = 0; ii < M * N; ii++)
     {
         magmaf_h_A[ii] = data.image[IDmatA].array.F[ii];
     }
     magma_ssetmatrix(M, N, magmaf_h_A, M, magmaf_d_A, M, magmaqueue);
 
     /// load matAinv in h_Ainv -> d_Ainv
-    for (ii = 0; ii < M * N; ii++)
+    for(ii = 0; ii < M * N; ii++)
     {
         magmaf_h_Ainv[ii] = data.image[IDmatAinv].array.F[ii];
     }
@@ -193,7 +193,7 @@ long CUDACOMP_MatMatMult_testPseudoInverse(const char *IDmatA_name,
                     0,
                     &IDmatOut);
 
-    for (ii = 0; ii < N * N; ii++)
+    for(ii = 0; ii < N * N; ii++)
     {
         data.image[IDmatOut].array.F[ii] = magmaf_h_AinvA[ii];
     }

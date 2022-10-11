@@ -22,7 +22,7 @@ int GPU_loop_MultMat_free(int index)
     cudaFree(gpumatmultconf[index].d_dmRef);
     free(gpumatmultconf[index].stream);
 
-    for (device = 0; device < gpumatmultconf[index].NBstreams; device++)
+    for(device = 0; device < gpumatmultconf[index].NBstreams; device++)
     {
         // free memory for stream
         cublasDestroy(gpumatmultconf[index].handle[device]);

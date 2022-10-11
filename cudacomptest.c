@@ -26,9 +26,9 @@ errno_t GPUcomp_test(__attribute__((unused)) long NBact,
 
 static errno_t CUDACOMP_test_cli()
 {
-    if (CLI_checkarg(1, 2) + CLI_checkarg(2, 2) + CLI_checkarg(3, 2) +
+    if(CLI_checkarg(1, 2) + CLI_checkarg(2, 2) + CLI_checkarg(3, 2) +
             CLI_checkarg(4, 2) ==
-        0)
+            0)
     {
         GPUcomp_test(data.cmdargtoken[1].val.numl,
                      data.cmdargtoken[2].val.numl,
@@ -134,7 +134,7 @@ errno_t GPUcomp_test(__attribute__((unused)) long NBact,
     printf("Testing GPU matrix multiplication speed, %ld GPUs\n", GPUcnt);
 
     GPUdevices = (int *) malloc(sizeof(int) * GPUcnt);
-    for (int k = 0; k < GPUcnt; k++)
+    for(int k = 0; k < GPUcnt; k++)
     {
         GPUdevices[k] = k + 8;
     }
@@ -190,7 +190,7 @@ errno_t GPUcomp_test(__attribute__((unused)) long NBact,
     clock_gettime(CLOCK_REALTIME, &tnow);
     time1sec = 1.0 * ((long) tnow.tv_sec) + 1.0e-9 * tnow.tv_nsec;
 
-    for (iter = 0; iter < NBiter; iter++)
+    for(iter = 0; iter < NBiter; iter++)
     {
         status = 0;
         GPU_loop_MultMat_execute(0, &status, &GPUstatus[0], 1.0, 0.0, 1, 0);

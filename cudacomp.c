@@ -58,7 +58,7 @@ INIT_MODULE_LIB(cudacomp)
 static void __attribute__((constructor)) libinit_cudacomp_printinfo()
 {
 #ifdef HAVE_CUDA
-    if (!getenv("MILK_QUIET"))
+    if(!getenv("MILK_QUIET"))
     {
         printf("[CUDA %d]", data.quiet);
     }
@@ -66,7 +66,7 @@ static void __attribute__((constructor)) libinit_cudacomp_printinfo()
 #endif
 
 #ifdef HAVE_MAGMA
-    if (!getenv("MILK_QUIET"))
+    if(!getenv("MILK_QUIET"))
     {
         printf("[MAGMA]");
     }
@@ -77,7 +77,7 @@ static errno_t init_module_CLI()
 {
 #ifdef HAVE_CUDA
     //    printf("HAVE_CUDA defined\n");
-    for (int i = 0; i < 20; i++)
+    for(int i = 0; i < 20; i++)
     {
         gpumatmultconf[i].init  = 0;
         gpumatmultconf[i].alloc = 0;

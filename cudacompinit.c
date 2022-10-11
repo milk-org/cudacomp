@@ -28,9 +28,9 @@ static errno_t delete_image_ID__cli()
 {
     long i = 1;
     printf("%ld : %d\n", i, data.cmdargtoken[i].type);
-    while (data.cmdargtoken[i].type != 0)
+    while(data.cmdargtoken[i].type != 0)
     {
-        if (data.cmdargtoken[i].type == 4)
+        if(data.cmdargtoken[i].type == 4)
         {
             delete_image_ID(data.cmdargtoken[i].val.string,
                             DELETE_IMAGE_ERRMODE_WARNING);
@@ -80,7 +80,7 @@ int CUDACOMP_init()
     cudaGetDeviceCount(&cuda_deviceCount);
     printf("%d devices found\n", cuda_deviceCount);
     printf("\n");
-    for (device = 0; device < cuda_deviceCount; ++device)
+    for(device = 0; device < cuda_deviceCount; ++device)
     {
         cudaGetDeviceProperties(&deviceProp, device);
         printf("Device %d [ %20s ]  has compute capability %d.%d.\n",
@@ -125,7 +125,7 @@ void *GPU_scanDevices(void *deviceCount_void_ptr)
     fflush(stdout);
 
     printf("\n");
-    for (device = 0; device < cuda_deviceCount; ++device)
+    for(device = 0; device < cuda_deviceCount; ++device)
     {
         cudaGetDeviceProperties(&deviceProp, device);
         printf("Device %d [ %20s ]  has compute capability %d.%d.\n",

@@ -23,10 +23,10 @@
 // ==========================================
 
 int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
-                                                const char *ID_Cmatrix_name,
-                                                double      SVDeps,
-                                                long        MaxNBmodes,
-                                                const char *ID_VTmatrix_name);
+        const char *ID_Cmatrix_name,
+        double      SVDeps,
+        long        MaxNBmodes,
+        const char *ID_VTmatrix_name);
 
 // ==========================================
 // Command line interface wrapper function(s)
@@ -34,9 +34,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
 
 errno_t CUDACOMP_magma_compute_SVDpseudoInverse_SVD_cli()
 {
-    if (CLI_checkarg(1, 4) + CLI_checkarg(2, 3) + CLI_checkarg(3, 1) +
+    if(CLI_checkarg(1, 4) + CLI_checkarg(2, 3) + CLI_checkarg(3, 1) +
             CLI_checkarg(4, 2) + CLI_checkarg(5, 3) ==
-        0)
+            0)
     {
         CUDACOMP_magma_compute_SVDpseudoInverse_SVD(
             data.cmdargtoken[1].val.string,
@@ -81,10 +81,10 @@ errno_t magma_compute_SVDpseudoInverse_SVD_addCLIcmd()
 //   m: number of actuators
 //   n: number of sensors
 int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
-                                                const char *ID_Cmatrix_name,
-                                                double      SVDeps,
-                                                long        MaxNBmodes,
-                                                const char *ID_VTmatrix_name)
+        const char *ID_Cmatrix_name,
+        double      SVDeps,
+        long        MaxNBmodes,
+        const char *ID_VTmatrix_name)
 {
     uint32_t   *arraysizetmp;
     magma_int_t M, N, min_mn;
@@ -116,7 +116,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
     ID_Rmatrix = image_ID(ID_Rmatrix_name);
     datatype   = data.image[ID_Rmatrix].md[0].datatype;
 
-    if (data.image[ID_Rmatrix].md[0].naxis == 3)
+    if(data.image[ID_Rmatrix].md[0].naxis == 3)
     {
         n = data.image[ID_Rmatrix].md[0].size[0] *
             data.image[ID_Rmatrix].md[0].size[1];
@@ -160,18 +160,18 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
     magma_smalloc_pinned(&h_work, lwork); // host  mem. for  h_work
 
     // write input h_R matrix
-    if (datatype == _DATATYPE_FLOAT)
+    if(datatype == _DATATYPE_FLOAT)
     {
-        for (k = 0; k < m; k++)
-            for (ii = 0; ii < n; ii++)
+        for(k = 0; k < m; k++)
+            for(ii = 0; ii < n; ii++)
             {
                 h_R[k * n + ii] = data.image[ID_Rmatrix].array.F[k * n + ii];
             }
     }
     else
     {
-        for (k = 0; k < m; k++)
-            for (ii = 0; ii < n; ii++)
+        for(k = 0; k < m; k++)
+            for(ii = 0; ii < n; ii++)
             {
                 h_R[k * n + ii] = data.image[ID_Rmatrix].array.D[k * n + ii];
             }
@@ -195,7 +195,7 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
                  lwork,
                  &info);
     gpu_time = magma_wtime() - gpu_time;
-    if (info != 0)
+    if(info != 0)
     {
         printf("magma_sgesvd returned error %d: %s.\n",
                (int) info,
@@ -206,12 +206,12 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
 
     // Write eigenvalues
     sprintf(fname, "eigenv.dat.magma");
-    if ((fp = fopen(fname, "w")) == NULL)
+    if((fp = fopen(fname, "w")) == NULL)
     {
         printf("ERROR: cannot create file \"%s\"\n", fname);
         exit(0);
     }
-    for (k = 0; k < min_mn; k++)
+    for(k = 0; k < min_mn; k++)
     {
         fprintf(fp, "%5ld %20g %20g\n", k, S1[k], S1[k] / S1[0]);
     }
@@ -220,16 +220,16 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
     egvlim = SVDeps * S1[0];
 
     MaxNBmodes1 = MaxNBmodes;
-    if (MaxNBmodes1 > M)
+    if(MaxNBmodes1 > M)
     {
         MaxNBmodes1 = M;
     }
-    if (MaxNBmodes1 > N)
+    if(MaxNBmodes1 > N)
     {
         MaxNBmodes1 = N;
     }
     mode = 0;
-    while ((mode < MaxNBmodes1) && (S1[mode] > egvlim))
+    while((mode < MaxNBmodes1) && (S1[mode] > egvlim))
     {
         mode++;
     }
@@ -249,10 +249,10 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
                     0,
                     &ID_VTmatrix);
 
-    if (datatype == _DATATYPE_FLOAT)
+    if(datatype == _DATATYPE_FLOAT)
     {
-        for (ii = 0; ii < m; ii++)  // modes
-            for (k = 0; k < m; k++) // modes
+        for(ii = 0; ii < m; ii++)   // modes
+            for(k = 0; k < m; k++)  // modes
             {
                 data.image[ID_VTmatrix].array.F[k * m + ii] =
                     (float) VT[k * m + ii];
@@ -260,15 +260,15 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
     }
     else
     {
-        for (ii = 0; ii < m; ii++)  // modes
-            for (k = 0; k < m; k++) // modes
+        for(ii = 0; ii < m; ii++)   // modes
+            for(k = 0; k < m; k++)  // modes
             {
                 data.image[ID_VTmatrix].array.D[k * m + ii] =
                     (double) VT[k * m + ii];
             }
     }
 
-    if (data.image[ID_Rmatrix].md[0].naxis == 3)
+    if(data.image[ID_Rmatrix].md[0].naxis == 3)
     {
         arraysizetmp[0] = data.image[ID_Rmatrix].md[0].size[0];
         arraysizetmp[1] = data.image[ID_Rmatrix].md[0].size[1];
@@ -291,9 +291,9 @@ int CUDACOMP_magma_compute_SVDpseudoInverse_SVD(const char *ID_Rmatrix_name,
 
     // compute pseudo-inverse
     // M+ = V Sig^-1 UT
-    for (ii = 0; ii < M; ii++)
-        for (jj = 0; jj < N; jj++)
-            for (mode = 0; mode < MaxNBmodes1 - 1; mode++)
+    for(ii = 0; ii < M; ii++)
+        for(jj = 0; jj < N; jj++)
+            for(mode = 0; mode < MaxNBmodes1 - 1; mode++)
             {
                 data.image[ID_Cmatrix].array.F[jj * M + ii] +=
                     VT[jj * N + mode] * U[mode * M + ii] / S1[mode];

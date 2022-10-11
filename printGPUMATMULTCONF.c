@@ -17,7 +17,7 @@ errno_t CUDACOMP_printGPUMATMULTCONF(int index)
     printf(" refWFSinit        = %p\n",
            (void *) gpumatmultconf[index].refWFSinit);
 
-    if (gpumatmultconf[index].refWFSinit != NULL)
+    if(gpumatmultconf[index].refWFSinit != NULL)
     {
         printf("     refWFSinit[0]     = %20d\n",
                (int) gpumatmultconf[index].refWFSinit[0]);

@@ -35,9 +35,9 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
 
 static errno_t CUDACOMP_Coeff2Map_Loop_cli()
 {
-    if (CLI_checkarg(1, 4) + CLI_checkarg(2, 4) + CLI_checkarg(3, 2) +
+    if(CLI_checkarg(1, 4) + CLI_checkarg(2, 4) + CLI_checkarg(3, 2) +
             CLI_checkarg(4, 4) ==
-        0)
+            0)
     {
         CUDACOMP_Coeff2Map_Loop(data.cmdargtoken[1].val.string,
                                 data.cmdargtoken[2].val.string,
@@ -56,9 +56,9 @@ static errno_t CUDACOMP_Coeff2Map_Loop_cli()
 
 static errno_t CUDACOMP_Coeff2Map_offset_Loop_cli()
 {
-    if (CLI_checkarg(1, 4) + CLI_checkarg(2, 4) + CLI_checkarg(3, 2) +
+    if(CLI_checkarg(1, 4) + CLI_checkarg(2, 4) + CLI_checkarg(3, 2) +
             CLI_checkarg(4, 4) + CLI_checkarg(5, 4) ==
-        0)
+            0)
     {
         CUDACOMP_Coeff2Map_Loop(data.cmdargtoken[1].val.string,
                                 data.cmdargtoken[2].val.string,
@@ -150,12 +150,12 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
     printf("offsetmode = %d\n", offsetmode);
     fflush(stdout);
 
-    if (offsetmode == 1)
+    if(offsetmode == 1)
     {
         beta     = 1.0;
         IDoffset = image_ID(IDoffset_name);
 
-        if (IDoffset == -1)
+        if(IDoffset == -1)
         {
             printf("ERROR: image \"%s\" does not exist\n", IDoffset_name);
             exit(0);
@@ -163,7 +163,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
     }
 
     IDoutmap = image_ID(IDoutmap_name);
-    if (IDoutmap == -1)
+    if(IDoutmap == -1)
     {
         printf("ERROR: missing output stream\n");
         exit(0);
@@ -174,7 +174,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
     printf("%d devices found\n", cuda_deviceCount);
     fflush(stdout);
     printf("\n");
-    for (int k = 0; k < cuda_deviceCount; ++k)
+    for(int k = 0; k < cuda_deviceCount; ++k)
     {
         cudaGetDeviceProperties(&deviceProp, k);
         printf("Device %d [ %20s ]  has compute capability %d.%d.\n",
@@ -196,7 +196,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
         printf("\n");
     }
 
-    if (GPUindex < cuda_deviceCount)
+    if(GPUindex < cuda_deviceCount)
     {
         cudaSetDevice(GPUindex);
     }
@@ -209,7 +209,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
     printf("Create cublas handle ...");
     fflush(stdout);
     cublas_status = cublasCreate(&cublasH);
-    if (cublas_status != CUBLAS_STATUS_SUCCESS)
+    if(cublas_status != CUBLAS_STATUS_SUCCESS)
     {
         printf("CUBLAS initialization failed\n");
         return EXIT_FAILURE;
@@ -221,14 +221,14 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
 
     IDcoeff = image_ID(IDcoeff_name);
     NBmodes = 1;
-    for (uint8_t k = 0; k < data.image[IDcoeff].md[0].naxis; k++)
+    for(uint8_t k = 0; k < data.image[IDcoeff].md[0].naxis; k++)
     {
         NBmodes *= data.image[IDcoeff].md[0].size[k];
     }
 
     IDmodes = image_ID(IDmodes_name);
     uint64_t mdim;
-    if (data.image[IDmodes].md[0].naxis == 3)
+    if(data.image[IDmodes].md[0].naxis == 3)
     {
         mdim = data.image[IDmodes].md[0].size[0] *
                data.image[IDmodes].md[0].size[1];
@@ -244,7 +244,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
            sizeof(float) * mdim * NBmodes);
     fflush(stdout);
     cudaStat = cudaMalloc((void **) &d_modes, sizeof(float) * mdim * NBmodes);
-    if (cudaStat != cudaSuccess)
+    if(cudaStat != cudaSuccess)
     {
         printf("cudaMalloc d_DMmodes returned error code %d, line(%d)\n",
                cudaStat,
@@ -259,7 +259,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
                           data.image[IDmodes].array.F,
                           sizeof(float) * mdim * NBmodes,
                           cudaMemcpyHostToDevice);
-    if (cudaStat != cudaSuccess)
+    if(cudaStat != cudaSuccess)
     {
         printf("cudaMemcpy returned error code %d, line(%d)\n",
                cudaStat,
@@ -273,7 +273,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
            sizeof(float) * mdim);
     fflush(stdout);
     cudaStat = cudaMalloc((void **) &d_outmap, sizeof(float) * mdim);
-    if (cudaStat != cudaSuccess)
+    if(cudaStat != cudaSuccess)
     {
         printf("cudaMalloc d_outmap returned error code %d, line(%d)\n",
                cudaStat,
@@ -287,7 +287,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
            sizeof(float) * NBmodes);
     fflush(stdout);
     cudaStat = cudaMalloc((void **) &d_coeff, sizeof(float) * NBmodes);
-    if (cudaStat != cudaSuccess)
+    if(cudaStat != cudaSuccess)
     {
         printf("cudaMalloc d_coeff returned error code %d, line(%d)\n",
                cudaStat,
@@ -295,42 +295,42 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
         exit(EXIT_FAILURE);
     }
 
-    if (sigaction(SIGINT, &data.sigact, NULL) == -1)
+    if(sigaction(SIGINT, &data.sigact, NULL) == -1)
     {
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
-    if (sigaction(SIGTERM, &data.sigact, NULL) == -1)
+    if(sigaction(SIGTERM, &data.sigact, NULL) == -1)
     {
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
-    if (sigaction(SIGBUS, &data.sigact, NULL) == -1)
+    if(sigaction(SIGBUS, &data.sigact, NULL) == -1)
     {
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
-    if (sigaction(SIGSEGV, &data.sigact, NULL) == -1)
+    if(sigaction(SIGSEGV, &data.sigact, NULL) == -1)
     {
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
-    if (sigaction(SIGABRT, &data.sigact, NULL) == -1)
+    if(sigaction(SIGABRT, &data.sigact, NULL) == -1)
     {
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
-    if (sigaction(SIGHUP, &data.sigact, NULL) == -1)
+    if(sigaction(SIGHUP, &data.sigact, NULL) == -1)
     {
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
-    if (sigaction(SIGPIPE, &data.sigact, NULL) == -1)
+    if(sigaction(SIGPIPE, &data.sigact, NULL) == -1)
     {
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
-    if (sigaction(SIGSEGV, &data.sigact, NULL) == -1)
+    if(sigaction(SIGSEGV, &data.sigact, NULL) == -1)
     {
         perror("sigaction");
         exit(EXIT_FAILURE);
@@ -342,13 +342,13 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
     printf("ENTERING LOOP, %ld modes (offsetmode = %d)\n", NBmodes, offsetmode);
     fflush(stdout);
 
-    while (loopOK == 1)
+    while(loopOK == 1)
     {
 
-        if (data.image[IDcoeff].md[0].sem == 0)
+        if(data.image[IDcoeff].md[0].sem == 0)
         {
-            while (data.image[IDcoeff].md[0].cnt0 ==
-                   cnt) // test if new frame exists
+            while(data.image[IDcoeff].md[0].cnt0 ==
+                    cnt) // test if new frame exists
             {
                 struct timespec treq, trem;
                 treq.tv_sec  = 0;
@@ -361,7 +361,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
         else
         {
 
-            if (clock_gettime(CLOCK_REALTIME, &ts) == -1)
+            if(clock_gettime(CLOCK_REALTIME, &ts) == -1)
             {
                 perror("clock_gettime");
                 exit(EXIT_FAILURE);
@@ -369,12 +369,12 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
             ts.tv_sec += 1;
             semr = sem_timedwait(data.image[IDcoeff].semptr[3], &ts);
 
-            if (iter == 0)
+            if(iter == 0)
             {
                 //  printf("driving semaphore to zero ... ");
                 // fflush(stdout);
                 sem_getvalue(data.image[IDcoeff].semptr[2], &semval);
-                for (scnt = 0; scnt < semval; scnt++)
+                for(scnt = 0; scnt < semval; scnt++)
                 {
                     printf("WARNING %s %d  : sem_trywait on semptr2\n",
                            __FILE__,
@@ -387,7 +387,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
             }
         }
 
-        if (semr == 0)
+        if(semr == 0)
         {
             //  printf("Compute\n");
             //  fflush(stdout);
@@ -397,7 +397,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
                                   data.image[IDcoeff].array.F,
                                   sizeof(float) * NBmodes,
                                   cudaMemcpyHostToDevice);
-            if (cudaStat != cudaSuccess)
+            if(cudaStat != cudaSuccess)
             {
                 printf("cudaMemcpy returned error code %d, line(%d)\n",
                        cudaStat,
@@ -405,13 +405,13 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
                 exit(EXIT_FAILURE);
             }
 
-            if (offsetmode == 1)
+            if(offsetmode == 1)
             {
                 cudaStat = cudaMemcpy(d_outmap,
                                       data.image[IDoffset].array.F,
                                       sizeof(float) * mdim,
                                       cudaMemcpyHostToDevice);
-                if (cudaStat != cudaSuccess)
+                if(cudaStat != cudaSuccess)
                 {
                     printf("cudaMemcpy returned error code %d, line(%d)\n",
                            cudaStat,
@@ -433,25 +433,25 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
                                         &beta,
                                         d_outmap,
                                         1);
-            if (cublas_status != CUBLAS_STATUS_SUCCESS)
+            if(cublas_status != CUBLAS_STATUS_SUCCESS)
             {
                 printf("cublasSgemv returned error code %d, line(%d)\n",
                        cublas_status,
                        __LINE__);
                 fflush(stdout);
-                if (cublas_status == CUBLAS_STATUS_NOT_INITIALIZED)
+                if(cublas_status == CUBLAS_STATUS_NOT_INITIALIZED)
                 {
                     printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
                 }
-                if (cublas_status == CUBLAS_STATUS_INVALID_VALUE)
+                if(cublas_status == CUBLAS_STATUS_INVALID_VALUE)
                 {
                     printf("   CUBLAS_STATUS_INVALID_VALUE\n");
                 }
-                if (cublas_status == CUBLAS_STATUS_ARCH_MISMATCH)
+                if(cublas_status == CUBLAS_STATUS_ARCH_MISMATCH)
                 {
                     printf("   CUBLAS_STATUS_ARCH_MISMATCH\n");
                 }
-                if (cublas_status == CUBLAS_STATUS_EXECUTION_FAILED)
+                if(cublas_status == CUBLAS_STATUS_EXECUTION_FAILED)
                 {
                     printf("   CUBLAS_STATUS_EXECUTION_FAILED\n");
                 }
@@ -477,12 +477,12 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
                                   sizeof(float) * mdim,
                                   cudaMemcpyDeviceToHost);
             sem_getvalue(data.image[IDoutmap].semptr[0], &semval);
-            if (semval < SEMAPHORE_MAXVAL)
+            if(semval < SEMAPHORE_MAXVAL)
             {
                 sem_post(data.image[IDoutmap].semptr[0]);
             }
             sem_getvalue(data.image[IDoutmap].semptr[1], &semval);
-            if (semval < SEMAPHORE_MAXVAL)
+            if(semval < SEMAPHORE_MAXVAL)
             {
                 sem_post(data.image[IDoutmap].semptr[1]);
             }
@@ -490,10 +490,10 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
             data.image[IDoutmap].md[0].write = 0;
         }
 
-        if ((data.signal_INT == 1) || (data.signal_TERM == 1) ||
-            (data.signal_ABRT == 1) || (data.signal_BUS == 1) ||
-            (data.signal_SEGV == 1) || (data.signal_HUP == 1) ||
-            (data.signal_PIPE == 1))
+        if((data.signal_INT == 1) || (data.signal_TERM == 1) ||
+                (data.signal_ABRT == 1) || (data.signal_BUS == 1) ||
+                (data.signal_SEGV == 1) || (data.signal_HUP == 1) ||
+                (data.signal_PIPE == 1))
         {
             loopOK = 0;
         }
@@ -505,7 +505,7 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
     cudaFree(d_outmap);
     cudaFree(d_coeff);
 
-    if (cublasH)
+    if(cublasH)
     {
         cublasDestroy(cublasH);
     }

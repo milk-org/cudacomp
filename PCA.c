@@ -16,17 +16,21 @@
 // Local variables pointers
 static char *inimname;
 
-static CLICMDARGDEF farg[] = {{CLIARG_IMG,
-                               ".in_name",
-                               "input image",
-                               "im1",
-                               CLIARG_VISIBLE_DEFAULT,
-                               (void **) &inimname,
-                               NULL}};
+static CLICMDARGDEF farg[] = {{
+        CLIARG_IMG,
+        ".in_name",
+        "input image",
+        "im1",
+        CLIARG_VISIBLE_DEFAULT,
+        (void **) &inimname,
+        NULL
+    }
+};
 
 static CLICMDDATA CLIcmddata = {"PCAdecomp",
                                 "Principal Components Analysis decomposition",
-                                CLICMD_FIELDS_DEFAULTS};
+                                CLICMD_FIELDS_DEFAULTS
+                               };
 
 // detailed help
 static errno_t help_function()
@@ -38,11 +42,11 @@ void printMatrix(int m, int n, const double *A, int lda, const char *name)
 {
     long cnt = 0;
 
-    for (int row = 0; row < m; row++)
+    for(int row = 0; row < m; row++)
     {
-        for (int col = 0; col < n; col++)
+        for(int col = 0; col < n; col++)
         {
-            if (cnt < 100)
+            if(cnt < 100)
             {
                 double Areg = A[row + col * lda];
                 printf("%s(%d,%d) = %f\n", name, row, col, Areg);
@@ -79,9 +83,9 @@ static imageID image_PCAdecomp(IMGID *img)
 
     double *A = (double *) malloc(sizeof(double) * lda * n);
 
-    for (int ii = 0; ii < n; ii++) // pixel
+    for(int ii = 0; ii < n; ii++)  // pixel
     {
-        for (int kk = 0; kk < m; kk++) // sample
+        for(int kk = 0; kk < m; kk++)  // sample
         {
             A[ii * m + kk] = 1.0 * img->im->array.UI16[kk * n + ii];
         }
@@ -186,21 +190,21 @@ static imageID image_PCAdecomp(IMGID *img)
     signed char jobu  = 'A'; // all m columns of U
     signed char jobvt = 'A'; // all n columns of VT
     cusolver_status   = cusolverDnDgesvd(cusolverH,
-                                       jobu,
-                                       jobvt,
-                                       m,
-                                       n,
-                                       d_A,
-                                       lda,
-                                       d_S,
-                                       d_U,
-                                       lda, // ldu
-                                       d_VT,
-                                       lda, // ldvt,
-                                       d_work,
-                                       lwork,
-                                       d_rwork,
-                                       devInfo);
+                                         jobu,
+                                         jobvt,
+                                         m,
+                                         n,
+                                         d_A,
+                                         lda,
+                                         d_S,
+                                         d_U,
+                                         lda, // ldu
+                                         d_VT,
+                                         lda, // ldvt,
+                                         d_work,
+                                         lwork,
+                                         d_rwork,
+                                         devInfo);
 
     {
         cudaError_t cudaStat = cudaDeviceSynchronize();
@@ -245,9 +249,9 @@ static imageID image_PCAdecomp(IMGID *img)
                     10,
                     0,
                     &outPCAID);
-    for (uint32_t jj = 0; jj < lmax; jj++)
+    for(uint32_t jj = 0; jj < lmax; jj++)
     {
-        for (uint32_t ii = 0; ii < (uint32_t) n; ii++)
+        for(uint32_t ii = 0; ii < (uint32_t) n; ii++)
         {
             data.image[outPCAID].array.D[jj * n + ii] = VT[ii * m + jj];
         }
@@ -292,7 +296,7 @@ static imageID image_PCAdecomp(IMGID *img)
         (void) cudaStat;
     }
 
-    for (uint32_t k = 50; k < (uint32_t) n; k++)
+    for(uint32_t k = 50; k < (uint32_t) n; k++)
     {
         S[k] = 0.0;
     }
@@ -365,36 +369,56 @@ static imageID image_PCAdecomp(IMGID *img)
                                  img->md->size[1],
                                  img->md->size[2]);
     imcreateIMGID(&imgAres);
-    for (int ii = 0; ii < n; ii++) // pixel
+    for(int ii = 0; ii < n; ii++)  // pixel
     {
-        for (int kk = 0; kk < m; kk++) // sample
+        for(int kk = 0; kk < m; kk++)  // sample
         {
             imgAres.im->array.F[kk * n + ii] = (float) A[ii * m + kk];
         }
     }
 
     // free resources
-    if (d_A)
+    if(d_A)
+    {
         cudaFree(d_A);
-    if (d_S)
+    }
+    if(d_S)
+    {
         cudaFree(d_S);
-    if (d_U)
+    }
+    if(d_U)
+    {
         cudaFree(d_U);
-    if (d_VT)
+    }
+    if(d_VT)
+    {
         cudaFree(d_VT);
-    if (devInfo)
+    }
+    if(devInfo)
+    {
         cudaFree(devInfo);
-    if (d_work)
+    }
+    if(d_work)
+    {
         cudaFree(d_work);
-    if (d_rwork)
+    }
+    if(d_rwork)
+    {
         cudaFree(d_rwork);
-    if (d_W)
+    }
+    if(d_W)
+    {
         cudaFree(d_W);
+    }
 
-    if (cublasH)
+    if(cublasH)
+    {
         cublasDestroy(cublasH);
-    if (cusolverH)
+    }
+    if(cusolverH)
+    {
         cusolverDnDestroy(cusolverH);
+    }
 
     cudaDeviceReset();
 
@@ -433,9 +457,9 @@ static errno_t compute_function()
 
 INSERT_STD_FPSCLIfunctions
 
-    // Register function in CLI
-    errno_t
-    CLIADDCMD_cudacomp__PCAdecomp()
+// Register function in CLI
+errno_t
+CLIADDCMD_cudacomp__PCAdecomp()
 {
     INSERT_STD_CLIREGISTERFUNC
     return RETURN_SUCCESS;

@@ -49,105 +49,133 @@ long         fpi_outrefsname;
 static uint64_t *twait;
 long             fpi_twait;
 
-static CLICMDARGDEF farg[] = {
-    {CLIARG_UINT32,
-     ".GPUindex",
-     "GPU index",
-     "0",
-     CLIARG_VISIBLE_DEFAULT,
-     (void **) &GPUindex,
-     &fpi_GPUindex},
-    {CLIARG_STREAM,
-     ".insname",
-     "input stream name",
-     "null",
-     CLIARG_VISIBLE_DEFAULT,
-     (void **) &insname,
-     &fpi_insname},
-    {CLIARG_STREAM,
-     ".immodes",
-     "modes stream name",
-     "null",
-     CLIARG_VISIBLE_DEFAULT,
-     (void **) &immodes,
-     &fpi_immodes},
-    {CLIARG_STREAM,
-     ".outcoeff",
-     "output coefficients",
-     "null",
-     CLIARG_VISIBLE_DEFAULT,
-     (void **) &outcoeff,
-     &fpi_outcoeff},
-    {CLIARG_ONOFF,
-     ".outinit",
-     "output init mode",
-     "0",
-     CLIARG_HIDDEN_DEFAULT,
-     (void **) &outinit,
-     &fpi_outinit},
-    {CLIARG_UINT32,
-     ".option.axmode",
-     "0 for normal mode extraction, 1 for expansion",
-     "0",
-     CLIARG_HIDDEN_DEFAULT,
-     (void **) &axmode,
-     &fpi_axmode},
-    {CLIARG_ONOFF,
-     ".option.PROCESS",
-     "processing flag",
-     "0",
-     CLIARG_HIDDEN_DEFAULT,
-     (void **) &PROCESS,
-     &fpi_PROCESS},
-    {CLIARG_ONOFF,
-     ".option.TRACEMODE",
-     "writing trace",
-     "0",
-     CLIARG_HIDDEN_DEFAULT,
-     (void **) &TRACEMODE,
-     &fpi_TRACEMODE},
-    {CLIARG_ONOFF,
-     ".option.MODENORM",
-     "input modes normalization",
-     "0",
-     CLIARG_HIDDEN_DEFAULT,
-     (void **) &MODENORM,
-     &fpi_MODENORM},
-    {CLIARG_STREAM,
-     ".option.sname_intot",
-     "optional input normalization stream",
-     "null",
-     CLIARG_HIDDEN_DEFAULT,
-     (void **) &intot_stream,
-     &fpi_intot_stream},
-    {CLIARG_STREAM,
-     ".option.sname_refin",
-     "optional input reference to be subtracted stream",
-     "null",
-     CLIARG_VISIBLE_DEFAULT,
-     (void **) &inrefsname,
-     &fpi_inrefsname},
-    {CLIARG_STREAM,
-     ".option.sname_refout",
-     "optional output reference to be subtracted stream",
-     "null",
-     CLIARG_VISIBLE_DEFAULT,
-     (void **) &outrefsname,
-     &fpi_outrefsname},
-    {CLIARG_UINT64,
-     ".option.twait",
-     "insert time wait [us] at each iteration",
-     "0",
-     CLIARG_HIDDEN_DEFAULT,
-     (void **) &twait,
-     &fpi_twait}};
+static CLICMDARGDEF farg[] =
+{
+    {
+        CLIARG_UINT32,
+        ".GPUindex",
+        "GPU index",
+        "0",
+        CLIARG_VISIBLE_DEFAULT,
+        (void **) &GPUindex,
+        &fpi_GPUindex
+    },
+    {
+        CLIARG_STREAM,
+        ".insname",
+        "input stream name",
+        "null",
+        CLIARG_VISIBLE_DEFAULT,
+        (void **) &insname,
+        &fpi_insname
+    },
+    {
+        CLIARG_STREAM,
+        ".immodes",
+        "modes stream name",
+        "null",
+        CLIARG_VISIBLE_DEFAULT,
+        (void **) &immodes,
+        &fpi_immodes
+    },
+    {
+        CLIARG_STREAM,
+        ".outcoeff",
+        "output coefficients",
+        "null",
+        CLIARG_VISIBLE_DEFAULT,
+        (void **) &outcoeff,
+        &fpi_outcoeff
+    },
+    {
+        CLIARG_ONOFF,
+        ".outinit",
+        "output init mode",
+        "0",
+        CLIARG_HIDDEN_DEFAULT,
+        (void **) &outinit,
+        &fpi_outinit
+    },
+    {
+        CLIARG_UINT32,
+        ".option.axmode",
+        "0 for normal mode extraction, 1 for expansion",
+        "0",
+        CLIARG_HIDDEN_DEFAULT,
+        (void **) &axmode,
+        &fpi_axmode
+    },
+    {
+        CLIARG_ONOFF,
+        ".option.PROCESS",
+        "processing flag",
+        "0",
+        CLIARG_HIDDEN_DEFAULT,
+        (void **) &PROCESS,
+        &fpi_PROCESS
+    },
+    {
+        CLIARG_ONOFF,
+        ".option.TRACEMODE",
+        "writing trace",
+        "0",
+        CLIARG_HIDDEN_DEFAULT,
+        (void **) &TRACEMODE,
+        &fpi_TRACEMODE
+    },
+    {
+        CLIARG_ONOFF,
+        ".option.MODENORM",
+        "input modes normalization",
+        "0",
+        CLIARG_HIDDEN_DEFAULT,
+        (void **) &MODENORM,
+        &fpi_MODENORM
+    },
+    {
+        CLIARG_STREAM,
+        ".option.sname_intot",
+        "optional input normalization stream",
+        "null",
+        CLIARG_HIDDEN_DEFAULT,
+        (void **) &intot_stream,
+        &fpi_intot_stream
+    },
+    {
+        CLIARG_STREAM,
+        ".option.sname_refin",
+        "optional input reference to be subtracted stream",
+        "null",
+        CLIARG_VISIBLE_DEFAULT,
+        (void **) &inrefsname,
+        &fpi_inrefsname
+    },
+    {
+        CLIARG_STREAM,
+        ".option.sname_refout",
+        "optional output reference to be subtracted stream",
+        "null",
+        CLIARG_VISIBLE_DEFAULT,
+        (void **) &outrefsname,
+        &fpi_outrefsname
+    },
+    {
+        CLIARG_UINT64,
+        ".option.twait",
+        "insert time wait [us] at each iteration",
+        "0",
+        CLIARG_HIDDEN_DEFAULT,
+        (void **) &twait,
+        &fpi_twait
+    }
+};
 
 // Optional custom configuration setup.
 // Runs once at conf startup
 //
 static errno_t customCONFsetup()
 {
-    if (data.fpsptr != NULL)
+    if(data.fpsptr != NULL)
     {
         data.fpsptr->parray[fpi_insname].fpflag |=
             FPFLAG_STREAM_RUN_REQUIRED | FPFLAG_CHECKSTREAM;
@@ -164,15 +192,17 @@ static errno_t customCONFsetup()
 static errno_t customCONFcheck()
 {
 
-    if (data.fpsptr != NULL)
+    if(data.fpsptr != NULL)
     {
     }
 
     return RETURN_SUCCESS;
 }
 
-static CLICMDDATA CLIcmddata = {
-    "MVMmextrmodes", "extract modes by MVM", CLICMD_FIELDS_DEFAULTS};
+static CLICMDDATA CLIcmddata =
+{
+    "MVMmextrmodes", "extract modes by MVM", CLICMD_FIELDS_DEFAULTS
+};
 
 // detailed help
 static errno_t help_function()
@@ -226,7 +256,7 @@ static errno_t compute_function()
     IDintot        = image_ID(intot_stream);
     int INNORMMODE = 0; // 1 if input normalized
 
-    if (IDintot == -1)
+    if(IDintot == -1)
     {
         INNORMMODE = 0;
         create_2Dimage_ID("intot_tmp", 1, 1, &IDintot);
@@ -241,13 +271,13 @@ static errno_t compute_function()
     imageID IDref    = -1;
     IMGID   imginref = mkIMGID_from_name(inrefsname);
     resolveIMGID(&imgin, ERRMODE_WARN);
-    if (imginref.ID == -1)
+    if(imginref.ID == -1)
     {
         create_2Dimage_ID("_tmprefin",
                           imgin.md->size[0],
                           imgin.md->size[1],
                           &IDref);
-        for (uint64_t ii = 0; ii < imgin.md->size[0] * imgin.md->size[1]; ii++)
+        for(uint64_t ii = 0; ii < imgin.md->size[0] * imgin.md->size[1]; ii++)
         {
             data.image[IDref].array.F[ii] = 0.0;
         }
@@ -268,7 +298,7 @@ static errno_t compute_function()
     long    NBmodes = 1;
     imageID IDmodes = -1;
 
-    if ((*axmode) == 0)
+    if((*axmode) == 0)
     {
         //
         // Extract modes.
@@ -304,16 +334,16 @@ static errno_t compute_function()
                           NBmodes,
                           &IDmodes);
 
-        for (uint32_t ii = 0; ii < imgin.md->size[0]; ii++)
-            for (uint32_t jj = 0; jj < imgin.md->size[1]; jj++)
+        for(uint32_t ii = 0; ii < imgin.md->size[0]; ii++)
+            for(uint32_t jj = 0; jj < imgin.md->size[1]; jj++)
             {
-                for (long kk = 0; kk < NBmodes; kk++)
+                for(long kk = 0; kk < NBmodes; kk++)
                 {
                     data.image[IDmodes]
-                        .array.F[kk * imgin.md->size[0] * imgin.md->size[1] +
-                                 jj * imgin.md->size[0] + ii] =
-                        imgmodes.im->array
-                            .F[NBmodes * (jj * imgin.md->size[0] + ii) + kk];
+                    .array.F[kk * imgin.md->size[0] * imgin.md->size[1] +
+                                jj * imgin.md->size[0] + ii] =
+                                 imgmodes.im->array
+                                 .F[NBmodes * (jj * imgin.md->size[0] + ii) + kk];
                 }
             }
 
@@ -322,13 +352,13 @@ static errno_t compute_function()
 
     float *normcoeff = (float *) malloc(sizeof(float) * NBmodes);
 
-    if ((*MODENORM) == 1)
+    if((*MODENORM) == 1)
     {
         // compute normalization coeffs
-        for (long k = 0; k < NBmodes; k++)
+        for(long k = 0; k < NBmodes; k++)
         {
             normcoeff[k] = 0.0;
-            for (long ii = 0; ii < m; ii++)
+            for(long ii = 0; ii < m; ii++)
             {
                 normcoeff[k] += imgmodes.im->array.F[k * m + ii] *
                                 imgmodes.im->array.F[k * m + ii];
@@ -338,7 +368,7 @@ static errno_t compute_function()
     else
     {
         // or set them to 1
-        for (long k = 0; k < NBmodes; k++)
+        for(long k = 0; k < NBmodes; k++)
         {
             normcoeff[k] = 1.0;
         }
@@ -351,9 +381,9 @@ static errno_t compute_function()
 
     //IDrefout = image_ID(IDrefout_name);
     imageID IDrefout = -1; //TODO handle this
-    if (IDrefout == -1)
+    if(IDrefout == -1)
     {
-        if ((*axmode) == 0)
+        if((*axmode) == 0)
         {
             arraytmp[0] = NBmodes;
             arraytmp[1] = 1;
@@ -379,7 +409,7 @@ static errno_t compute_function()
     resolveIMGID(&imgout, ERRMODE_WARN);
     imageID ID_modeval = imgout.ID;
 
-    if (imgout.ID != -1)
+    if(imgout.ID != -1)
     {
         // if in local memory,
         // create blank img for comparison
@@ -392,7 +422,7 @@ static errno_t compute_function()
         printf("%lu errors\n", imgerr);
 
         // if doesn't pass test, erase from local memory
-        if (imgerr != 0)
+        if(imgerr != 0)
         {
             delete_image_ID(outcoeff, DELETE_IMAGE_ERRMODE_WARNING);
             imgout.ID = -1;
@@ -400,7 +430,7 @@ static errno_t compute_function()
     }
 
     // if not in local memory, (re)-create
-    if (imgout.ID == -1)
+    if(imgout.ID == -1)
     {
         create_image_ID(outcoeff,
                         2,
@@ -425,7 +455,7 @@ static errno_t compute_function()
     /* INITIALIZE PROCESSINFO AND PROMOTE SCHED PARAMS BEFORE SPAWNING CUDE THREADS */
     INSERT_STD_PROCINFO_COMPUTEFUNC_INIT;
 
-    if (MODEVALCOMPUTE == 1)
+    if(MODEVALCOMPUTE == 1)
     {
         int deviceCount;
 
@@ -433,7 +463,7 @@ static errno_t compute_function()
         printf("%d devices found\n", deviceCount);
         fflush(stdout);
         printf("\n");
-        for (int k = 0; k < deviceCount; k++)
+        for(int k = 0; k < deviceCount; k++)
         {
             cudaGetDeviceProperties(&deviceProp, k);
             printf("Device %d / %d [ %20s ]  has compute capability %d.%d.\n",
@@ -456,7 +486,7 @@ static errno_t compute_function()
             printf("\n");
         }
 
-        if ((int) (*GPUindex) < deviceCount)
+        if((int)(*GPUindex) < deviceCount)
         {
             cudaSetDevice(*GPUindex);
         }
@@ -469,7 +499,7 @@ static errno_t compute_function()
         printf("Create cublas handle ...");
         fflush(stdout);
         cublas_status = cublasCreate(&cublasH);
-        if (cublas_status != CUBLAS_STATUS_SUCCESS)
+        if(cublas_status != CUBLAS_STATUS_SUCCESS)
         {
             printf("CUBLAS initialization failed\n");
             return EXIT_FAILURE;
@@ -479,7 +509,7 @@ static errno_t compute_function()
 
         // load modes to GPU
         cudaStat = cudaMalloc((void **) &d_modes, sizeof(float) * m * NBmodes);
-        if (cudaStat != cudaSuccess)
+        if(cudaStat != cudaSuccess)
         {
             printf("cudaMalloc d_modes returned error code %d, line %d\n",
                    cudaStat,
@@ -495,7 +525,7 @@ static errno_t compute_function()
                               sizeof(float) * m * NBmodes,
                               cudaMemcpyHostToDevice);
         //cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
-        if (cudaStat != cudaSuccess)
+        if(cudaStat != cudaSuccess)
         {
             printf("cudaMemcpy returned error code %d, line %d\n",
                    cudaStat,
@@ -505,7 +535,7 @@ static errno_t compute_function()
 
         // create d_in
         cudaStat = cudaMalloc((void **) &d_in, sizeof(float) * m);
-        if (cudaStat != cudaSuccess)
+        if(cudaStat != cudaSuccess)
         {
             printf("cudaMalloc d_in returned error code %d, line %d\n",
                    cudaStat,
@@ -515,7 +545,7 @@ static errno_t compute_function()
 
         // create d_modeval
         cudaStat = cudaMalloc((void **) &d_modeval, sizeof(float) * NBmodes);
-        if (cudaStat != cudaSuccess)
+        if(cudaStat != cudaSuccess)
         {
             printf("cudaMalloc d_modeval returned error code %d, line %d\n",
                    cudaStat,
@@ -525,7 +555,7 @@ static errno_t compute_function()
     }
 
 
-    if ((*TRACEMODE) == 1)
+    if((*TRACEMODE) == 1)
     {
         uint32_t *sizearraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
 
@@ -534,12 +564,12 @@ static errno_t compute_function()
                                 STRINGMAXLEN_IMGNAME,
                                 "%s_trace",
                                 outcoeff);
-            if (slen < 1)
+            if(slen < 1)
             {
                 PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
-            if (slen >= STRINGMAXLEN_IMGNAME)
+            if(slen >= STRINGMAXLEN_IMGNAME)
             {
                 PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
@@ -550,20 +580,20 @@ static errno_t compute_function()
         sizearraytmp[1] = NBmodes;
         IDtrace         = image_ID(traceim_name);
         int imOK        = 1;
-        if (IDtrace == -1)
+        if(IDtrace == -1)
         {
             imOK = 0;
         }
         else
         {
-            if ((data.image[IDtrace].md[0].size[0] != TRACEsize) ||
-                (data.image[IDtrace].md[0].size[1] != NBmodes))
+            if((data.image[IDtrace].md[0].size[0] != TRACEsize) ||
+                    (data.image[IDtrace].md[0].size[1] != NBmodes))
             {
                 imOK = 0;
                 delete_image_ID(traceim_name, DELETE_IMAGE_ERRMODE_WARNING);
             }
         }
-        if (imOK == 0)
+        if(imOK == 0)
         {
             create_image_ID(traceim_name,
                             2,
@@ -578,7 +608,7 @@ static errno_t compute_function()
         free(sizearraytmp);
     }
 
-    if ((*PROCESS) == 1)
+    if((*PROCESS) == 1)
     {
         uint32_t *sizearraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
 
@@ -587,12 +617,12 @@ static errno_t compute_function()
                                 STRINGMAXLEN_IMGNAME,
                                 "%s_ave",
                                 outcoeff);
-            if (slen < 1)
+            if(slen < 1)
             {
                 PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
-            if (slen >= STRINGMAXLEN_IMGNAME)
+            if(slen >= STRINGMAXLEN_IMGNAME)
             {
                 PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
@@ -603,20 +633,20 @@ static errno_t compute_function()
         sizearraytmp[1] = NBaveSTEP;
         IDprocave       = image_ID(process_ave_name);
         int imOK        = 1;
-        if (IDprocave == -1)
+        if(IDprocave == -1)
         {
             imOK = 0;
         }
         else
         {
-            if ((data.image[IDprocave].md[0].size[0] != NBmodes) ||
-                (data.image[IDprocave].md[0].size[1] != NBaveSTEP))
+            if((data.image[IDprocave].md[0].size[0] != NBmodes) ||
+                    (data.image[IDprocave].md[0].size[1] != NBaveSTEP))
             {
                 imOK = 0;
                 delete_image_ID(process_ave_name, DELETE_IMAGE_ERRMODE_WARNING);
             }
         }
-        if (imOK == 0)
+        if(imOK == 0)
         {
             create_image_ID(process_ave_name,
                             2,
@@ -637,12 +667,12 @@ static errno_t compute_function()
                                 STRINGMAXLEN_IMGNAME,
                                 "%s_rms",
                                 outcoeff);
-            if (slen < 1)
+            if(slen < 1)
             {
                 PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
-            if (slen >= STRINGMAXLEN_IMGNAME)
+            if(slen >= STRINGMAXLEN_IMGNAME)
             {
                 PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
@@ -653,20 +683,20 @@ static errno_t compute_function()
         sizearraytmp[1] = NBaveSTEP;
         IDprocrms       = image_ID(process_rms_name);
         imOK            = 1;
-        if (IDprocrms == -1)
+        if(IDprocrms == -1)
         {
             imOK = 0;
         }
         else
         {
-            if ((data.image[IDprocrms].md[0].size[0] != NBmodes) ||
-                (data.image[IDprocrms].md[0].size[1] != NBaveSTEP))
+            if((data.image[IDprocrms].md[0].size[0] != NBmodes) ||
+                    (data.image[IDprocrms].md[0].size[1] != NBaveSTEP))
             {
                 imOK = 0;
                 delete_image_ID(process_rms_name, DELETE_IMAGE_ERRMODE_WARNING);
             }
         }
-        if (imOK == 0)
+        if(imOK == 0)
         {
             create_image_ID(process_rms_name,
                             2,
@@ -688,7 +718,7 @@ static errno_t compute_function()
     printf("LOOP START   MODEVALCOMPUTE = %d\n", MODEVALCOMPUTE);
     fflush(stdout);
 
-    if (MODEVALCOMPUTE == 0)
+    if(MODEVALCOMPUTE == 0)
     {
         printf("\n");
         printf("This function is NOT computing mode values\n");
@@ -704,12 +734,12 @@ static errno_t compute_function()
                                 STRINGMAXLEN_PROCESSINFO_STATUSMSG,
                                 "Running on GPU %d",
                                 (*GPUindex));
-            if (slen < 1)
+            if(slen < 1)
             {
                 PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
-            if (slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG)
+            if(slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG)
             {
                 PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
@@ -734,14 +764,14 @@ static errno_t compute_function()
     // Are we computing a new reference ?
     // if yes, set initref to 0 (reference is NOT initialized)
     //
-    if (refindex != data.image[IDref].md[0].cnt0)
+    if(refindex != data.image[IDref].md[0].cnt0)
     {
         initref  = 0;
         refindex = data.image[IDref].md[0].cnt0;
     }
 
     // load in_stream to GPU
-    if (initref == 0)
+    if(initref == 0)
     {
         cudaStat = cudaMemcpy(d_in,
                               data.image[IDref].array.F,
@@ -756,7 +786,7 @@ static errno_t compute_function()
                               cudaMemcpyHostToDevice);
     }
 
-    if (cudaStat != cudaSuccess)
+    if(cudaStat != cudaSuccess)
     {
         printf("initref = %d    %ld  %ld\n", initref, IDref, imgin.ID);
         printf("cudaMemcpy returned error code %d, line %d\n",
@@ -765,7 +795,7 @@ static errno_t compute_function()
         exit(EXIT_FAILURE);
     }
 
-    if (BETAMODE == 1)
+    if(BETAMODE == 1)
     {
         beta     = -1.0;
         cudaStat = cudaMemcpy(d_modeval,
@@ -791,25 +821,25 @@ static errno_t compute_function()
                                 &beta,
                                 d_modeval,
                                 1);
-    if (cublas_status != CUBLAS_STATUS_SUCCESS)
+    if(cublas_status != CUBLAS_STATUS_SUCCESS)
     {
         printf("cublasSgemv returned error code %d, line(%d)\n",
                cublas_status,
                __LINE__);
         fflush(stdout);
-        if (cublas_status == CUBLAS_STATUS_NOT_INITIALIZED)
+        if(cublas_status == CUBLAS_STATUS_NOT_INITIALIZED)
         {
             printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
         }
-        if (cublas_status == CUBLAS_STATUS_INVALID_VALUE)
+        if(cublas_status == CUBLAS_STATUS_INVALID_VALUE)
         {
             printf("   CUBLAS_STATUS_INVALID_VALUE\n");
         }
-        if (cublas_status == CUBLAS_STATUS_ARCH_MISMATCH)
+        if(cublas_status == CUBLAS_STATUS_ARCH_MISMATCH)
         {
             printf("   CUBLAS_STATUS_ARCH_MISMATCH\n");
         }
-        if (cublas_status == CUBLAS_STATUS_EXECUTION_FAILED)
+        if(cublas_status == CUBLAS_STATUS_EXECUTION_FAILED)
         {
             printf("   CUBLAS_STATUS_EXECUTION_FAILED\n");
         }
@@ -828,8 +858,9 @@ static errno_t compute_function()
     // copy result
     data.image[ID_modeval].md[0].write = 1;
 
-    if (initref == 0)
-    { // construct reference to be subtracted
+    if(initref == 0)
+    {
+        // construct reference to be subtracted
         printf("... reference compute\n");
         cudaStat = cudaMemcpy(modevalarrayref,
                               d_modeval,
@@ -837,13 +868,13 @@ static errno_t compute_function()
                               cudaMemcpyDeviceToHost);
 
         IDrefout = image_ID(outrefsname);
-        if (IDrefout != -1)
-            for (long k = 0; k < NBmodes; k++)
+        if(IDrefout != -1)
+            for(long k = 0; k < NBmodes; k++)
             {
                 modevalarrayref[k] -= data.image[IDrefout].array.F[k];
             }
 
-        if ((INNORMMODE == 0) && (MODENORM == 0))
+        if((INNORMMODE == 0) && (MODENORM == 0))
         {
             BETAMODE = 1; // include ref subtraction in GPU operation
         }
@@ -859,9 +890,9 @@ static errno_t compute_function()
                               sizeof(float) * NBmodes,
                               cudaMemcpyDeviceToHost);
 
-        if (BETAMODE == 0)
+        if(BETAMODE == 0)
         {
-            for (long k = 0; k < NBmodes; k++)
+            for(long k = 0; k < NBmodes; k++)
             {
                 data.image[ID_modeval].array.F[k] =
                     (modevalarray[k] / data.image[IDintot].array.F[0] -
@@ -870,7 +901,7 @@ static errno_t compute_function()
             }
         }
         else
-            for (long k = 0; k < NBmodes; k++)
+            for(long k = 0; k < NBmodes; k++)
             {
                 data.image[ID_modeval].array.F[k] = modevalarray[k];
             }
@@ -895,9 +926,9 @@ static errno_t compute_function()
 
 INSERT_STD_FPSCLIfunctions
 
-    // Register function in CLI
-    errno_t
-    CLIADDCMD_cudacomp__MVMextractModes()
+// Register function in CLI
+errno_t
+CLIADDCMD_cudacomp__MVMextractModes()
 {
 
     CLIcmddata.FPS_customCONFsetup = customCONFsetup;

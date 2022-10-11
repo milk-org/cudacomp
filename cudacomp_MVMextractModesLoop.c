@@ -98,7 +98,7 @@ static errno_t CUDACOMP_MVMextractModesLoop_cli()
     // see code in function_parameter.c for detailed rules
     function_parameter_getFPSargs_from_CLIfunc("cudaMVM");
 
-    if (data.FPS_CMDCODE != 0) // use FPS implementation
+    if(data.FPS_CMDCODE != 0)  // use FPS implementation
     {
         // set pointers to CONF and RUN functions
         data.FPS_CONFfunc = CUDACOMP_MVMextractModesLoop_FPCONF;
@@ -108,14 +108,14 @@ static errno_t CUDACOMP_MVMextractModesLoop_cli()
     }
 
     // non FPS implementation - all parameters specified at function launch
-    if (CLI_checkarg(1, CLIARG_IMG) + CLI_checkarg(2, CLIARG_STR) +
+    if(CLI_checkarg(1, CLIARG_IMG) + CLI_checkarg(2, CLIARG_STR) +
             CLI_checkarg(3, CLIARG_IMG) + CLI_checkarg(4, CLIARG_STR) +
             CLI_checkarg(5, CLIARG_STR) + CLI_checkarg(6, CLIARG_STR) +
             CLI_checkarg(7, CLIARG_LONG) + CLI_checkarg(8, CLIARG_LONG) +
             CLI_checkarg(9, CLIARG_LONG) + CLI_checkarg(10, CLIARG_LONG) +
             CLI_checkarg(11, CLIARG_LONG) + CLI_checkarg(12, CLIARG_LONG) +
             CLI_checkarg(13, CLIARG_LONG) + CLI_checkarg(14, CLIARG_LONG) ==
-        0)
+            0)
     {
         CUDACOMP_MVMextractModesLoop(data.cmdargtoken[1].val.string,
                                      data.cmdargtoken[2].val.string,
@@ -338,12 +338,12 @@ errno_t CUDACOMP_MVMextractModesLoop_FPCONF()
     // ==============================================
     FPS_CONFLOOP_START // macro in function_parameter.h
 
-        // ==============================================
-        // ======== STOP FPS CONF LOOP ==================
-        // ==============================================
-        FPS_CONFLOOP_END // macro in function_parameter.h
+    // ==============================================
+    // ======== STOP FPS CONF LOOP ==================
+    // ==============================================
+    FPS_CONFLOOP_END // macro in function_parameter.h
 
-        return RETURN_SUCCESS;
+    return RETURN_SUCCESS;
 }
 
 /**
@@ -557,12 +557,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                             STRINGMAXLEN_PROCESSINFO_NAME,
                             "cudaMVMextract-%s",
                             in_stream);
-        if (slen < 1)
+        if(slen < 1)
         {
             PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
-        if (slen >= STRINGMAXLEN_PROCESSINFO_NAME)
+        if(slen >= STRINGMAXLEN_PROCESSINFO_NAME)
         {
             PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
@@ -576,12 +576,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                             "%s->%s",
                             in_stream,
                             IDmodes_val_name);
-        if (slen < 1)
+        if(slen < 1)
         {
             PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
-        if (slen >= STRINGMAXLEN_PROCESSINFO_DESCRIPTION)
+        if(slen >= STRINGMAXLEN_PROCESSINFO_DESCRIPTION)
         {
             PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
@@ -592,12 +592,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     {
         int slen =
             snprintf(pinfomsg, STRINGMAXLEN_PROCESSINFO_STATUSMSG, "Setup");
-        if (slen < 1)
+        if(slen < 1)
         {
             PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
-        if (slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG)
+        if(slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG)
         {
             PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
@@ -606,12 +606,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
     PROCESSINFO *processinfo;
     processinfo = processinfo_setup(
-        pinfoname, // short name for the processinfo instance, no spaces, no dot, name should be human-readable
-        pinfodescr, // description
-        pinfomsg,   // message on startup
-        __FUNCTION__,
-        __FILE__,
-        __LINE__);
+                      pinfoname, // short name for the processinfo instance, no spaces, no dot, name should be human-readable
+                      pinfodescr, // description
+                      pinfomsg,   // message on startup
+                      __FUNCTION__,
+                      __FILE__,
+                      __LINE__);
 
     // OPTIONAL SETTINGS
     processinfo->MeasureTiming = 1; // Measure timing
@@ -629,7 +629,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     IDin = image_ID(in_stream);
 
     // ERROR HANDLING
-    if (IDin == -1)
+    if(IDin == -1)
     {
         struct timespec errtime;
         struct tm      *errtm;
@@ -660,7 +660,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     IDintot        = image_ID(intot_stream);
     int INNORMMODE = 0; // 1 if input normalized
 
-    if (IDintot == -1)
+    if(IDintot == -1)
     {
         INNORMMODE = 0;
         create_2Dimage_ID("intot_tmp", 1, 1, &IDintot);
@@ -674,22 +674,22 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     // CONNECT TO WFS REFERENCE STREAM
     long IDref;
     IDref = image_ID(IDrefin_name);
-    if (IDref == -1)
+    if(IDref == -1)
     {
         create_2Dimage_ID("_tmprefin",
                           data.image[IDin].md[0].size[0],
                           data.image[IDin].md[0].size[1],
                           &IDref);
 
-        for (ii = 0; ii < data.image[IDin].md[0].size[0] *
-                              data.image[IDin].md[0].size[1];
-             ii++)
+        for(ii = 0; ii < data.image[IDin].md[0].size[0] *
+                data.image[IDin].md[0].size[1];
+                ii++)
         {
             data.image[IDref].array.F[ii] = 0.0;
         }
     }
 
-    if (axmode == 0)
+    if(axmode == 0)
     {
         //
         // Extract modes.
@@ -726,20 +726,20 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                           NBmodes,
                           &IDmodes);
 
-        for (ii = 0; ii < data.image[IDin].md[0].size[0]; ii++)
-            for (jj = 0; jj < data.image[IDin].md[0].size[1]; jj++)
+        for(ii = 0; ii < data.image[IDin].md[0].size[0]; ii++)
+            for(jj = 0; jj < data.image[IDin].md[0].size[1]; jj++)
             {
-                for (kk = 0; kk < NBmodes; kk++)
+                for(kk = 0; kk < NBmodes; kk++)
                 {
                     data.image[IDmodes]
-                        .array.F[kk * data.image[IDin].md[0].size[0] *
-                                     data.image[IDin].md[0].size[1] +
-                                 jj * data.image[IDin].md[0].size[0] + ii] =
-                        data.image[ID]
-                            .array
-                            .F[NBmodes *
-                                   (jj * data.image[IDin].md[0].size[0] + ii) +
-                               kk];
+                    .array.F[kk * data.image[IDin].md[0].size[0] *
+                                data.image[IDin].md[0].size[1] +
+                                jj * data.image[IDin].md[0].size[0] + ii] =
+                                 data.image[ID]
+                                 .array
+                                 .F[NBmodes *
+                                            (jj * data.image[IDin].md[0].size[0] + ii) +
+                                            kk];
                 }
             }
 
@@ -748,12 +748,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
     normcoeff = (float *) malloc(sizeof(float) * NBmodes);
 
-    if (MODENORM == 1)
+    if(MODENORM == 1)
     {
-        for (k = 0; k < NBmodes; k++)
+        for(k = 0; k < NBmodes; k++)
         {
             normcoeff[k] = 0.0;
-            for (ii = 0; ii < m; ii++)
+            for(ii = 0; ii < m; ii++)
             {
                 normcoeff[k] += data.image[IDmodes].array.F[k * m + ii] *
                                 data.image[IDmodes].array.F[k * m + ii];
@@ -761,7 +761,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         }
     }
     else
-        for (k = 0; k < NBmodes; k++)
+        for(k = 0; k < NBmodes; k++)
         {
             normcoeff[k] = 1.0;
         }
@@ -772,7 +772,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     arraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
 
     IDrefout = image_ID(IDrefout_name);
-    if (IDrefout == -1)
+    if(IDrefout == -1)
     {
         arraytmp[0] = NBmodes;
         arraytmp[1] = 1;
@@ -786,8 +786,9 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     // CONNNECT TO OUTPUT STREAM
 
     ID_modeval = image_ID(IDmodes_val_name);
-    if (ID_modeval == -1)
-    { // CREATE IT
+    if(ID_modeval == -1)
+    {
+        // CREATE IT
         create_image_ID(IDmodes_val_name,
                         2,
                         arraytmp,
@@ -800,19 +801,24 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         MODEVALCOMPUTE = 1;
     }
     else
-    { // USE STREAM, DO NOT COMPUTE IT
+    {
+        // USE STREAM, DO NOT COMPUTE IT
         printf("======== Using pre-existing stream %s, insem = %d\n",
                IDmodes_val_name,
                insem);
         fflush(stdout);
 
-        if (outinit == 0)
+        if(outinit == 0)
+        {
             MODEVALCOMPUTE = 0;
+        }
         else
+        {
             MODEVALCOMPUTE = 1;
+        }
 
         // drive semaphore to zero
-        while (sem_trywait(data.image[ID_modeval].semptr[insem]) == 0)
+        while(sem_trywait(data.image[ID_modeval].semptr[insem]) == 0)
         {
             printf("WARNING %s %d  : sem_trywait on ID_modeval\n",
                    __FILE__,
@@ -826,7 +832,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     printf("OUTPUT STREAM : %s  ID: %ld\n", IDmodes_val_name, ID_modeval);
     list_image_ID();
 
-    if (MODEVALCOMPUTE == 1)
+    if(MODEVALCOMPUTE == 1)
     {
         int deviceCount;
 
@@ -834,7 +840,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         printf("%d devices found\n", deviceCount);
         fflush(stdout);
         printf("\n");
-        for (k = 0; k < deviceCount; k++)
+        for(k = 0; k < deviceCount; k++)
         {
             cudaGetDeviceProperties(&deviceProp, k);
             printf("Device %d / %d [ %20s ]  has compute capability %d.%d.\n",
@@ -857,7 +863,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
             printf("\n");
         }
 
-        if (GPUindex < deviceCount)
+        if(GPUindex < deviceCount)
         {
             cudaSetDevice(GPUindex);
         }
@@ -870,7 +876,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         printf("Create cublas handle ...");
         fflush(stdout);
         cublas_status = cublasCreate(&cublasH);
-        if (cublas_status != CUBLAS_STATUS_SUCCESS)
+        if(cublas_status != CUBLAS_STATUS_SUCCESS)
         {
             printf("CUBLAS initialization failed\n");
             return EXIT_FAILURE;
@@ -880,7 +886,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
         // load modes to GPU
         cudaStat = cudaMalloc((void **) &d_modes, sizeof(float) * m * NBmodes);
-        if (cudaStat != cudaSuccess)
+        if(cudaStat != cudaSuccess)
         {
             printf("cudaMalloc d_modes returned error code %d, line %d\n",
                    cudaStat,
@@ -891,7 +897,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                               data.image[IDmodes].array.F,
                               sizeof(float) * m * NBmodes,
                               cudaMemcpyHostToDevice);
-        if (cudaStat != cudaSuccess)
+        if(cudaStat != cudaSuccess)
         {
             printf("cudaMemcpy returned error code %d, line %d\n",
                    cudaStat,
@@ -901,7 +907,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
         // create d_in
         cudaStat = cudaMalloc((void **) &d_in, sizeof(float) * m);
-        if (cudaStat != cudaSuccess)
+        if(cudaStat != cudaSuccess)
         {
             printf("cudaMalloc d_in returned error code %d, line %d\n",
                    cudaStat,
@@ -911,7 +917,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
         // create d_modeval
         cudaStat = cudaMalloc((void **) &d_modeval, sizeof(float) * NBmodes);
-        if (cudaStat != cudaSuccess)
+        if(cudaStat != cudaSuccess)
         {
             printf("cudaMalloc d_modeval returned error code %d, line %d\n",
                    cudaStat,
@@ -922,7 +928,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
     //loopcnt = 0;
 
-    if (TRACEMODE == 1)
+    if(TRACEMODE == 1)
     {
         sizearraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
 
@@ -931,12 +937,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                                 STRINGMAXLEN_IMGNAME,
                                 "%s_trace",
                                 IDmodes_val_name);
-            if (slen < 1)
+            if(slen < 1)
             {
                 PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
-            if (slen >= STRINGMAXLEN_IMGNAME)
+            if(slen >= STRINGMAXLEN_IMGNAME)
             {
                 PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
@@ -947,20 +953,20 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         sizearraytmp[1] = NBmodes;
         IDtrace         = image_ID(traceim_name);
         imOK            = 1;
-        if (IDtrace == -1)
+        if(IDtrace == -1)
         {
             imOK = 0;
         }
         else
         {
-            if ((data.image[IDtrace].md[0].size[0] != TRACEsize) ||
-                (data.image[IDtrace].md[0].size[1] != NBmodes))
+            if((data.image[IDtrace].md[0].size[0] != TRACEsize) ||
+                    (data.image[IDtrace].md[0].size[1] != NBmodes))
             {
                 imOK = 0;
                 delete_image_ID(traceim_name, DELETE_IMAGE_ERRMODE_WARNING);
             }
         }
-        if (imOK == 0)
+        if(imOK == 0)
         {
             create_image_ID(traceim_name,
                             2,
@@ -975,7 +981,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         free(sizearraytmp);
     }
 
-    if (PROCESS == 1)
+    if(PROCESS == 1)
     {
         sizearraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
 
@@ -984,12 +990,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                                 STRINGMAXLEN_IMGNAME,
                                 "%s_ave",
                                 IDmodes_val_name);
-            if (slen < 1)
+            if(slen < 1)
             {
                 PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
-            if (slen >= STRINGMAXLEN_IMGNAME)
+            if(slen >= STRINGMAXLEN_IMGNAME)
             {
                 PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
@@ -1000,20 +1006,20 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         sizearraytmp[1] = NBaveSTEP;
         IDprocave       = image_ID(process_ave_name);
         imOK            = 1;
-        if (IDprocave == -1)
+        if(IDprocave == -1)
         {
             imOK = 0;
         }
         else
         {
-            if ((data.image[IDprocave].md[0].size[0] != NBmodes) ||
-                (data.image[IDprocave].md[0].size[1] != NBaveSTEP))
+            if((data.image[IDprocave].md[0].size[0] != NBmodes) ||
+                    (data.image[IDprocave].md[0].size[1] != NBaveSTEP))
             {
                 imOK = 0;
                 delete_image_ID(process_ave_name, DELETE_IMAGE_ERRMODE_WARNING);
             }
         }
-        if (imOK == 0)
+        if(imOK == 0)
         {
             create_image_ID(process_ave_name,
                             2,
@@ -1034,12 +1040,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                                 STRINGMAXLEN_IMGNAME,
                                 "%s_rms",
                                 IDmodes_val_name);
-            if (slen < 1)
+            if(slen < 1)
             {
                 PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
-            if (slen >= STRINGMAXLEN_IMGNAME)
+            if(slen >= STRINGMAXLEN_IMGNAME)
             {
                 PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
@@ -1050,20 +1056,20 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         sizearraytmp[1] = NBaveSTEP;
         IDprocrms       = image_ID(process_rms_name);
         imOK            = 1;
-        if (IDprocrms == -1)
+        if(IDprocrms == -1)
         {
             imOK = 0;
         }
         else
         {
-            if ((data.image[IDprocrms].md[0].size[0] != NBmodes) ||
-                (data.image[IDprocrms].md[0].size[1] != NBaveSTEP))
+            if((data.image[IDprocrms].md[0].size[0] != NBmodes) ||
+                    (data.image[IDprocrms].md[0].size[1] != NBaveSTEP))
             {
                 imOK = 0;
                 delete_image_ID(process_rms_name, DELETE_IMAGE_ERRMODE_WARNING);
             }
         }
-        if (imOK == 0)
+        if(imOK == 0)
         {
             create_image_ID(process_rms_name,
                             2,
@@ -1085,13 +1091,13 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     printf("LOOP START   MODEVALCOMPUTE = %d\n", MODEVALCOMPUTE);
     fflush(stdout);
 
-    if (MODEVALCOMPUTE == 0)
+    if(MODEVALCOMPUTE == 0)
     {
         printf("\n");
         printf("This function is NOT computing mode values\n");
         printf("Pre-existing stream %s was detected\n", IDmodes_val_name);
         printf("\n");
-        if (data.processinfo == 1)
+        if(data.processinfo == 1)
         {
             strcpy(processinfo->statusmsg, "Passing stream, no computation");
             //sprintf(processinfo->description, "passthrough, no comp");
@@ -1106,18 +1112,18 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                                 STRINGMAXLEN_PROCESSINFO_STATUSMSG,
                                 "Running on GPU %d",
                                 GPUindex);
-            if (slen < 1)
+            if(slen < 1)
             {
                 PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
-            if (slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG)
+            if(slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG)
             {
                 PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
             }
         }
-        if (data.processinfo == 1)
+        if(data.processinfo == 1)
         {
             strcpy(processinfo->statusmsg, msgstring);
         }
@@ -1129,7 +1135,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     processinfo_loopstart(
         processinfo); // Notify processinfo that we are entering loop
 
-    if (MODEVALCOMPUTE == 1)
+    if(MODEVALCOMPUTE == 1)
     {
         int slen = snprintf(pinfomsg,
                             STRINGMAXLEN_PROCESSINFO_STATUSMSG,
@@ -1139,12 +1145,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                             IDmodes_val_name,
                             TRACEMODE,
                             PROCESS);
-        if (slen < 1)
+        if(slen < 1)
         {
             PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
-        if (slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG)
+        if(slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG)
         {
             PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
@@ -1158,12 +1164,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                             IDmodes_val_name,
                             TRACEMODE,
                             PROCESS);
-        if (slen < 1)
+        if(slen < 1)
         {
             PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
-        if (slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG)
+        if(slen >= STRINGMAXLEN_PROCESSINFO_STATUSMSG)
         {
             PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way
@@ -1177,7 +1183,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                                        PROCESSINFO_TRIGGERMODE_SEMAPHORE,
                                        5);
 
-    while (loopOK == 1)
+    while(loopOK == 1)
     {
         struct timespec tdiff;
         double          tdiffv;
@@ -1197,7 +1203,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         // We either compute the result in this function (MODEVALCOMPUTE = 1)
         // or we read it from ID_modeval stream (MODEVALCOMPUTE = 0)
 
-        if (MODEVALCOMPUTE == 1)
+        if(MODEVALCOMPUTE == 1)
         {
 
             int doComputation = 0;
@@ -1205,21 +1211,21 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
             // Are we computing a new reference ?
             // if yes, set initref to 0 (reference is NOT initialized)
             //
-            if (refindex != data.image[IDref].md[0].cnt0)
+            if(refindex != data.image[IDref].md[0].cnt0)
             {
                 initref  = 0;
                 refindex = data.image[IDref].md[0].cnt0;
             }
 
-            if (initref == 1)
+            if(initref == 1)
             {
                 // Reference is already initialized
                 // wait for input stream to be changed to start computation
                 //
 
                 processinfo_waitoninputstream(processinfo);
-                if (processinfo->triggerstatus ==
-                    PROCESSINFO_TRIGGERSTATUS_RECEIVED)
+                if(processinfo->triggerstatus ==
+                        PROCESSINFO_TRIGGERSTATUS_RECEIVED)
                 {
                     doComputation = 1;
                 }
@@ -1229,7 +1235,8 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                 }
             }
             else
-            { // compute response of reference immediately
+            {
+                // compute response of reference immediately
                 printf("COMPUTE NEW REFERENCE RESPONSE\n");
                 doComputation = 1;
             }
@@ -1239,10 +1246,10 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
             processinfo_exec_start(processinfo);
 
-            if (doComputation == 1)
+            if(doComputation == 1)
             {
                 // load in_stream to GPU
-                if (initref == 0)
+                if(initref == 0)
                 {
                     cudaStat = cudaMemcpy(d_in,
                                           data.image[IDref].array.F,
@@ -1257,7 +1264,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                                           cudaMemcpyHostToDevice);
                 }
 
-                if (cudaStat != cudaSuccess)
+                if(cudaStat != cudaSuccess)
                 {
                     printf("initref = %d    %ld  %ld\n", initref, IDref, IDin);
                     printf("cudaMemcpy returned error code %d, line %d\n",
@@ -1269,7 +1276,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                 //t01OK = 1;
                 clock_gettime(CLOCK_REALTIME, &t01);
 
-                if (BETAMODE == 1)
+                if(BETAMODE == 1)
                 {
                     beta     = -1.0;
                     cudaStat = cudaMemcpy(d_modeval,
@@ -1294,25 +1301,25 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                                             &beta,
                                             d_modeval,
                                             1);
-                if (cublas_status != CUBLAS_STATUS_SUCCESS)
+                if(cublas_status != CUBLAS_STATUS_SUCCESS)
                 {
                     printf("cublasSgemv returned error code %d, line(%d)\n",
                            cublas_status,
                            __LINE__);
                     fflush(stdout);
-                    if (cublas_status == CUBLAS_STATUS_NOT_INITIALIZED)
+                    if(cublas_status == CUBLAS_STATUS_NOT_INITIALIZED)
                     {
                         printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
                     }
-                    if (cublas_status == CUBLAS_STATUS_INVALID_VALUE)
+                    if(cublas_status == CUBLAS_STATUS_INVALID_VALUE)
                     {
                         printf("   CUBLAS_STATUS_INVALID_VALUE\n");
                     }
-                    if (cublas_status == CUBLAS_STATUS_ARCH_MISMATCH)
+                    if(cublas_status == CUBLAS_STATUS_ARCH_MISMATCH)
                     {
                         printf("   CUBLAS_STATUS_ARCH_MISMATCH\n");
                     }
-                    if (cublas_status == CUBLAS_STATUS_EXECUTION_FAILED)
+                    if(cublas_status == CUBLAS_STATUS_EXECUTION_FAILED)
                     {
                         printf("   CUBLAS_STATUS_EXECUTION_FAILED\n");
                     }
@@ -1338,8 +1345,9 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                 //t03OK = 1;
                 clock_gettime(CLOCK_REALTIME, &t03);
 
-                if (initref == 0)
-                { // construct reference to be subtracted
+                if(initref == 0)
+                {
+                    // construct reference to be subtracted
                     printf("... reference compute\n");
                     cudaStat = cudaMemcpy(modevalarrayref,
                                           d_modeval,
@@ -1347,14 +1355,14 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                                           cudaMemcpyDeviceToHost);
 
                     IDrefout = image_ID(IDrefout_name);
-                    if (IDrefout != -1)
-                        for (k = 0; k < NBmodes; k++)
+                    if(IDrefout != -1)
+                        for(k = 0; k < NBmodes; k++)
                         {
                             modevalarrayref[k] -=
                                 data.image[IDrefout].array.F[k];
                         }
 
-                    if ((INNORMMODE == 0) && (MODENORM == 0))
+                    if((INNORMMODE == 0) && (MODENORM == 0))
                     {
                         BETAMODE =
                             1; // include ref subtraction in GPU operation
@@ -1371,19 +1379,19 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
                                           sizeof(float) * NBmodes,
                                           cudaMemcpyDeviceToHost);
 
-                    if (BETAMODE == 0)
+                    if(BETAMODE == 0)
                     {
-                        for (k = 0; k < NBmodes; k++)
+                        for(k = 0; k < NBmodes; k++)
                         {
                             data.image[ID_modeval].array.F[k] =
                                 (modevalarray[k] /
-                                     data.image[IDintot].array.F[0] -
+                                 data.image[IDintot].array.F[0] -
                                  modevalarrayref[k]) /
                                 normcoeff[k];
                         }
                     }
                     else
-                        for (k = 0; k < NBmodes; k++)
+                        for(k = 0; k < NBmodes; k++)
                         {
                             data.image[ID_modeval].array.F[k] = modevalarray[k];
                         }
@@ -1393,11 +1401,14 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
             }
         }
         else
-        { // WAIT FOR NEW MODEVAL
+        {
+            // WAIT FOR NEW MODEVAL
             int rval;
             rval = sem_wait(data.image[ID_modeval].semptr[insem]);
-            if (rval == -1) // interrupt
+            if(rval == -1)  // interrupt
+            {
                 loopOK = 0;
+            }
 
             processinfo_exec_start(processinfo);
         }
@@ -1405,11 +1416,11 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         //t04OK = 1;
         clock_gettime(CLOCK_REALTIME, &t04);
 
-        if (TRACEMODE == 1)
+        if(TRACEMODE == 1)
         {
             data.image[ID_modeval].md[0].write = 1;
 
-            for (k = 0; k < NBmodes; k++)
+            for(k = 0; k < NBmodes; k++)
             {
                 data.image[IDtrace].array.F[k * TRACEsize + TRACEindex] =
                     data.image[ID_modeval].array.F[k];
@@ -1417,12 +1428,12 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
             data.image[IDtrace].md[0].cnt1 = TRACEindex;
 
             sem_getvalue(data.image[IDtrace].semptr[0], &semval);
-            if (semval < SEMAPHORE_MAXVAL)
+            if(semval < SEMAPHORE_MAXVAL)
             {
                 sem_post(data.image[IDtrace].semptr[0]);
             }
             sem_getvalue(data.image[IDtrace].semptr[1], &semval);
-            if (semval < SEMAPHORE_MAXVAL)
+            if(semval < SEMAPHORE_MAXVAL)
             {
                 sem_post(data.image[IDtrace].semptr[1]);
             }
@@ -1430,7 +1441,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
             data.image[IDtrace].md[0].write = 0;
 
             TRACEindex++;
-            if (TRACEindex >= TRACEsize)
+            if(TRACEindex >= TRACEsize)
             {
                 TRACEindex = 0;
                 // copy to tracef shared memory (frozen trace)
@@ -1440,17 +1451,17 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         //t05OK = 1;
         clock_gettime(CLOCK_REALTIME, &t05);
 
-        if (PROCESS == 1)
+        if(PROCESS == 1)
         {
             stepcoeff                         = stepcoeff0;
             data.image[IDprocave].md[0].write = 1;
-            for (step = 0; step < NBaveSTEP; step++)
+            for(step = 0; step < NBaveSTEP; step++)
             {
-                for (k = 0; k < NBmodes; k++)
+                for(k = 0; k < NBmodes; k++)
                 {
                     data.image[IDprocave].array.F[NBmodes * step + k] =
                         (1.0 - stepcoeff) *
-                            data.image[IDprocave].array.F[NBmodes * step + k] +
+                        data.image[IDprocave].array.F[NBmodes * step + k] +
                         stepcoeff * data.image[ID_modeval].array.F[k];
                 }
                 stepcoeff *= stepcoeff0;
@@ -1459,16 +1470,16 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
             stepcoeff                         = stepcoeff0;
             data.image[IDprocrms].md[0].write = 1;
-            for (step = 0; step < NBaveSTEP; step++)
+            for(step = 0; step < NBaveSTEP; step++)
             {
-                for (k = 0; k < NBmodes; k++)
+                for(k = 0; k < NBmodes; k++)
                 {
                     tmpv = data.image[ID_modeval].array.F[k] -
                            data.image[IDprocave].array.F[NBmodes * step + k];
                     tmpv = tmpv * tmpv;
                     data.image[IDprocrms].array.F[NBmodes * step + k] =
                         (1.0 - stepcoeff) *
-                            data.image[IDprocrms].array.F[NBmodes * step + k] +
+                        data.image[IDprocrms].array.F[NBmodes * step + k] +
                         stepcoeff * tmpv;
                 }
                 stepcoeff *= stepcoeff0;
@@ -1482,17 +1493,17 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
         processinfo_exec_end(processinfo);
 
-        if (twait1 < 0)
+        if(twait1 < 0)
         {
             twait1 = 0;
         }
 
-        if (*twait > 0)
+        if(*twait > 0)
         {
             struct timespec treq, trem;
 
-            treq.tv_sec  = (long) (twait1 / 1000000);
-            treq.tv_nsec = (long) (1e9 * (twait1 - treq.tv_sec * 1000000));
+            treq.tv_sec  = (long)(twait1 / 1000000);
+            treq.tv_nsec = (long)(1e9 * (twait1 - treq.tv_sec * 1000000));
             nanosleep(&treq, &trem);
         }
 
@@ -1500,7 +1511,7 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         tdiff  = timespec_diff(t0, t1);
         tdiffv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
 
-        if (tdiffv < 1.0e-6 * (*twait))
+        if(tdiffv < 1.0e-6 * (*twait))
         {
             twait1++;
         }
@@ -1514,13 +1525,13 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
     processinfo_cleanExit(processinfo);
     function_parameter_RUNexit(&fps);
 
-    if (MODEVALCOMPUTE == 1)
+    if(MODEVALCOMPUTE == 1)
     {
         cudaFree(d_modes);
         cudaFree(d_in);
         cudaFree(d_modeval);
 
-        if (cublasH)
+        if(cublasH)
         {
             cublasDestroy(cublasH);
         }
@@ -1582,22 +1593,23 @@ int __attribute__((hot)) CUDACOMP_MVMextractModesLoop(
     // ==================================
 
     long pindex = (long)
-        getpid(); // index used to differentiate multiple calls to function
+                  getpid(); // index used to differentiate multiple calls to function
     // if we don't have anything more informative, we use PID
 
     FUNCTION_PARAMETER_STRUCT fps;
 
-    { // write FPS name
+    {
+        // write FPS name
         int slen = snprintf(data.FPS_name,
                             STRINGMAXLEN_FPS_NAME,
                             "cudaMVMextmodes-%06ld",
                             pindex);
-        if (slen < 1)
+        if(slen < 1)
         {
             PRINT_ERROR("snprintf wrote <1 char");
             abort(); // can't handle this error any other way
         }
-        if (slen >= STRINGMAXLEN_FPS_NAME)
+        if(slen >= STRINGMAXLEN_FPS_NAME)
         {
             PRINT_ERROR("snprintf string truncation");
             abort(); // can't handle this error any other way

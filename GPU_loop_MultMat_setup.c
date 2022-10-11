@@ -65,7 +65,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
     /// This function will not do anything if the initialization has already been performed
 
-    if (gpumatmultconf[index].init == 0)
+    if(gpumatmultconf[index].init == 0)
     {
         int pid;
         //struct cudaDeviceProp deviceProp;
@@ -92,13 +92,13 @@ errno_t GPU_loop_MultMat_setup(int         index,
             }
         }*/
 
-        if (gpumatmultconf[index].alloc == 1)
+        if(gpumatmultconf[index].alloc == 1)
         {
             GPU_loop_MultMat_free(index);
             gpumatmultconf[index].alloc = 0;
         }
 
-        if (USEsem == 1)
+        if(USEsem == 1)
         {
             gpumatmultconf[index].sem = 1;
         }
@@ -120,7 +120,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
         imageID IDcontrM            = image_ID(IDcontrM_name);
         gpumatmultconf[index].CM_ID = IDcontrM;
         printf("    size : [");
-        for (int dim = 0; dim < data.image[IDcontrM].md->naxis; dim++)
+        for(int dim = 0; dim < data.image[IDcontrM].md->naxis; dim++)
         {
             printf(" %d", data.image[IDcontrM].md[0].size[dim]);
         }
@@ -131,9 +131,9 @@ errno_t GPU_loop_MultMat_setup(int         index,
             data.image[gpumatmultconf[index].CM_ID].md[0].cnt0;
 
 
-        if (orientation == 0)
+        if(orientation == 0)
         {
-            if (data.image[IDcontrM].md[0].naxis == 3)
+            if(data.image[IDcontrM].md[0].naxis == 3)
             {
                 gpumatmultconf[index].M = data.image[IDcontrM].md[0].size[2];
                 gpumatmultconf[index].N = data.image[IDcontrM].md[0].size[0] *
@@ -155,7 +155,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
         }
         else
         {
-            if (data.image[IDcontrM].md[0].naxis == 3)
+            if(data.image[IDcontrM].md[0].naxis == 3)
             {
                 gpumatmultconf[index].M = data.image[IDcontrM].md[0].size[0] *
                                           data.image[IDcontrM].md[0].size[1];
@@ -185,20 +185,20 @@ errno_t GPU_loop_MultMat_setup(int         index,
         IDwfsref                     = image_ID(IDwfsim_name);
         gpumatmultconf[index].wfsRef = data.image[IDwfsref].array.F;
 
-        if (orientation == 0)
+        if(orientation == 0)
         {
             printf("[0] Input vector size: %ld %ld\n",
                    (long) data.image[IDwfsim].md[0].size[0],
                    (long) data.image[IDwfsim].md[0].size[1]);
 
-            if ((uint32_t) (data.image[IDwfsim].md[0].size[0] *
-                            data.image[IDwfsim].md[0].size[1]) !=
-                gpumatmultconf[index].N)
+            if((uint32_t)(data.image[IDwfsim].md[0].size[0] *
+                          data.image[IDwfsim].md[0].size[1]) !=
+                    gpumatmultconf[index].N)
             {
                 PRINT_ERROR(
                     "CONTRmat and WFSvec size not compatible: %ld vs %d\n",
-                    (long) (data.image[IDwfsim].md[0].size[0] *
-                            data.image[IDwfsim].md[0].size[1]),
+                    (long)(data.image[IDwfsim].md[0].size[0] *
+                           data.image[IDwfsim].md[0].size[1]),
                     (int) gpumatmultconf[index].N);
                 fflush(stdout);
                 DEBUG_TRACE_FEXIT();
@@ -210,7 +210,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
         {
             printf("[1] Input vector size: %ld \n",
                    (long) data.image[IDwfsim].md[0].size[0]);
-            if (data.image[IDwfsim].md[0].size[0] != gpumatmultconf[index].N)
+            if(data.image[IDwfsim].md[0].size[0] != gpumatmultconf[index].N)
             {
                 printf(
                     "ERROR: CONTRmat and WFSvec size not compatible: %ld %d\n",
@@ -225,7 +225,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
         printf("Setting up gpumatmultconf\n");
         fflush(stdout);
 
-        if ((gpumatmultconf[index].IDout = image_ID(IDoutdmmodes_name)) == -1)
+        if((gpumatmultconf[index].IDout = image_ID(IDoutdmmodes_name)) == -1)
         {
             uint32_t *sizearraytmp;
 
@@ -244,21 +244,21 @@ errno_t GPU_loop_MultMat_setup(int         index,
         }
         else
         {
-            if ((uint32_t) (data.image[gpumatmultconf[index].IDout]
-                                .md[0]
-                                .size[0] *
-                            data.image[gpumatmultconf[index].IDout]
-                                .md[0]
-                                .size[1]) != gpumatmultconf[index].M)
+            if((uint32_t)(data.image[gpumatmultconf[index].IDout]
+                          .md[0]
+                          .size[0] *
+                          data.image[gpumatmultconf[index].IDout]
+                          .md[0]
+                          .size[1]) != gpumatmultconf[index].M)
             {
                 printf(
                     "ERROR: CONTRmat and WFSvec size not compatible: %ld %d\n",
-                    (long) (data.image[gpumatmultconf[index].IDout]
-                                .md[0]
-                                .size[0] *
-                            data.image[gpumatmultconf[index].IDout]
-                                .md[0]
-                                .size[1]),
+                    (long)(data.image[gpumatmultconf[index].IDout]
+                           .md[0]
+                           .size[0] *
+                           data.image[gpumatmultconf[index].IDout]
+                           .md[0]
+                           .size[1]),
                     (int) gpumatmultconf[index].M);
                 printf("gpumatmultconf[index].IDout = %ld\n",
                        gpumatmultconf[index].IDout);
@@ -280,14 +280,14 @@ errno_t GPU_loop_MultMat_setup(int         index,
                        NULL,
                        GPU_scanDevices,
                        (void *) &cuda_deviceCount);
-        if (pthread_join(GPUscan_thread, NULL))
+        if(pthread_join(GPUscan_thread, NULL))
         {
             fprintf(stderr, "Error joining thread\n");
             exit(0);
         }
 
         gpumatmultconf[index].NBstreams = cuda_deviceCount;
-        if (NBGPUs < cuda_deviceCount)
+        if(NBGPUs < cuda_deviceCount)
         {
             gpumatmultconf[index].NBstreams = NBGPUs;
         }
@@ -297,12 +297,12 @@ errno_t GPU_loop_MultMat_setup(int         index,
         gpumatmultconf[index].Noffset =
             (uint32_t *) malloc(sizeof(long) * gpumatmultconf[index].NBstreams);
         gpumatmultconf[index].Noffset[0] = 0;
-        for (int device = 1; device < gpumatmultconf[index].NBstreams; device++)
+        for(int device = 1; device < gpumatmultconf[index].NBstreams; device++)
         {
             gpumatmultconf[index].Noffset[device] =
                 gpumatmultconf[index].Noffset[device - 1] +
-                (long) (gpumatmultconf[index].N /
-                        gpumatmultconf[index].NBstreams);
+                (long)(gpumatmultconf[index].N /
+                       gpumatmultconf[index].NBstreams);
             gpumatmultconf[index].Nsize[device - 1] =
                 gpumatmultconf[index].Noffset[device] -
                 gpumatmultconf[index].Noffset[device - 1];
@@ -324,7 +324,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
         printf("- - - - - - - - -\n");
         fflush(stdout);
 
-        for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
+        for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             printf("stream %2d  ->  GPU device %2d\n",
                    device,
@@ -335,14 +335,14 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
         printf("-----------------------------------------------------\n");
         fflush(stdout);
-        for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
+        for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             printf("DEVICE %2d  [%2d]:  %5d -> %5d  (%d)\n",
                    device,
                    gpumatmultconf[index].GPUdevice[device],
                    (int) gpumatmultconf[index].Noffset[device],
-                   (int) (gpumatmultconf[index].Noffset[device] +
-                          gpumatmultconf[index].Nsize[device]),
+                   (int)(gpumatmultconf[index].Noffset[device] +
+                         gpumatmultconf[index].Nsize[device]),
                    (int) gpumatmultconf[index].Nsize[device]);
             fflush(stdout);
         }
@@ -351,56 +351,56 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
         // device (GPU)
         gpumatmultconf[index].d_cMat = (float **) malloc(
-            sizeof(float *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].d_cMat == NULL)
+                                           sizeof(float *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].d_cMat == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].d_wfsVec = (float **) malloc(
-            sizeof(float *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].d_wfsVec == NULL)
+                                             sizeof(float *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].d_wfsVec == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].d_dmVec = (float **) malloc(
-            sizeof(float *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].d_dmVec == NULL)
+                                            sizeof(float *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].d_dmVec == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].d_wfsRef = (float **) malloc(
-            sizeof(float *) * gpumatmultconf[index].NBstreams); // WFS reference
-        if (gpumatmultconf[index].d_wfsRef == NULL)
+                                             sizeof(float *) * gpumatmultconf[index].NBstreams); // WFS reference
+        if(gpumatmultconf[index].d_wfsRef == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].d_dmRef = (float **) malloc(
-            sizeof(float *) * gpumatmultconf[index].NBstreams); // DM reference
-        if (gpumatmultconf[index].d_dmRef == NULL)
+                                            sizeof(float *) * gpumatmultconf[index].NBstreams); // DM reference
+        if(gpumatmultconf[index].d_dmRef == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].stream = (cudaStream_t *) malloc(
-            sizeof(cudaStream_t) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].stream == NULL)
+                                           sizeof(cudaStream_t) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].stream == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].handle = (cublasHandle_t *) malloc(
-            sizeof(cublasHandle_t) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].handle == NULL)
+                                           sizeof(cublasHandle_t) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].handle == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
@@ -408,42 +408,42 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
         // host (computer)
         gpumatmultconf[index].cMat_part = (float **) malloc(
-            sizeof(float *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].cMat_part == NULL)
+                                              sizeof(float *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].cMat_part == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].wfsVec_part = (float **) malloc(
-            sizeof(float *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].wfsVec_part == NULL)
+                                                sizeof(float *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].wfsVec_part == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].dmVec_part = (float **) malloc(
-            sizeof(float *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].dmVec_part == NULL)
+                                               sizeof(float *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].dmVec_part == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].wfsRef_part = (float **) malloc(
-            sizeof(float *) * gpumatmultconf[index].NBstreams); // WFS reference
-        if (gpumatmultconf[index].wfsRef_part == NULL)
+                                                sizeof(float *) * gpumatmultconf[index].NBstreams); // WFS reference
+        if(gpumatmultconf[index].wfsRef_part == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].dmRef_part = (float **) malloc(
-            sizeof(float *) *
-            gpumatmultconf[index]
-                .NBstreams); // DM reference (for checking only)
-        if (gpumatmultconf[index].dmRef_part == NULL)
+                                               sizeof(float *) *
+                                               gpumatmultconf[index]
+                                               .NBstreams); // DM reference (for checking only)
+        if(gpumatmultconf[index].dmRef_part == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
@@ -451,74 +451,74 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
         gpumatmultconf[index].refWFSinit =
             (int *) malloc(sizeof(int) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].refWFSinit == NULL)
+        if(gpumatmultconf[index].refWFSinit == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].semptr1 = (sem_t **) malloc(
-            sizeof(sem_t *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].semptr1 == NULL)
+                                            sizeof(sem_t *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].semptr1 == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].semptr2 = (sem_t **) malloc(
-            sizeof(sem_t *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].semptr2 == NULL)
+                                            sizeof(sem_t *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].semptr2 == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].semptr3 = (sem_t **) malloc(
-            sizeof(sem_t *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].semptr3 == NULL)
+                                            sizeof(sem_t *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].semptr3 == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].semptr4 = (sem_t **) malloc(
-            sizeof(sem_t *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].semptr4 == NULL)
+                                            sizeof(sem_t *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].semptr4 == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].semptr5 = (sem_t **) malloc(
-            sizeof(sem_t *) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].semptr5 == NULL)
+                                            sizeof(sem_t *) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].semptr5 == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
-        for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
+        for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             gpumatmultconf[index].cMat_part[device] =
                 (float *) malloc(sizeof(float) * gpumatmultconf[index].M *
                                  gpumatmultconf[index].Nsize[device]);
-            if (gpumatmultconf[index].cMat_part[device] == NULL)
+            if(gpumatmultconf[index].cMat_part[device] == NULL)
             {
                 printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
                 exit(0);
             }
 
             gpumatmultconf[index].wfsVec_part[device] = (float *) malloc(
-                sizeof(float) * gpumatmultconf[index].Nsize[device]);
-            if (gpumatmultconf[index].wfsVec_part[device] == NULL)
+                        sizeof(float) * gpumatmultconf[index].Nsize[device]);
+            if(gpumatmultconf[index].wfsVec_part[device] == NULL)
             {
                 printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
                 exit(0);
             }
 
             gpumatmultconf[index].wfsRef_part[device] = (float *) malloc(
-                sizeof(float) * gpumatmultconf[index].Nsize[device]);
-            if (gpumatmultconf[index].wfsRef_part[device] == NULL)
+                        sizeof(float) * gpumatmultconf[index].Nsize[device]);
+            if(gpumatmultconf[index].wfsRef_part[device] == NULL)
             {
                 printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
                 exit(0);
@@ -526,7 +526,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
             gpumatmultconf[index].dmVec_part[device] =
                 (float *) malloc(sizeof(float) * gpumatmultconf[index].M);
-            if (gpumatmultconf[index].dmVec_part[device] == NULL)
+            if(gpumatmultconf[index].dmVec_part[device] == NULL)
             {
                 printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
                 exit(0);
@@ -534,7 +534,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
             gpumatmultconf[index].dmRef_part[device] =
                 (float *) malloc(sizeof(float) * gpumatmultconf[index].M);
-            if (gpumatmultconf[index].dmRef_part[device] == NULL)
+            if(gpumatmultconf[index].dmRef_part[device] == NULL)
             {
                 printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
                 exit(0);
@@ -546,8 +546,8 @@ errno_t GPU_loop_MultMat_setup(int         index,
                     index,
                     GPUdevice[device],
                     pid);
-            if ((gpumatmultconf[index].semptr1[device] =
-                     sem_open(sname, O_CREAT, 0644, 1)) == SEM_FAILED)
+            if((gpumatmultconf[index].semptr1[device] =
+                        sem_open(sname, O_CREAT, 0644, 1)) == SEM_FAILED)
             {
                 perror("semaphore initilization");
                 exit(0);
@@ -560,8 +560,8 @@ errno_t GPU_loop_MultMat_setup(int         index,
                     index,
                     GPUdevice[device],
                     pid);
-            if ((gpumatmultconf[index].semptr2[device] =
-                     sem_open(sname, O_CREAT, 0644, 1)) == SEM_FAILED)
+            if((gpumatmultconf[index].semptr2[device] =
+                        sem_open(sname, O_CREAT, 0644, 1)) == SEM_FAILED)
             {
                 perror("semaphore initilization");
                 exit(0);
@@ -574,8 +574,8 @@ errno_t GPU_loop_MultMat_setup(int         index,
                     index,
                     GPUdevice[device],
                     pid);
-            if ((gpumatmultconf[index].semptr3[device] =
-                     sem_open(sname, O_CREAT, 0644, 1)) == SEM_FAILED)
+            if((gpumatmultconf[index].semptr3[device] =
+                        sem_open(sname, O_CREAT, 0644, 1)) == SEM_FAILED)
             {
                 perror("semaphore initilization");
                 exit(0);
@@ -588,8 +588,8 @@ errno_t GPU_loop_MultMat_setup(int         index,
                     index,
                     GPUdevice[device],
                     pid);
-            if ((gpumatmultconf[index].semptr4[device] =
-                     sem_open(sname, O_CREAT, 0644, 1)) == SEM_FAILED)
+            if((gpumatmultconf[index].semptr4[device] =
+                        sem_open(sname, O_CREAT, 0644, 1)) == SEM_FAILED)
             {
                 perror("semaphore initilization");
                 exit(0);
@@ -602,8 +602,8 @@ errno_t GPU_loop_MultMat_setup(int         index,
                     index,
                     GPUdevice[device],
                     pid);
-            if ((gpumatmultconf[index].semptr5[device] =
-                     sem_open(sname, O_CREAT, 0644, 1)) == SEM_FAILED)
+            if((gpumatmultconf[index].semptr5[device] =
+                        sem_open(sname, O_CREAT, 0644, 1)) == SEM_FAILED)
             {
                 perror("semaphore initilization");
                 exit(0);
@@ -612,13 +612,13 @@ errno_t GPU_loop_MultMat_setup(int         index,
         }
 
         // this create two threads per device
-        for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
+        for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             cudaSetDevice(GPUdevice[device]);
             cudaStreamCreate(&gpumatmultconf[index].stream[device]);
         }
 
-        for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
+        for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             cudaSetDevice(GPUdevice[device]);
 
@@ -627,8 +627,8 @@ errno_t GPU_loop_MultMat_setup(int         index,
             cudaError_t error =
                 cudaMalloc((void **) &gpumatmultconf[index].d_cMat[device],
                            sizeof(float) * gpumatmultconf[index].M *
-                               gpumatmultconf[index].Nsize[device]);
-            if (error != cudaSuccess)
+                           gpumatmultconf[index].Nsize[device]);
+            if(error != cudaSuccess)
             {
                 printf("cudaMalloc d_cMat returned error code %d, line(%d)\n",
                        error,
@@ -647,7 +647,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
             error =
                 cudaMalloc((void **) &gpumatmultconf[index].d_wfsVec[device],
                            sizeof(float) * gpumatmultconf[index].Nsize[device]);
-            if (error != cudaSuccess)
+            if(error != cudaSuccess)
             {
                 printf("cudaMalloc d_wfsVec returned error code %d, line(%d)\n",
                        error,
@@ -665,7 +665,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
             error =
                 cudaMalloc((void **) &gpumatmultconf[index].d_wfsRef[device],
                            sizeof(float) * gpumatmultconf[index].Nsize[device]);
-            if (error != cudaSuccess)
+            if(error != cudaSuccess)
             {
                 printf("cudaMalloc d_wfsRef returned error code %d, line(%d)\n",
                        error,
@@ -682,7 +682,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
             error = cudaMalloc((void **) &gpumatmultconf[index].d_dmVec[device],
                                sizeof(float) * gpumatmultconf[index].M);
-            if (error != cudaSuccess)
+            if(error != cudaSuccess)
             {
                 printf("cudaMalloc d_dmVec returned error code %d, line(%d)\n",
                        error,
@@ -699,7 +699,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
             error = cudaMalloc((void **) &gpumatmultconf[index].d_dmRef[device],
                                sizeof(float) * gpumatmultconf[index].M);
-            if (error != cudaSuccess)
+            if(error != cudaSuccess)
             {
                 printf("cudaMalloc d_dmVec returned error code %d, line(%d)\n",
                        error,
@@ -720,38 +720,38 @@ errno_t GPU_loop_MultMat_setup(int         index,
                    index,
                    device);
             fflush(stdout);
-            if (stat != CUBLAS_STATUS_SUCCESS)
+            if(stat != CUBLAS_STATUS_SUCCESS)
             {
                 printf("CUBLAS initialization failed\n");
                 return EXIT_FAILURE;
             }
         }
 
-        for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
-            for (unsigned long n = gpumatmultconf[index].Noffset[device];
-                 n < gpumatmultconf[index].Noffset[device] +
-                         gpumatmultconf[index].Nsize[device];
-                 n++)
+        for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
+            for(unsigned long n = gpumatmultconf[index].Noffset[device];
+                    n < gpumatmultconf[index].Noffset[device] +
+                    gpumatmultconf[index].Nsize[device];
+                    n++)
             {
                 gpumatmultconf[index]
-                    .wfsVec_part[device]
-                                [n - gpumatmultconf[index].Noffset[device]] =
+                .wfsVec_part[device]
+                [n - gpumatmultconf[index].Noffset[device]] =
                     gpumatmultconf[index].wfsVec[n];
                 gpumatmultconf[index]
-                    .wfsRef_part[device]
-                                [n - gpumatmultconf[index].Noffset[device]] =
+                .wfsRef_part[device]
+                [n - gpumatmultconf[index].Noffset[device]] =
                     gpumatmultconf[index].wfsRef[n];
             }
 
         // copy memory to devices
-        for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
+        for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
         {
             cudaError_t error =
                 cudaMemcpy(gpumatmultconf[index].d_wfsVec[device],
                            gpumatmultconf[index].wfsVec_part[device],
                            sizeof(float) * gpumatmultconf[index].Nsize[device],
                            cudaMemcpyHostToDevice);
-            if (error != cudaSuccess)
+            if(error != cudaSuccess)
             {
                 printf(
                     "cudaMemcpy d_wfsVec wfsVec returned error code %d, "
@@ -768,7 +768,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
                            gpumatmultconf[index].wfsRef_part[device],
                            sizeof(float) * gpumatmultconf[index].Nsize[device],
                            cudaMemcpyHostToDevice);
-            if (error != cudaSuccess)
+            if(error != cudaSuccess)
             {
                 printf(
                     "cudaMemcpy d_wfsRef wfsRef returned error code %d, "
@@ -786,7 +786,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
         gpumatmultconf[index].iret =
             (int *) malloc(sizeof(int) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].iret == NULL)
+        if(gpumatmultconf[index].iret == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
@@ -794,22 +794,22 @@ errno_t GPU_loop_MultMat_setup(int         index,
 
         // thread data
         gpumatmultconf[index].thdata = (CUDACOMP_THDATA *) malloc(
-            sizeof(CUDACOMP_THDATA) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].thdata == NULL)
+                                           sizeof(CUDACOMP_THDATA) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].thdata == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
         gpumatmultconf[index].threadarray = (pthread_t *) malloc(
-            sizeof(pthread_t) * gpumatmultconf[index].NBstreams);
-        if (gpumatmultconf[index].threadarray == NULL)
+                                                sizeof(pthread_t) * gpumatmultconf[index].NBstreams);
+        if(gpumatmultconf[index].threadarray == NULL)
         {
             printf("malloc allocation error - %s %d\n", __FILE__, __LINE__);
             exit(0);
         }
 
-        for (uint32_t m = 0; m < gpumatmultconf[index].M; m++)
+        for(uint32_t m = 0; m < gpumatmultconf[index].M; m++)
         {
             gpumatmultconf[index].dmVecTMP[m] = 0.0;
         }
@@ -822,7 +822,7 @@ errno_t GPU_loop_MultMat_setup(int         index,
         fflush(stdout);
     }
 
-    for (int device = 0; device < gpumatmultconf[index].NBstreams; device++)
+    for(int device = 0; device < gpumatmultconf[index].NBstreams; device++)
     {
         gpumatmultconf[index].refWFSinit[device] = initWFSref;
     }
