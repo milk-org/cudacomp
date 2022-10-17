@@ -11,43 +11,43 @@
 
 // Local variables pointers
 static uint32_t *GPUindex;
-long             fpi_GPUindex;
+long fpi_GPUindex;
 
 static char *insname;
-long         fpi_insname;
+long fpi_insname;
 
 static char *immodes;
-long         fpi_immodes;
+long fpi_immodes;
 
 static char *outcoeff;
-long         fpi_outcoeff;
+long fpi_outcoeff;
 
 static int64_t *outinit;
-long            fpi_outinit;
+long fpi_outinit;
 
 static uint32_t *axmode;
-long             fpi_axmode;
+long fpi_axmode;
 
 static int64_t *PROCESS;
-long            fpi_PROCESS;
+long fpi_PROCESS;
 
 static int64_t *TRACEMODE;
-long            fpi_TRACEMODE;
+long fpi_TRACEMODE;
 
 static int64_t *MODENORM;
-long            fpi_MODENORM;
+long fpi_MODENORM;
 
 static char *intot_stream;
-long         fpi_intot_stream;
+long fpi_intot_stream;
 
 static char *inrefsname;
-long         fpi_inrefsname;
+long fpi_inrefsname;
 
 static char *outrefsname;
-long         fpi_outrefsname;
+long fpi_outrefsname;
 
 static uint64_t *twait;
-long             fpi_twait;
+long fpi_twait;
 
 static CLICMDARGDEF farg[] =
 {
@@ -210,31 +210,28 @@ static errno_t help_function()
     return RETURN_SUCCESS;
 }
 
-
-
-
 static errno_t compute_function()
 {
     DEBUG_TRACE_FSTART();
 
     int MODEVALCOMPUTE = 1; // 1 if compute, 0 if import
 
-    cublasHandle_t        cublasH       = NULL;
-    cublasStatus_t        cublas_status = CUBLAS_STATUS_SUCCESS;
-    cudaError_t           cudaStat      = cudaSuccess;
+    cublasHandle_t cublasH = NULL;
+    cublasStatus_t cublas_status = CUBLAS_STATUS_SUCCESS;
+    cudaError_t cudaStat = cudaSuccess;
     struct cudaDeviceProp deviceProp;
 
-    float *d_modes   = NULL; // linear memory of GPU
-    float *d_in      = NULL;
+    float *d_modes = NULL; // linear memory of GPU
+    float *d_in = NULL;
     float *d_modeval = NULL;
 
     char traceim_name[STRINGMAXLEN_IMGNAME];
     long TRACEsize = 2000;
-    //long    TRACEindex = 0;
+    // long    TRACEindex = 0;
     imageID IDtrace;
 
-    char    process_ave_name[STRINGMAXLEN_IMGNAME];
-    char    process_rms_name[STRINGMAXLEN_IMGNAME];
+    char process_ave_name[STRINGMAXLEN_IMGNAME];
+    char process_rms_name[STRINGMAXLEN_IMGNAME];
     imageID IDprocave;
     imageID IDprocrms;
 
@@ -242,7 +239,6 @@ static errno_t compute_function()
         10; // each step is 2x longer average than previous step
 
     int initref = 0; // 1 when reference has been processed
-
 
     // CONNECT TO INPUT STREAM
     IMGID imgin = mkIMGID_from_name(insname);
@@ -253,7 +249,7 @@ static errno_t compute_function()
     // NORMALIZATION
     // CONNECT TO TOTAL FLUX STREAM
     imageID IDintot;
-    IDintot        = image_ID(intot_stream);
+    IDintot = image_ID(intot_stream);
     int INNORMMODE = 0; // 1 if input normalized
 
     if(IDintot == -1)
@@ -268,8 +264,8 @@ static errno_t compute_function()
     }
 
     // CONNECT TO INPUT REFERENCE STREAM OR CREATE IT
-    imageID IDref    = -1;
-    IMGID   imginref = mkIMGID_from_name(inrefsname);
+    imageID IDref = -1;
+    IMGID imginref = mkIMGID_from_name(inrefsname);
     resolveIMGID(&imgin, ERRMODE_WARN);
     if(imginref.ID == -1)
     {
@@ -290,12 +286,13 @@ static errno_t compute_function()
     // CONNECT TO MODES STREAM
     IMGID imgmodes = mkIMGID_from_name(immodes);
     resolveIMGID(&imgmodes, ERRMODE_ABORT);
+
     printf("Modes stream size : %u %u\n",
            imgmodes.md->size[0],
            imgmodes.md->size[1]);
 
-    long    n;
-    long    NBmodes = 1;
+    long n;
+    long NBmodes = 1;
     imageID IDmodes = -1;
 
     if((*axmode) == 0)
@@ -304,7 +301,7 @@ static errno_t compute_function()
         // Extract modes.
         // This is the default geometry, no need to remap
         //
-        n       = imgmodes.md->size[2];
+        n = imgmodes.md->size[2];
         IDmodes = imgmodes.ID;
         NBmodes = n;
         printf("NBmodes = %ld\n", NBmodes);
@@ -318,13 +315,13 @@ static errno_t compute_function()
         //
 
         NBmodes = imgmodes.md->size[0] * imgmodes.md->size[1];
-        n       = NBmodes;
+        n = NBmodes;
         printf("NBmodes = %ld\n", NBmodes);
         fflush(stdout);
 
         printf("creating _tmpmodes  %ld %ld %ld\n",
-               (long) imgin.md->size[0],
-               (long) imgin.md->size[1],
+               (long)imgin.md->size[0],
+               (long)imgin.md->size[1],
                NBmodes);
         fflush(stdout);
 
@@ -347,10 +344,10 @@ static errno_t compute_function()
                 }
             }
 
-        //save_fits("_tmpmodes", "_test_tmpmodes.fits");
+        // save_fits("_tmpmodes", "_test_tmpmodes.fits");
     }
 
-    float *normcoeff = (float *) malloc(sizeof(float) * NBmodes);
+    float *normcoeff = (float *)malloc(sizeof(float) * NBmodes);
 
     if((*MODENORM) == 1)
     {
@@ -374,13 +371,13 @@ static errno_t compute_function()
         }
     }
 
-    float *modevalarray    = (float *) malloc(sizeof(float) * n);
-    float *modevalarrayref = (float *) malloc(sizeof(float) * n);
+    float *modevalarray = (float *)malloc(sizeof(float) * n);
+    float *modevalarrayref = (float *)malloc(sizeof(float) * n);
 
-    uint32_t *arraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
+    uint32_t *arraytmp = (uint32_t *)malloc(sizeof(uint32_t) * 2);
 
-    //IDrefout = image_ID(IDrefout_name);
-    imageID IDrefout = -1; //TODO handle this
+    // IDrefout = image_ID(IDrefout_name);
+    imageID IDrefout = -1; // TODO handle this
     if(IDrefout == -1)
     {
         if((*axmode) == 0)
@@ -400,7 +397,6 @@ static errno_t compute_function()
         arraytmp[1] = data.image[IDrefout].md[0].size[1];
     }
 
-
     // CONNNECT TO OR CREATE OUTPUT STREAM
     // TODO: replace with stream_connect_create_2Df32
 
@@ -413,11 +409,11 @@ static errno_t compute_function()
     {
         // if in local memory,
         // create blank img for comparison
-        IMGID imgc      = makeIMGID_blank();
-        imgc.datatype   = _DATATYPE_FLOAT;
-        imgc.naxis      = 2;
-        imgc.size[0]    = arraytmp[0];
-        imgc.size[1]    = arraytmp[1];
+        IMGID imgc = makeIMGID_blank();
+        imgc.datatype = _DATATYPE_FLOAT;
+        imgc.naxis = 2;
+        imgc.size[0] = arraytmp[0];
+        imgc.size[1] = arraytmp[1];
         uint64_t imgerr = IMGIDcompare(imgout, imgc);
         printf("%lu errors\n", imgerr);
 
@@ -449,10 +445,7 @@ static errno_t compute_function()
     printf("OUTPUT STREAM : %s  ID: %ld\n", outcoeff, ID_modeval);
     list_image_ID();
 
-
-
-
-    /* INITIALIZE PROCESSINFO AND PROMOTE SCHED PARAMS BEFORE SPAWNING CUDE THREADS */
+    /* INITIALIZE PROCESSINFO AND PROMOTE SCHED PARAMS BEFORE SPAWNING CUDA THREADS */
     INSERT_STD_PROCINFO_COMPUTEFUNC_INIT;
 
     if(MODEVALCOMPUTE == 1)
@@ -475,8 +468,8 @@ static errno_t compute_function()
             printf(
                 "  Total amount of global memory:                 %.0f MBytes "
                 "(%llu bytes)\n",
-                (float) deviceProp.totalGlobalMem / 1048576.0f,
-                (unsigned long long) deviceProp.totalGlobalMem);
+                (float)deviceProp.totalGlobalMem / 1048576.0f,
+                (unsigned long long)deviceProp.totalGlobalMem);
             printf("  (%2d) Multiprocessors\n", deviceProp.multiProcessorCount);
             printf(
                 "  GPU Clock rate:                                %.0f MHz "
@@ -508,7 +501,7 @@ static errno_t compute_function()
         fflush(stdout);
 
         // load modes to GPU
-        cudaStat = cudaMalloc((void **) &d_modes, sizeof(float) * m * NBmodes);
+        cudaStat = cudaMalloc((void **)&d_modes, sizeof(float) * m * NBmodes);
         if(cudaStat != cudaSuccess)
         {
             printf("cudaMalloc d_modes returned error code %d, line %d\n",
@@ -524,7 +517,7 @@ static errno_t compute_function()
                               data.image[IDmodes].array.F,
                               sizeof(float) * m * NBmodes,
                               cudaMemcpyHostToDevice);
-        //cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
+        // cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
         if(cudaStat != cudaSuccess)
         {
             printf("cudaMemcpy returned error code %d, line %d\n",
@@ -534,7 +527,7 @@ static errno_t compute_function()
         }
 
         // create d_in
-        cudaStat = cudaMalloc((void **) &d_in, sizeof(float) * m);
+        cudaStat = cudaMalloc((void **)&d_in, sizeof(float) * m);
         if(cudaStat != cudaSuccess)
         {
             printf("cudaMalloc d_in returned error code %d, line %d\n",
@@ -544,7 +537,7 @@ static errno_t compute_function()
         }
 
         // create d_modeval
-        cudaStat = cudaMalloc((void **) &d_modeval, sizeof(float) * NBmodes);
+        cudaStat = cudaMalloc((void **)&d_modeval, sizeof(float) * NBmodes);
         if(cudaStat != cudaSuccess)
         {
             printf("cudaMalloc d_modeval returned error code %d, line %d\n",
@@ -554,10 +547,9 @@ static errno_t compute_function()
         }
     }
 
-
     if((*TRACEMODE) == 1)
     {
-        uint32_t *sizearraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
+        uint32_t *sizearraytmp = (uint32_t *)malloc(sizeof(uint32_t) * 2);
 
         {
             int slen = snprintf(traceim_name,
@@ -578,8 +570,8 @@ static errno_t compute_function()
 
         sizearraytmp[0] = TRACEsize;
         sizearraytmp[1] = NBmodes;
-        IDtrace         = image_ID(traceim_name);
-        int imOK        = 1;
+        IDtrace = image_ID(traceim_name);
+        int imOK = 1;
         if(IDtrace == -1)
         {
             imOK = 0;
@@ -610,7 +602,7 @@ static errno_t compute_function()
 
     if((*PROCESS) == 1)
     {
-        uint32_t *sizearraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
+        uint32_t *sizearraytmp = (uint32_t *)malloc(sizeof(uint32_t) * 2);
 
         {
             int slen = snprintf(process_ave_name,
@@ -632,7 +624,7 @@ static errno_t compute_function()
         sizearraytmp[0] = NBmodes;
         sizearraytmp[1] = NBaveSTEP;
         IDprocave       = image_ID(process_ave_name);
-        int imOK        = 1;
+        int imOK = 1;
         if(IDprocave == -1)
         {
             imOK = 0;
@@ -660,7 +652,7 @@ static errno_t compute_function()
         COREMOD_MEMORY_image_set_createsem(process_ave_name, 10);
         free(sizearraytmp);
 
-        sizearraytmp = (uint32_t *) malloc(sizeof(uint32_t) * 2);
+        sizearraytmp = (uint32_t *)malloc(sizeof(uint32_t) * 2);
 
         {
             int slen = snprintf(process_rms_name,
@@ -681,8 +673,8 @@ static errno_t compute_function()
 
         sizearraytmp[0] = NBmodes;
         sizearraytmp[1] = NBaveSTEP;
-        IDprocrms       = image_ID(process_rms_name);
-        imOK            = 1;
+        IDprocrms = image_ID(process_rms_name);
+        imOK = 1;
         if(IDprocrms == -1)
         {
             imOK = 0;
@@ -713,7 +705,7 @@ static errno_t compute_function()
 
     initref = 0; // 1 when reference has been processed
 
-    //long twait1 = *twait;
+    // long twait1 = *twait;
 
     printf("LOOP START   MODEVALCOMPUTE = %d\n", MODEVALCOMPUTE);
     fflush(stdout);
@@ -751,165 +743,165 @@ static errno_t compute_function()
     printf(" n       = %ld\n", n);
     printf(" NBmodes = %ld\n", NBmodes);
 
-    int      BETAMODE = 0;
-    float    alpha    = 1.0;
-    float    beta     = 0.0;
+    int BETAMODE = 0;
+    float alpha = 1.0;
+    float beta = 0.0;
     uint64_t refindex = 0;
-
-
-
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_LOOPSTART
 
-    // Are we computing a new reference ?
-    // if yes, set initref to 0 (reference is NOT initialized)
-    //
-    if(refindex != data.image[IDref].md[0].cnt0)
     {
-        initref  = 0;
-        refindex = data.image[IDref].md[0].cnt0;
-    }
 
-    // load in_stream to GPU
-    if(initref == 0)
-    {
-        cudaStat = cudaMemcpy(d_in,
-                              data.image[IDref].array.F,
-                              sizeof(float) * m,
-                              cudaMemcpyHostToDevice);
-    }
-    else
-    {
-        cudaStat = cudaMemcpy(d_in,
-                              imgin.im->array.F,
-                              sizeof(float) * m,
-                              cudaMemcpyHostToDevice);
-    }
-
-    if(cudaStat != cudaSuccess)
-    {
-        printf("initref = %d    %ld  %ld\n", initref, IDref, imgin.ID);
-        printf("cudaMemcpy returned error code %d, line %d\n",
-               cudaStat,
-               __LINE__);
-        exit(EXIT_FAILURE);
-    }
-
-    if(BETAMODE == 1)
-    {
-        beta     = -1.0;
-        cudaStat = cudaMemcpy(d_modeval,
-                              modevalarrayref,
-                              sizeof(float) * NBmodes,
-                              cudaMemcpyHostToDevice);
-    }
-
-    //cudaMemset ( d_in, 0, sizeof(float) *  m); //TBE
-    //cudaMemset ( d_modes, 0, sizeof(float) *  m * NBmodes); //TBE
-    //cudaMemset ( d_modeval, 0, sizeof(float) * NBmodes); //TBE
-
-    // compute
-    cublas_status = cublasSgemv(cublasH,
-                                CUBLAS_OP_T,
-                                m,
-                                NBmodes,
-                                &alpha,
-                                d_modes,
-                                m,
-                                d_in,
-                                1,
-                                &beta,
-                                d_modeval,
-                                1);
-    if(cublas_status != CUBLAS_STATUS_SUCCESS)
-    {
-        printf("cublasSgemv returned error code %d, line(%d)\n",
-               cublas_status,
-               __LINE__);
-        fflush(stdout);
-        if(cublas_status == CUBLAS_STATUS_NOT_INITIALIZED)
+        // Are we computing a new reference ?
+        // if yes, set initref to 0 (reference is NOT initialized)
+        //
+        if(refindex != data.image[IDref].md[0].cnt0)
         {
-            printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
-        }
-        if(cublas_status == CUBLAS_STATUS_INVALID_VALUE)
-        {
-            printf("   CUBLAS_STATUS_INVALID_VALUE\n");
-        }
-        if(cublas_status == CUBLAS_STATUS_ARCH_MISMATCH)
-        {
-            printf("   CUBLAS_STATUS_ARCH_MISMATCH\n");
-        }
-        if(cublas_status == CUBLAS_STATUS_EXECUTION_FAILED)
-        {
-            printf("   CUBLAS_STATUS_EXECUTION_FAILED\n");
+            initref = 0;
+            refindex = data.image[IDref].md[0].cnt0;
         }
 
-        printf("GPU index                           = %u\n", (*GPUindex));
-
-        printf("CUBLAS_OP                           = %d\n", CUBLAS_OP_T);
-        printf("alpha                               = %f\n", alpha);
-        printf("alpha                               = %f\n", beta);
-        printf("m                                   = %d\n", (int) m);
-        printf("NBmodes                             = %d\n", (int) NBmodes);
-        fflush(stdout);
-        exit(EXIT_FAILURE);
-    }
-
-    // copy result
-    data.image[ID_modeval].md[0].write = 1;
-
-    if(initref == 0)
-    {
-        // construct reference to be subtracted
-        printf("... reference compute\n");
-        cudaStat = cudaMemcpy(modevalarrayref,
-                              d_modeval,
-                              sizeof(float) * NBmodes,
-                              cudaMemcpyDeviceToHost);
-
-        IDrefout = image_ID(outrefsname);
-        if(IDrefout != -1)
-            for(long k = 0; k < NBmodes; k++)
-            {
-                modevalarrayref[k] -= data.image[IDrefout].array.F[k];
-            }
-
-        if((INNORMMODE == 0) && (MODENORM == 0))
+        // load in_stream to GPU
+        if(initref == 0)
         {
-            BETAMODE = 1; // include ref subtraction in GPU operation
+            cudaStat = cudaMemcpy(d_in,
+                                  data.image[IDref].array.F,
+                                  sizeof(float) * m,
+                                  cudaMemcpyHostToDevice);
         }
         else
         {
-            BETAMODE = 0;
+            cudaStat = cudaMemcpy(d_in,
+                                  imgin.im->array.F,
+                                  sizeof(float) * m,
+                                  cudaMemcpyHostToDevice);
         }
-    }
-    else
-    {
-        cudaStat = cudaMemcpy(modevalarray,
-                              d_modeval,
-                              sizeof(float) * NBmodes,
-                              cudaMemcpyDeviceToHost);
 
-        if(BETAMODE == 0)
+        if(cudaStat != cudaSuccess)
         {
-            for(long k = 0; k < NBmodes; k++)
+            printf("initref = %d    %ld  %ld\n", initref, IDref, imgin.ID);
+            printf("cudaMemcpy returned error code %d, line %d\n",
+                   cudaStat,
+                   __LINE__);
+            exit(EXIT_FAILURE);
+        }
+
+        if(BETAMODE == 1)
+        {
+            beta = -1.0;
+            cudaStat = cudaMemcpy(d_modeval,
+                                  modevalarrayref,
+                                  sizeof(float) * NBmodes,
+                                  cudaMemcpyHostToDevice);
+        }
+
+        // cudaMemset ( d_in, 0, sizeof(float) *  m); //TBE
+        // cudaMemset ( d_modes, 0, sizeof(float) *  m * NBmodes); //TBE
+        // cudaMemset ( d_modeval, 0, sizeof(float) * NBmodes); //TBE
+
+        // compute
+        cublas_status = cublasSgemv(cublasH,
+                                    CUBLAS_OP_T,
+                                    m,
+                                    NBmodes,
+                                    &alpha,
+                                    d_modes,
+                                    m,
+                                    d_in,
+                                    1,
+                                    &beta,
+                                    d_modeval,
+                                    1);
+        if(cublas_status != CUBLAS_STATUS_SUCCESS)
+        {
+            printf("cublasSgemv returned error code %d, line(%d)\n",
+                   cublas_status,
+                   __LINE__);
+            fflush(stdout);
+            if(cublas_status == CUBLAS_STATUS_NOT_INITIALIZED)
             {
-                data.image[ID_modeval].array.F[k] =
-                    (modevalarray[k] / data.image[IDintot].array.F[0] -
-                     modevalarrayref[k]) /
-                    normcoeff[k];
+                printf("   CUBLAS_STATUS_NOT_INITIALIZED\n");
+            }
+            if(cublas_status == CUBLAS_STATUS_INVALID_VALUE)
+            {
+                printf("   CUBLAS_STATUS_INVALID_VALUE\n");
+            }
+            if(cublas_status == CUBLAS_STATUS_ARCH_MISMATCH)
+            {
+                printf("   CUBLAS_STATUS_ARCH_MISMATCH\n");
+            }
+            if(cublas_status == CUBLAS_STATUS_EXECUTION_FAILED)
+            {
+                printf("   CUBLAS_STATUS_EXECUTION_FAILED\n");
+            }
+
+            printf("GPU index                           = %u\n", (*GPUindex));
+
+            printf("CUBLAS_OP                           = %d\n", CUBLAS_OP_T);
+            printf("alpha                               = %f\n", alpha);
+            printf("alpha                               = %f\n", beta);
+            printf("m                                   = %d\n", (int)m);
+            printf("NBmodes                             = %d\n", (int)NBmodes);
+            fflush(stdout);
+            exit(EXIT_FAILURE);
+        }
+
+        // copy result
+        data.image[ID_modeval].md[0].write = 1;
+
+        if(initref == 0)
+        {
+            // construct reference to be subtracted
+            printf("... reference compute\n");
+            cudaStat = cudaMemcpy(modevalarrayref,
+                                  d_modeval,
+                                  sizeof(float) * NBmodes,
+                                  cudaMemcpyDeviceToHost);
+
+            IDrefout = image_ID(outrefsname);
+            if(IDrefout != -1)
+                for(long k = 0; k < NBmodes; k++)
+                {
+                    modevalarrayref[k] -= data.image[IDrefout].array.F[k];
+                }
+
+            if((INNORMMODE == 0) && (MODENORM == 0))
+            {
+                BETAMODE = 1; // include ref subtraction in GPU operation
+            }
+            else
+            {
+                BETAMODE = 0;
             }
         }
         else
-            for(long k = 0; k < NBmodes; k++)
+        {
+            cudaStat = cudaMemcpy(modevalarray,
+                                  d_modeval,
+                                  sizeof(float) * NBmodes,
+                                  cudaMemcpyDeviceToHost);
+
+            if(BETAMODE == 0)
             {
-                data.image[ID_modeval].array.F[k] = modevalarray[k];
+                for(long k = 0; k < NBmodes; k++)
+                {
+                    data.image[ID_modeval].array.F[k] =
+                        (modevalarray[k] / data.image[IDintot].array.F[0] -
+                         modevalarrayref[k]) /
+                        normcoeff[k];
+                }
             }
+            else
+                for(long k = 0; k < NBmodes; k++)
+                {
+                    data.image[ID_modeval].array.F[k] = modevalarray[k];
+                }
 
-        processinfo_update_output_stream(processinfo, ID_modeval);
+            processinfo_update_output_stream(processinfo, ID_modeval);
+        }
+
+        initref = 1;
     }
-
-    initref = 1;
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_END
 
@@ -920,9 +912,6 @@ static errno_t compute_function()
     DEBUG_TRACE_FEXIT();
     return RETURN_SUCCESS;
 }
-
-
-
 
 INSERT_STD_FPSCLIfunctions
 

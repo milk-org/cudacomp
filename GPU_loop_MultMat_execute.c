@@ -859,22 +859,6 @@ int GPU_loop_MultMat_execute(int   index,
         }
     }
 
-    /*  if(data.image[gpumatmultconf[index].IDout].md[0].sem > 0)
-       {
-           sem_getvalue(data.image[gpumatmultconf[index].IDout].semptr[0], &semval);
-           if(semval<SEMAPHORE_MAXVAL)
-               sem_post(data.image[gpumatmultconf[index].IDout].semptr[0]);
-       }
-
-
-       if(data.image[gpumatmultconf[index].IDout].md[0].sem > 1)
-           {
-               sem_getvalue(data.image[gpumatmultconf[index].IDout].semptr[1], &semval);
-               if(semval<SEMAPHORE_MAXVAL)
-                   sem_post(data.image[gpumatmultconf[index].IDout].semptr[1]);
-           }
-    */
-
     if(timing == 1)
     {
         struct timespec tnow;
@@ -899,7 +883,7 @@ int GPU_loop_MultMat_execute(int   index,
     fflush(stdout);
 #endif
 
-    return (0);
+    return 0;
 }
 
 #endif
