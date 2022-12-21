@@ -451,10 +451,23 @@ static errno_t compute_function()
     if(MODEVALCOMPUTE == 1)
     {
         int deviceCount;
+        int devicecntMax = 100;
 
         cudaGetDeviceCount(&deviceCount);
         printf("%d devices found\n", deviceCount);
         fflush(stdout);
+
+        if(deviceCount > devicecntMax)
+        {
+            deviceCount = 0;
+        }
+        if(deviceCount < 0)
+        {
+            deviceCount = 0;
+        }
+
+
+
         printf("\n");
         for(int k = 0; k < deviceCount; k++)
         {

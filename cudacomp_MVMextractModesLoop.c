@@ -459,6 +459,9 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
 
     int RT_priority = 91; //any number from 0-99
 
+    int devicecntMax = 100;
+
+
     FPS_CONNECT(data.FPS_name, FPSCONNECT_RUN);
 
     // ===============================
@@ -837,7 +840,16 @@ errno_t __attribute__((hot)) CUDACOMP_MVMextractModesLoop_RUN()
         int deviceCount;
 
         cudaGetDeviceCount(&deviceCount);
-        printf("%d devices found\n", deviceCount);
+        if(deviceCount > devicecntMax)
+        {
+            deviceCount = 0;
+        }
+        if(deviceCount < 0)
+        {
+            deviceCount = 0;
+        }
+
+        printf("%s: %d devices found\n", __func__, deviceCount);
         fflush(stdout);
         printf("\n");
         for(k = 0; k < deviceCount; k++)

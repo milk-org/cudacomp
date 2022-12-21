@@ -94,17 +94,18 @@ errno_t Coeff2Map_Loop_addCLIcmd()
         "const char *IDoutmap_name, int offsetmode, const char "
         "*IDoffset_name)");
 
-    RegisterCLIcommand("cudacoeffo2map",
-                       __FILE__,
-                       CUDACOMP_Coeff2Map_offset_Loop_cli,
-                       "CUDA multiply vector by modes and add offset",
-                       "<modes> <coeffs vector> <GPU index [long]> <output "
-                       "map> <offset image>",
-                       "cudacoeffo2map modes coeff 4 outmap offsetim",
-                       "int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, "
-                       "const char *IDcoeff_name, int GPUindex, "
-                       "const char *IDoutmap_name, int offsetmode, const char "
-                       "*IDoffset_name)");
+    RegisterCLIcommand(
+        "cudacoeffo2map",
+        __FILE__,
+        CUDACOMP_Coeff2Map_offset_Loop_cli,
+        "CUDA multiply vector by modes and add offset",
+        "<modes> <coeffs vector> <GPU index [long]> <output "
+        "map> <offset image>",
+        "cudacoeffo2map modes coeff 4 outmap offsetim",
+        "int CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name, "
+        "const char *IDcoeff_name, int GPUindex, "
+        "const char *IDoutmap_name, int offsetmode, const char "
+        "*IDoffset_name)");
 
     return RETURN_SUCCESS;
 }
@@ -144,6 +145,8 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
     int             semval;
     int             semr;
 
+    int devicecntMax = 100;
+
     imageID IDoffset;
 
     printf("entering CUDACOMP_Coeff2Map_Loop\n");
@@ -171,8 +174,19 @@ errno_t CUDACOMP_Coeff2Map_Loop(const char *IDmodes_name,
     COREMOD_MEMORY_image_set_createsem(IDoutmap_name, 5);
 
     cudaGetDeviceCount(&cuda_deviceCount);
-    printf("%d devices found\n", cuda_deviceCount);
+    printf("%s : %d devices found\n", __func__, cuda_deviceCount);
     fflush(stdout);
+    if(cuda_deviceCount > devicecntMax)
+    {
+        cuda_deviceCount = 0;
+    }
+    if(cuda_deviceCount < 0)
+    {
+        cuda_deviceCount = 0;
+    }
+
+
+
     printf("\n");
     for(int k = 0; k < cuda_deviceCount; ++k)
     {

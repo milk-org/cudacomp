@@ -76,9 +76,19 @@ int CUDACOMP_init()
 {
     int                   device;
     struct cudaDeviceProp deviceProp;
+    int devicecntMax = 100;
 
     cudaGetDeviceCount(&cuda_deviceCount);
-    printf("%d devices found\n", cuda_deviceCount);
+    if(cuda_deviceCount > devicecntMax)
+    {
+        cuda_deviceCount = 0;
+    }
+    if(cuda_deviceCount < 0)
+    {
+        cuda_deviceCount = 0;
+    }
+
+    printf("%s: %d devices found\n", __func__, cuda_deviceCount);
     printf("\n");
     for(device = 0; device < cuda_deviceCount; ++device)
     {
@@ -111,17 +121,34 @@ int CUDACOMP_init()
     return ((int) cuda_deviceCount);
 }
 
-void *GPU_scanDevices(void *deviceCount_void_ptr)
+
+
+
+
+void *GPU_scanDevices(
+    void *deviceCount_void_ptr
+)
 {
     int                  *devcnt_ptr = (int *) deviceCount_void_ptr;
     int                   device;
     struct cudaDeviceProp deviceProp;
+    int devicecntMax = 100;
+
 
     printf("Scanning for GPU devices ...\n");
     fflush(stdout);
 
     cudaGetDeviceCount(&cuda_deviceCount);
-    printf("%d devices found\n", cuda_deviceCount);
+    if(cuda_deviceCount > devicecntMax)
+    {
+        cuda_deviceCount = 0;
+    }
+    if(cuda_deviceCount < 0)
+    {
+        cuda_deviceCount = 0;
+    }
+
+    printf("%s: %d devices found\n", __func__, cuda_deviceCount);
     fflush(stdout);
 
     printf("\n");
