@@ -93,9 +93,10 @@ static errno_t init_module_CLI()
     magma_compute_SVDpseudoInverse_SVD_addCLIcmd();
     Coeff2Map_Loop_addCLIcmd();
     cudacomp_MVMextractModesLoop_addCLIcmd();
+#endif
 
     CLIADDCMD_cudacomp__MVMextractModes();
-#endif
+
     // add atexit functions here
 
     return RETURN_SUCCESS;
