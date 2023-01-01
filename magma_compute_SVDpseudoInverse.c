@@ -1808,6 +1808,8 @@ errno_t CUDACOMP_magma_compute_SVDpseudoInverse(const char *ID_Rmatrix_name,
         MAGMAloop_iter++;
     }
 
+    list_image_ID();
+
     if(outID != NULL)
     {
         *outID = ID_Cmatrix;

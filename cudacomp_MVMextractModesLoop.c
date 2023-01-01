@@ -111,10 +111,10 @@ static errno_t CUDACOMP_MVMextractModesLoop_cli()
     if(CLI_checkarg(1, CLIARG_IMG) + CLI_checkarg(2, CLIARG_STR) +
             CLI_checkarg(3, CLIARG_IMG) + CLI_checkarg(4, CLIARG_STR) +
             CLI_checkarg(5, CLIARG_STR) + CLI_checkarg(6, CLIARG_STR) +
-            CLI_checkarg(7, CLIARG_LONG) + CLI_checkarg(8, CLIARG_LONG) +
-            CLI_checkarg(9, CLIARG_LONG) + CLI_checkarg(10, CLIARG_LONG) +
-            CLI_checkarg(11, CLIARG_LONG) + CLI_checkarg(12, CLIARG_LONG) +
-            CLI_checkarg(13, CLIARG_LONG) + CLI_checkarg(14, CLIARG_LONG) ==
+            CLI_checkarg(7, CLIARG_INT64) + CLI_checkarg(8, CLIARG_INT64) +
+            CLI_checkarg(9, CLIARG_INT64) + CLI_checkarg(10, CLIARG_INT64) +
+            CLI_checkarg(11, CLIARG_INT64) + CLI_checkarg(12, CLIARG_INT64) +
+            CLI_checkarg(13, CLIARG_INT64) + CLI_checkarg(14, CLIARG_INT64) ==
             0)
     {
         CUDACOMP_MVMextractModesLoop(data.cmdargtoken[1].val.string,
