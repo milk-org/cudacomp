@@ -67,6 +67,8 @@ add_library(${LIBNAME} SHARED ${SOURCEFILES})
 
 message("---- module cudacomp ------------------")
 
+find_package(PkgConfig REQUIRED)
+
 if(USE_CUDA)
 find_package(CUDA 9.0 REQUIRED)
 message(STATUS "Found CUDA ${CUDA_VERSION_STRING} at ${CUDA_TOOLKIT_ROOT_DIR}")
@@ -93,6 +95,38 @@ target_compile_options(${LIBNAME} PRIVATE ${MAGMA_CFLAGS_OTHER})
 target_compile_options(${LIBNAME} PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA)
 #target_compile_options(${LIBNAME} PUBLIC -DHAVE_CUDA -DHAVE_MAGMA -DUSE_MAGMA)
 endif(USE_MAGMA)
+
+
+
+#find_package(PkgConfig REQUIRED)
+#pkg_check_modules(OPENBLAS openblas)
+
+# OpenBLAS detected in upsteam CMakeList with pkg_check_modules(OPENBLAS openblas)
+if(OPENBLAS_FOUND)
+message("---- OPENBLAS_LIBRARY_DIRS =  ${OPENBLAS_LIBRARY_DIRS}")
+message("---- OPENBLAS_LIBRARIES    =  ${OPENBLAS_LIBRARIES}" )
+message("---- OPENBLAS_CFLAGS_OTHER =  ${OPENBLAS_CFLAGS_OTHER}" )
+target_include_directories(${LIBNAME} PUBLIC ${OPENBLAS_INCLUDE_DIRS})
+target_link_directories(${LIBNAME} PUBLIC ${OPENBLAS_LIBRARY_DIRS})
+target_link_libraries(${LIBNAME} PUBLIC ${OPENBLAS_LIBRARIES})
+target_compile_options(${LIBNAME} PUBLIC -DHAVE_OPENBLAS ${OPENBLAS_CFLAGS_OTHER})
+endif()
+
+
+# MKL detected in upstream CMakeList with find_package(MKL CONFIG)
+if(MKL_FOUND)
+message("---- MKL_LIBRARY_DIRS =  ${MKL_LIBRARY_DIRS}")
+message("---- MKL_LIBRARIES    =  ${MKL_LIBRARIES}" )
+message("---- MKL_CFLAGS_OTHER =  ${MKL_CFLAGS_OTHER}" )
+target_compile_options(${LIBNAME} PUBLIC -DHAVE_MKL ${MKL_CFLAGS_OTHER})
+target_compile_options(${LIBNAME} PUBLIC $<TARGET_PROPERTY:MKL::MKL,INTERFACE_COMPILE_OPTIONS>)
+target_include_directories(${LIBNAME} PUBLIC $<TARGET_PROPERTY:MKL::MKL,INTERFACE_INCLUDE_DIRECTORIES>)
+target_link_libraries(${LIBNAME} PUBLIC $<LINK_ONLY:MKL::MKL>)
+endif()
+
+
+
+
 
 
 

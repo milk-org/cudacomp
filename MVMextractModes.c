@@ -9,9 +9,29 @@
 
 #include <pthread.h>
 
+
+// Use MKL if available
+// Otherwise use openBLAS
+//
+#ifdef HAVE_MKL
+#include "mkl.h"
+#define BLASLIB "IntelMKL"
+#else
+#ifdef HAVE_OPENBLAS
+#include <cblas.h>
+#include <lapacke.h>
+#define BLASLIB "OpenBLAS"
+#endif
+#endif
+
+
+
 #include "CommandLineInterface/CLIcore.h"
+#include "CommandLineInterface/timeutils.h"
 
 #include "MVM_CPU.h"
+
+
 
 // Local variables pointers
 static int32_t *GPUindex;
@@ -69,7 +89,7 @@ static CLICMDARGDEF farg[] =
     {
         CLIARG_INT32,
         ".GPUindex",
-        "GPU index, <0 for CPU",
+        "GPU index, 99 for CPU",
         "0",
         CLIARG_VISIBLE_DEFAULT,
         (void **) &GPUindex,
@@ -521,7 +541,6 @@ static errno_t compute_function()
     if(MODEVALCOMPUTE == 1)
     {
 
-
 #ifdef HAVE_CUDA
         int deviceCount;
         int devicecntMax = 100;
@@ -529,6 +548,8 @@ static errno_t compute_function()
         cudaGetDeviceCount(&deviceCount);
         printf("%d devices found\n", deviceCount);
         fflush(stdout);
+
+        processinfo_WriteMessage(processinfo, "CUDA : %d devices", deviceCount);
 
         if(deviceCount > devicecntMax)
         {
@@ -627,6 +648,8 @@ static errno_t compute_function()
                    __LINE__);
             exit(EXIT_FAILURE);
         }
+#else
+        processinfo_WriteMessage(processinfo, "NO CUDA");
 #endif
     }
 
@@ -840,6 +863,28 @@ static errno_t compute_function()
     float beta = 0.0;
     uint64_t refindex = 0;
 
+#ifdef HAVE_OPENBLAS
+    printf("OpenBLASS  YES\n");
+#else
+    printf("OpenBLASS  NO\n");
+#endif
+
+#ifdef HAVE_MKL
+    printf("MKL        YES\n");
+#else
+    printf("MKL        NO\n");
+#endif
+
+
+#ifdef HAVE_CUDA
+    printf("CUDA       YES\n");
+#else
+    printf("CUDA       NO\n");
+#endif
+
+
+
+
     INSERT_STD_PROCINFO_COMPUTEFUNC_LOOPSTART
 
     {
@@ -855,8 +900,27 @@ static errno_t compute_function()
 
 
 
-        if((*GPUindex) < 0)
+        if(((*GPUindex) < 0) || (*GPUindex == 99))
         {
+
+#ifdef BLASLIB
+
+            struct timespec t0, t1;
+            clock_gettime(CLOCK_REALTIME, &t0);
+            data.image[imgout.ID].md[0].write = 1;
+            cblas_sgemv(CblasColMajor,
+                        CblasNoTrans, (int) n, (int) m,
+                        1.0, imgmodes.im->array.F, (int) n,
+                        imgin.im->array.F, 1, 0.0,
+                        imgout.im->array.F, 1);
+            clock_gettime(CLOCK_REALTIME, &t1);
+
+            struct timespec tdiff;
+            tdiff = timespec_diff(t0, t1);
+            double t01d  = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
+            processinfo_WriteMessage_fmt(processinfo, "%s %dx%d MVM %.3f us", BLASLIB, n, m, t01d*1e6);
+
+#else
             // Run on CPU
             int mmax1 = (*mmax);
             if(mmax1 > m)
@@ -886,12 +950,13 @@ static errno_t compute_function()
                     imgout.im->array.F[jj] += imgmodes.im->array.F[index] * imgin.im->array.F[ii];
                 }
             }
+#endif
             processinfo_update_output_stream(processinfo, imgout.ID);
         }
         else
         {
-
 #ifdef HAVE_CUDA
+            processinfo_WriteMessage_fmt(processinfo, "MVM on GPU %d", GPUindex);
             // load in_stream to GPU
             if(initref == 0)
             {
