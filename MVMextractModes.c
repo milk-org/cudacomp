@@ -380,6 +380,7 @@ static errno_t compute_function()
     long NBmodes = 1;
     imageID IDmodes = -1;
 
+
     if((*axmode) == 0)
     {
         //
@@ -391,6 +392,9 @@ static errno_t compute_function()
         NBmodes = n;
         printf("NBmodes = %ld\n", NBmodes);
         fflush(stdout);
+
+
+        // make col-major storage
     }
     else
     {
@@ -885,8 +889,25 @@ static errno_t compute_function()
 
 
 
-    INSERT_STD_PROCINFO_COMPUTEFUNC_LOOPSTART
+    float *ColMajorMatrix = (float *) malloc(sizeof(float)*m*n);
+    if( *axmode == 0)
+    {
+        for(int ii=0; ii<m; ii++)
+        {
+            for(int jj=0; jj<n; jj++)
+            {
+                ColMajorMatrix[ii*n + jj] = imgmodes.im->array.F[jj*m+ii];
+            }
+        }
+    }
+    else
+    {
+        memcpy(ColMajorMatrix, imgmodes.im->array.F, sizeof(float)*m*n);
+    }
 
+    printf(">>> START MVM loop\n");
+
+    INSERT_STD_PROCINFO_COMPUTEFUNC_LOOPSTART
     {
 
         // Are we computing a new reference ?
@@ -905,20 +926,37 @@ static errno_t compute_function()
 
 #ifdef BLASLIB
 
+
+//printf(">>> START MVM\n");
             struct timespec t0, t1;
             clock_gettime(CLOCK_REALTIME, &t0);
             data.image[imgout.ID].md[0].write = 1;
-            cblas_sgemv(CblasColMajor,
-                        CblasNoTrans, (int) n, (int) m,
-                        1.0, imgmodes.im->array.F, (int) n,
-                        imgin.im->array.F, 1, 0.0,
-                        imgout.im->array.F, 1);
+
+            if(*axmode == 1)
+            {
+                cblas_sgemv(CblasColMajor,
+                            CblasNoTrans, (int) n, (int) m,
+                            1.0, ColMajorMatrix, (int) n,
+                            imgin.im->array.F, 1, 0.0,
+                            imgout.im->array.F, 1);
+            }
+            else
+            {
+                cblas_sgemv(CblasColMajor,
+                            CblasNoTrans, (int) n, (int) m,
+                            1.0, ColMajorMatrix, (int) n,
+                            imgin.im->array.F, 1, 0.0,
+                            imgout.im->array.F, 1);
+            }
+
             clock_gettime(CLOCK_REALTIME, &t1);
 
             struct timespec tdiff;
             tdiff = timespec_diff(t0, t1);
             double t01d  = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
             processinfo_WriteMessage_fmt(processinfo, "%s %dx%d MVM %.3f us", BLASLIB, n, m, t01d*1e6);
+
+// printf("    END MVM >>>\n");
 
 #else
             // Run on CPU
@@ -1102,6 +1140,8 @@ static errno_t compute_function()
     }
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_END
+
+    free(ColMajorMatrix);
 
     free(normcoeff);
     free(modevalarray);
