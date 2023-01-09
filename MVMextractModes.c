@@ -553,7 +553,7 @@ static errno_t compute_function()
         printf("%d devices found\n", deviceCount);
         fflush(stdout);
 
-        processinfo_WriteMessage(processinfo, "CUDA : %d devices", deviceCount);
+        processinfo_WriteMessage_fmt(processinfo, "CUDA : %d devices", deviceCount);
 
         if(deviceCount > devicecntMax)
         {
