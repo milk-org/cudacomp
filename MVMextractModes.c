@@ -348,25 +348,11 @@ static errno_t compute_function()
 
 
     // CONNECT TO OPTIONAL OUTPUT REFERENCE STREAM
-    /*    imageID IDoutref = -1;
-        IMGID imgoutref = mkIMGID_from_name(outrefsname);
-        resolveIMGID(&imgin, ERRMODE_WARN);
-        if(imginref.ID == -1)
-        {
-            create_2Dimage_ID("_tmprefin",
-                              imgin.md->size[0],
-                              imgin.md->size[1],
-                              &IDref);
-            for(uint64_t ii = 0; ii < imgin.md->size[0] * imgin.md->size[1]; ii++)
-            {
-                data.image[IDref].array.F[ii] = 0.0;
-            }
-        }
-        else
-        {
-            IDref = imginref.ID;
-        }
-    */
+    imageID IDoutref = -1;
+    IMGID imgoutref = mkIMGID_from_name(outrefsname);
+    resolveIMGID(&imgoutref, ERRMODE_WARN);
+ 
+
 
     // CONNECT TO MODES STREAM
     IMGID imgmodes = mkIMGID_from_name(immodes);
@@ -932,29 +918,39 @@ static errno_t compute_function()
             clock_gettime(CLOCK_REALTIME, &t0);
             data.image[imgout.ID].md[0].write = 1;
 
-            if(*axmode == 1)
             {
-                cblas_sgemv(CblasColMajor,
+                float beta = 0.0;
+            
+                if(imgoutref.ID != -1)
+                {
+                    beta = 1.0;
+                    memcpy(imgout.im->array.F, imgoutref.im->array.F, sizeof(float)*n);
+                }
+
+                if(*axmode == 1)
+                {
+                    cblas_sgemv(CblasColMajor,
                             CblasNoTrans, (int) n, (int) m,
                             1.0, ColMajorMatrix, (int) n,
-                            imgin.im->array.F, 1, 0.0,
+                            imgin.im->array.F, 1, beta,
                             imgout.im->array.F, 1);
-            }
-            else
-            {
-                cblas_sgemv(CblasColMajor,
+                }
+                else
+                {
+                    cblas_sgemv(CblasColMajor,
                             CblasNoTrans, (int) n, (int) m,
                             1.0, ColMajorMatrix, (int) n,
-                            imgin.im->array.F, 1, 0.0,
+                            imgin.im->array.F, 1, beta,
                             imgout.im->array.F, 1);
+                }
+
+                clock_gettime(CLOCK_REALTIME, &t1);
+
+                struct timespec tdiff;
+                tdiff = timespec_diff(t0, t1);
+                double t01d  = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
+                processinfo_WriteMessage_fmt(processinfo, "%s %dx%d MVM %.3f us", BLASLIB, n, m, t01d*1e6);
             }
-
-            clock_gettime(CLOCK_REALTIME, &t1);
-
-            struct timespec tdiff;
-            tdiff = timespec_diff(t0, t1);
-            double t01d  = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
-            processinfo_WriteMessage_fmt(processinfo, "%s %dx%d MVM %.3f us", BLASLIB, n, m, t01d*1e6);
 
 // printf("    END MVM >>>\n");
 
