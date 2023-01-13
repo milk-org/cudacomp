@@ -477,8 +477,9 @@ static errno_t compute_function()
 
 
     // CONNNECT TO OR CREATE OUTPUT STREAM
-    // TODO: replace with stream_connect_create_2Df32
-
+    IMGID imgout = stream_connect_create_2Df32(outcoeff, arraytmp[0], arraytmp[1]);
+ 
+ /*
     // try to connect to local memory
     IMGID imgout = mkIMGID_from_name(outcoeff);
     resolveIMGID(&imgout, ERRMODE_WARN);
@@ -518,13 +519,12 @@ static errno_t compute_function()
                         0,
                         &ID_modeval);
     }
-
+*/
     MODEVALCOMPUTE = 1;
 
     free(arraytmp);
 
-    printf("OUTPUT STREAM : %s  ID: %ld\n", outcoeff, ID_modeval);
-    list_image_ID();
+ 
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_INIT;
 
@@ -913,14 +913,18 @@ static errno_t compute_function()
         }
 
 
-
         if(((*GPUindex) < 0) || (*GPUindex == 99))
         {
 
 #ifdef BLASLIB
             struct timespec t0, t1;
             clock_gettime(CLOCK_REALTIME, &t0);
-            data.image[imgout.ID].md[0].write = 1;
+            processinfo_WriteMessage_fmt(processinfo, "imgout %s ID %d", imgout.md->name, imgout.ID);
+            if( imgout.ID == -1 )
+            {
+                list_image_ID();
+            }
+            data.image[imgout.ID].md->write = 1;
 
             {
                 float beta = 0.0;
@@ -1080,7 +1084,7 @@ static errno_t compute_function()
             }
 
             // copy result
-            data.image[ID_modeval].md[0].write = 1;
+            imgout.md->write = 1;
 
             if(initref == 0)
             {
@@ -1118,7 +1122,7 @@ static errno_t compute_function()
                 {
                     for(long k = 0; k < NBmodes; k++)
                     {
-                        data.image[ID_modeval].array.F[k] =
+                        imgout.im->array.F[k] =
                             (modevalarray[k] / data.image[IDintot].array.F[0] -
                              modevalarrayref[k]) /
                             normcoeff[k];
@@ -1127,7 +1131,7 @@ static errno_t compute_function()
                 else
                     for(long k = 0; k < NBmodes; k++)
                     {
-                        data.image[ID_modeval].array.F[k] = modevalarray[k];
+                        imgout.im->array.F[k] = modevalarray[k];
                     }
 
 
@@ -1140,7 +1144,7 @@ static errno_t compute_function()
 
 
 
-                processinfo_update_output_stream(processinfo, ID_modeval);
+                processinfo_update_output_stream(processinfo, imgout.ID);
             }
 #endif
         }
