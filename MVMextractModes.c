@@ -297,7 +297,6 @@ static errno_t compute_function()
 
 
 
-
     // each step is 2x longer average than previous step
     uint32_t NBaveSTEP = 10;
 
@@ -326,6 +325,8 @@ static errno_t compute_function()
         INNORMMODE = 1;
     }
 
+
+
     // CONNECT TO OPTIONAL INPUT REFERENCE STREAM
     imageID IDinref = -1;
     IMGID imginref = mkIMGID_from_name(inrefsname);
@@ -348,19 +349,20 @@ static errno_t compute_function()
 
 
     // CONNECT TO OPTIONAL OUTPUT REFERENCE STREAM
-    imageID IDoutref = -1;
     IMGID imgoutref = mkIMGID_from_name(outrefsname);
     resolveIMGID(&imgoutref, ERRMODE_WARN);
- 
 
 
     // CONNECT TO MODES STREAM
     IMGID imgmodes = mkIMGID_from_name(immodes);
     resolveIMGID(&imgmodes, ERRMODE_ABORT);
 
+
+
     printf("Modes stream size : %u %u\n",
            imgmodes.md->size[0],
            imgmodes.md->size[1]);
+
 
     long n;
     long NBmodes = 1;
@@ -531,116 +533,121 @@ static errno_t compute_function()
     if(MODEVALCOMPUTE == 1)
     {
 
+        if( ((*GPUindex) >= 0) && ((*GPUindex) != 99) )
+        {
+
 #ifdef HAVE_CUDA
-        int deviceCount;
-        int devicecntMax = 100;
+            int deviceCount;
+            int devicecntMax = 100;
 
-        cudaGetDeviceCount(&deviceCount);
-        printf("%d devices found\n", deviceCount);
-        fflush(stdout);
+            cudaGetDeviceCount(&deviceCount);
+            printf("%d devices found\n", deviceCount);
+            fflush(stdout);
 
-        processinfo_WriteMessage_fmt(processinfo, "CUDA : %d devices", deviceCount);
+            processinfo_WriteMessage_fmt(processinfo, "CUDA : %d devices", deviceCount);
 
-        if(deviceCount > devicecntMax)
-        {
-            deviceCount = 0;
-        }
-        if(deviceCount < 0)
-        {
-            deviceCount = 0;
-        }
+            if(deviceCount > devicecntMax)
+            {
+                deviceCount = 0;
+            }
+            if(deviceCount < 0)
+            {
+                deviceCount = 0;
+            }
 
-        printf("\n");
-
-        for(int k = 0; k < deviceCount; k++)
-        {
-            cudaGetDeviceProperties(&deviceProp, k);
-            printf("Device %d / %d [ %20s ]  has compute capability %d.%d.\n",
-                   k + 1,
-                   deviceCount,
-                   deviceProp.name,
-                   deviceProp.major,
-                   deviceProp.minor);
-            printf(
-                "  Total amount of global memory:                 %.0f MBytes "
-                "(%llu bytes)\n",
-                (float)deviceProp.totalGlobalMem / 1048576.0f,
-                (unsigned long long)deviceProp.totalGlobalMem);
-            printf("  (%2d) Multiprocessors\n", deviceProp.multiProcessorCount);
-            printf(
-                "  GPU Clock rate:                                %.0f MHz "
-                "(%0.2f GHz)\n",
-                deviceProp.clockRate * 1e-3f,
-                deviceProp.clockRate * 1e-6f);
             printf("\n");
-        }
 
-        if((*GPUindex) < deviceCount)
-        {
-            cudaSetDevice(*GPUindex);
-        }
-        else
-        {
-            printf("Invalid Device : %d / %d\n", *GPUindex, deviceCount);
-            exit(0);
-        }
+            for(int k = 0; k < deviceCount; k++)
+            {
+                cudaGetDeviceProperties(&deviceProp, k);
+                printf("Device %d / %d [ %20s ]  has compute capability %d.%d.\n",
+                       k + 1,
+                       deviceCount,
+                       deviceProp.name,
+                       deviceProp.major,
+                       deviceProp.minor);
+                printf(
+                    "  Total amount of global memory:                 %.0f MBytes "
+                    "(%llu bytes)\n",
+                    (float)deviceProp.totalGlobalMem / 1048576.0f,
+                    (unsigned long long)deviceProp.totalGlobalMem);
+                printf("  (%2d) Multiprocessors\n", deviceProp.multiProcessorCount);
+                printf(
+                    "  GPU Clock rate:                                %.0f MHz "
+                    "(%0.2f GHz)\n",
+                    deviceProp.clockRate * 1e-3f,
+                    deviceProp.clockRate * 1e-6f);
+                printf("\n");
+            }
 
-        printf("Create cublas handle ...");
-        fflush(stdout);
-        cublas_status = cublasCreate(&cublasH);
-        if(cublas_status != CUBLAS_STATUS_SUCCESS)
-        {
-            printf("CUBLAS initialization failed\n");
-            return EXIT_FAILURE;
-        }
-        printf(" done\n");
-        fflush(stdout);
+            if((*GPUindex) < deviceCount)
+            {
+                cudaSetDevice(*GPUindex);
+            }
+            else
+            {
+                printf("Invalid Device : %d / %d\n", *GPUindex, deviceCount);
+                processinfo_WriteMessage_fmt(processinfo, "Invalid GPU device %d", *GPUindex);
+                exit(0);
+            }
 
-        // load modes to GPU
-        cudaStat = cudaMalloc((void **)&d_modes, sizeof(float) * m * NBmodes);
-        if(cudaStat != cudaSuccess)
-        {
-            printf("cudaMalloc d_modes returned error code %d, line %d\n",
-                   cudaStat,
-                   __LINE__);
-            exit(EXIT_FAILURE);
-        }
+            printf("Create cublas handle ...");
+            fflush(stdout);
+            cublas_status = cublasCreate(&cublasH);
+            if(cublas_status != CUBLAS_STATUS_SUCCESS)
+            {
+                printf("CUBLAS initialization failed\n");
+                return EXIT_FAILURE;
+            }
+            printf(" done\n");
+            fflush(stdout);
 
-        cudaStat = cudaMemcpy(d_modes,
-                              data.image[IDmodes].array.F,
-                              sizeof(float) * m * NBmodes,
-                              cudaMemcpyHostToDevice);
-        // cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
-        if(cudaStat != cudaSuccess)
-        {
-            printf("cudaMemcpy returned error code %d, line %d\n",
-                   cudaStat,
-                   __LINE__);
-            exit(EXIT_FAILURE);
-        }
+            // load modes to GPU
+            cudaStat = cudaMalloc((void **)&d_modes, sizeof(float) * m * NBmodes);
+            if(cudaStat != cudaSuccess)
+            {
+                printf("cudaMalloc d_modes returned error code %d, line %d\n",
+                       cudaStat,
+                       __LINE__);
+                exit(EXIT_FAILURE);
+            }
 
-        // create d_in
-        cudaStat = cudaMalloc((void **)&d_in, sizeof(float) * m);
-        if(cudaStat != cudaSuccess)
-        {
-            printf("cudaMalloc d_in returned error code %d, line %d\n",
-                   cudaStat,
-                   __LINE__);
-            exit(EXIT_FAILURE);
-        }
+            cudaStat = cudaMemcpy(d_modes,
+                                  data.image[IDmodes].array.F,
+                                  sizeof(float) * m * NBmodes,
+                                  cudaMemcpyHostToDevice);
+            // cudaStat = cudaMemcpy(d_modes, imgmodes.im->array.F, sizeof(float) * m * NBmodes, cudaMemcpyHostToDevice);
+            if(cudaStat != cudaSuccess)
+            {
+                printf("cudaMemcpy returned error code %d, line %d\n",
+                       cudaStat,
+                       __LINE__);
+                exit(EXIT_FAILURE);
+            }
 
-        // create d_modeval
-        cudaStat = cudaMalloc((void **)&d_modeval, sizeof(float) * NBmodes);
-        if(cudaStat != cudaSuccess)
-        {
-            printf("cudaMalloc d_modeval returned error code %d, line %d\n",
-                   cudaStat,
-                   __LINE__);
-            exit(EXIT_FAILURE);
-        }
+            // create d_in
+            cudaStat = cudaMalloc((void **)&d_in, sizeof(float) * m);
+            if(cudaStat != cudaSuccess)
+            {
+                printf("cudaMalloc d_in returned error code %d, line %d\n",
+                       cudaStat,
+                       __LINE__);
+                exit(EXIT_FAILURE);
+            }
+
+            // create d_modeval
+            cudaStat = cudaMalloc((void **)&d_modeval, sizeof(float) * NBmodes);
+            if(cudaStat != cudaSuccess)
+            {
+                printf("cudaMalloc d_modeval returned error code %d, line %d\n",
+                       cudaStat,
+                       __LINE__);
+                exit(EXIT_FAILURE);
+            }
 #else
-        processinfo_WriteMessage(processinfo, "NO CUDA");
+            processinfo_WriteMessage(processinfo, "NO CUDA");
 #endif
+        }
     }
 
     if((*TRACEMODE) == 1)
@@ -911,16 +918,13 @@ static errno_t compute_function()
         {
 
 #ifdef BLASLIB
-
-
-//printf(">>> START MVM\n");
             struct timespec t0, t1;
             clock_gettime(CLOCK_REALTIME, &t0);
             data.image[imgout.ID].md[0].write = 1;
 
             {
                 float beta = 0.0;
-            
+
                 if(imgoutref.ID != -1)
                 {
                     beta = 1.0;
@@ -930,32 +934,28 @@ static errno_t compute_function()
                 if(*axmode == 1)
                 {
                     cblas_sgemv(CblasColMajor,
-                            CblasNoTrans, (int) n, (int) m,
-                            1.0, ColMajorMatrix, (int) n,
-                            imgin.im->array.F, 1, beta,
-                            imgout.im->array.F, 1);
+                                CblasNoTrans, (int) n, (int) m,
+                                1.0, ColMajorMatrix, (int) n,
+                                imgin.im->array.F, 1, beta,
+                                imgout.im->array.F, 1);
                 }
                 else
                 {
                     cblas_sgemv(CblasColMajor,
-                            CblasNoTrans, (int) n, (int) m,
-                            1.0, ColMajorMatrix, (int) n,
-                            imgin.im->array.F, 1, beta,
-                            imgout.im->array.F, 1);
+                                CblasNoTrans, (int) n, (int) m,
+                                1.0, ColMajorMatrix, (int) n,
+                                imgin.im->array.F, 1, beta,
+                                imgout.im->array.F, 1);
                 }
 
                 clock_gettime(CLOCK_REALTIME, &t1);
-
                 struct timespec tdiff;
                 tdiff = timespec_diff(t0, t1);
                 double t01d  = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
                 processinfo_WriteMessage_fmt(processinfo, "%s %dx%d MVM %.3f us", BLASLIB, n, m, t01d*1e6);
             }
-
-// printf("    END MVM >>>\n");
-
 #else
-            // Run on CPU
+            // Run on CPU without lib
             int mmax1 = (*mmax);
             if(mmax1 > m)
             {
@@ -990,7 +990,10 @@ static errno_t compute_function()
         else
         {
 #ifdef HAVE_CUDA
-            processinfo_WriteMessage_fmt(processinfo, "MVM on GPU %d", GPUindex);
+
+            struct timespec t0, t1;
+            clock_gettime(CLOCK_REALTIME, &t0);
+
             // load in_stream to GPU
             if(initref == 0)
             {
@@ -1126,6 +1129,16 @@ static errno_t compute_function()
                     {
                         data.image[ID_modeval].array.F[k] = modevalarray[k];
                     }
+
+
+
+                clock_gettime(CLOCK_REALTIME, &t1);
+                struct timespec tdiff;
+                tdiff = timespec_diff(t0, t1);
+                double t01d  = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
+                processinfo_WriteMessage_fmt(processinfo, "GPU%d %dx%d MVM %.3f us", *GPUindex, n, m, t01d*1e6);
+
+
 
                 processinfo_update_output_stream(processinfo, ID_modeval);
             }
