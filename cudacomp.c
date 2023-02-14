@@ -88,9 +88,12 @@ static errno_t init_module_CLI()
 
     CLIADDCMD_cudacomp__PCAdecomp();
 
+#ifdef HAVE_MAGMA
     MatMatMult_testPseudoInverse_addCLIcmd();
     magma_compute_SVDpseudoInverse_addCLIcmd();
     magma_compute_SVDpseudoInverse_SVD_addCLIcmd();
+#endif
+
     Coeff2Map_Loop_addCLIcmd();
     cudacomp_MVMextractModesLoop_addCLIcmd();
 #endif
